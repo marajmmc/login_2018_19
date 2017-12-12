@@ -56,6 +56,7 @@ if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
     $action_buttons[]=array(
         'type'=>'button',
         'label'=>'Change status',
+        'data-message-confirm'=>'Are you sure to Change Status?',
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/edit_status')
     );

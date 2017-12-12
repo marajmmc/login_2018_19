@@ -82,6 +82,12 @@ foreach($results as $result)
 
         <!--    for jqx grid end-->
 
+        <?php
+        $system_divisions=array();
+        $system_zones=array();
+        $system_territories=array();
+        $system_districts=array();
+        ?>
         <script type="text/javascript">
             var base_url = "<?php echo base_url(); ?>";
             var display_date_format = "dd-M-yy";
@@ -90,15 +96,15 @@ foreach($results as $result)
             var resized_image_files=[];
 <!--            var system_crops=JSON.parse('--><?php //echo json_encode($system_crops);?><!--');-->
 <!--            var system_types=JSON.parse('--><?php //echo json_encode($system_types);?><!--');-->
-<!--            var system_divisions=JSON.parse('--><?php //echo json_encode($system_divisions);?><!--');-->
-<!--            var system_zones=JSON.parse('--><?php //echo json_encode($system_zones);?><!--');-->
-<!--            var system_territories=JSON.parse('--><?php //echo json_encode($system_territories);?><!--');-->
-<!--            var system_districts=JSON.parse('--><?php //echo json_encode($system_districts);?><!--');-->
+            var system_divisions=JSON.parse('<?php echo json_encode($system_divisions);?>');
+            var system_zones=JSON.parse('<?php echo json_encode($system_zones);?>');
+            var system_territories=JSON.parse('<?php echo json_encode($system_territories);?>');
+            var system_districts=JSON.parse('<?php echo json_encode($system_districts);?>');
         </script>
         <header class="hidden-print">
 
             <img alt="Logo" height="40" class="site_logo pull-left" src="<?php echo base_url('images/logo.png'); ?>">
-            <div class="site_title pull-left">A.R. MALIK & Co. (PVT) LTD.</div>
+            <div class="site_title pull-left">A.R. Malik Seeds (Pvt.) Ltd.</div>
 
         </header>
 
@@ -117,7 +123,7 @@ foreach($results as $result)
         </div>
         <footer class="hidden-print navbar-fixed-bottom">
             <div>
-                All Rights Reserved & &copy; Copyright 2017 by Malik Seeds. Design & Developed by :
+                All Rights Reserved & &copy; Copyright 2017 by A.R. Malik Seeds (Pvt.) Ltd. Design & Developed by :
                 <a href="http://disb.solutions/" target="_blank" class="external">
                     <img src="<?php echo base_url()?>images/logo_disb.png" alt="DISB Logo" style="width: 50px"/>
                 </a>

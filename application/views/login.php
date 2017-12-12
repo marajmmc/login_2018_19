@@ -26,7 +26,6 @@
                     <div class="clearfix"></div>
                 </div>
             </form>
-
         </div>
     </div>
     <div class="col-sm-3">&nbsp;</div>

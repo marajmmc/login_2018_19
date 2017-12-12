@@ -101,7 +101,6 @@ class Setup_users extends Root_Controller
             $this->system_list();
         }
     }
-
     private function system_list()
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
@@ -166,9 +165,7 @@ class Setup_users extends Root_Controller
     {
         if(isset($this->permissions['action1']) && ($this->permissions['action1']==1))
         {
-
             $data['title']='Create New User';
-
             $data['user'] = array(
                 'id' => 0,
                 'employee_id' => '',
@@ -366,16 +363,28 @@ class Setup_users extends Root_Controller
             {
                 $user_id=$id;
             }
-            $data['user']=Query_helper::get_info($this->config->item('table_login_setup_user'),array('status'),array('id ='.$user_id),1);
-            $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
-            $data['title']=$data['user_info']['name'];
-            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/edit_status",$data,true));
-            if($this->message)
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user'),'*',array('id ='.$user_id),1);
+            $status=$this->config->item('system_status_inactive');
+            if($result['status']==$this->config->item('system_status_inactive'))
             {
-                $ajax['system_message']=$this->message;
+                $status=$this->config->item('system_status_active');
             }
-            $ajax['system_page_url']=site_url($this->controller_url.'/index/edit_status/'.$user_id);
-            $this->json_return($ajax);
+
+            $this->db->trans_start();  //DB Transaction Handle START
+            Query_helper::update($this->config->item('table_login_setup_user'),array('status'=>$status),array("id = ".$user_id));
+            $this->db->trans_complete();   //DB Transaction Handle END
+
+            if ($this->db->trans_status() === TRUE)
+            {
+                $this->message='Status Changed to '.$status;
+                $this->system_list();
+            }
+            else
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+                $this->jsonReturn($ajax);
+            }
         }
         else
         {
@@ -524,7 +533,6 @@ class Setup_users extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_assign_sites($id)
     {
         if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
@@ -563,7 +571,6 @@ class Setup_users extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_change_company($id)
     {
         if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
@@ -602,7 +609,6 @@ class Setup_users extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_save()
     {
         $id = $this->input->post('id');
@@ -692,11 +698,11 @@ class Setup_users extends Root_Controller
         $revision_history_data=array();
         $revision_history_data['date_updated']=$time;
         $revision_history_data['user_updated']=$user->user_id;
-        Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_history_data,array('revision=1','user_id='.$id));
+        Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_history_data,array('revision=1','user_id='.$id), false);
 
         $this->db->where('user_id',$id);
         $this->db->set('revision', 'revision+1', FALSE);
-        $this->db->update($this->config->item('table_login_setup_user_info'));
+        $this->db->update($this->config->item('table_login_setup_user_info'),false);
 
         $data_user_info=$this->input->post('user_info');
         $data_user_info['user_id']=$id;
@@ -706,19 +712,19 @@ class Setup_users extends Root_Controller
 
         if(isset($data_user_info['date_birth']))
         {
-           $data_user_info['date_birth']=System_helper::get_time($data_user_info['date_birth']);
-           if($data_user_info['date_birth']===0)
-           {
+            $data_user_info['date_birth']=System_helper::get_time($data_user_info['date_birth']);
+            if($data_user_info['date_birth']===0)
+            {
                 unset($data_user_info['date_birth']);
-           }
+            }
         }
         if(isset($data_user_info['date_join']))
         {
-           $data_user_info['date_join']=System_helper::get_time($data_user_info['date_join']);
-           if($data_user_info['date_join']===0)
-           {
+            $data_user_info['date_join']=System_helper::get_time($data_user_info['date_join']);
+            if($data_user_info['date_join']===0)
+            {
                 unset($data_user_info['date_join']);
-           }
+            }
         }
         if($id>0)
         {
@@ -741,7 +747,7 @@ class Setup_users extends Root_Controller
             }
         }
 
-        Query_helper::add($this->config->item('table_login_setup_user_info'),$data_user_info);
+        Query_helper::add($this->config->item('table_login_setup_user_info'),$data_user_info,false);
         $this->db->trans_complete();   //DB Transaction Handle END
         if ($this->db->trans_status() === TRUE)
         {
@@ -1188,7 +1194,6 @@ class Setup_users extends Root_Controller
             }
         }
     }
-
     private function check_validation_for_add()
     {
         $this->load->library('form_validation');
