@@ -38,6 +38,14 @@ class Setup_csetup_customer extends Root_Controller {
         {
             $this->system_assign_upazilla($id);
         }
+        elseif($action=="set_preference")
+        {
+            $this->system_set_preference();
+        }
+        elseif($action=="save_preference")
+        {
+            $this->system_save_preference();
+        }
         elseif($action=="details")
         {
             $this->system_details($id);
@@ -63,6 +71,28 @@ class Setup_csetup_customer extends Root_Controller {
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
         {
+            $user = User_helper::get_user();
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            if($result)
+            {
+                $data['items']=json_decode($result['preferences'],true);
+            }
+            else
+            {
+                $data['items']['name']= true;
+                $data['items']['name_short']= true;
+                $data['items']['type']= true;
+                $data['items']['division_name']= true;
+                $data['items']['zone_name']= true;
+                $data['items']['territory_name']= true;
+                $data['items']['district_name']= true;
+                $data['items']['customer_code']= true;
+                $data['items']['incharge']= true;
+                $data['items']['phone']= true;
+                $data['items']['ordering']= true;
+                $data['items']['status']= true;
+            }
+
             $data['title']="Customers";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
@@ -84,7 +114,7 @@ class Setup_csetup_customer extends Root_Controller {
     {
         $this->db->from($this->config->item('table_login_csetup_customer').' cus');
         $this->db->select('cus.id,cus.status');
-        $this->db->select('cus_info.name,cus_info.name_short,cus_info.customer_code,cus_info.phone,cus_info.ordering');
+        $this->db->select('cus_info.name,cus_info.name_short,cus_info.customer_code,cus_info.phone,cus_info.ordering,cus_info.type');
         $this->db->select('cus_type.name type_name');
         $this->db->select('d.name district_name');
         $this->db->select('t.name territory_name');
@@ -98,7 +128,8 @@ class Setup_csetup_customer extends Root_Controller {
         $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
         $this->db->join($this->config->item('table_login_setup_location_divisions').' division','division.id = zone.division_id','INNER');
         $this->db->join($this->config->item('table_login_csetup_incharge').' cus_incharge','cus_incharge.id = cus_info.incharge','LEFT');
-
+        $this->db->order_by('cus_info.type','ASC');
+        $this->db->order_by('cus_info.customer_code','ASC');
         $this->db->order_by('division.ordering','ASC');
         $this->db->order_by('zone.ordering','ASC');
         $this->db->order_by('t.ordering','ASC');
@@ -772,4 +803,121 @@ class Setup_csetup_customer extends Root_Controller {
     {
         return true;
     }
+
+    private function system_set_preference()
+    {
+        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
+        {
+            $user = User_helper::get_user();
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            if($result)
+            {
+                $data['items']=json_decode($result['preferences'],true);
+            }
+            else
+            {
+                $data['items']['name']= true;
+                $data['items']['name_short']= true;
+                $data['items']['type']= true;
+                $data['items']['division_name']= true;
+                $data['items']['zone_name']= true;
+                $data['items']['territory_name']= true;
+                $data['items']['district_name']= true;
+                $data['items']['customer_code']= true;
+                $data['items']['incharge']= true;
+                $data['items']['phone']= true;
+                $data['items']['ordering']= true;
+                $data['items']['status']= true;
+            }
+            $data['title']="Set Preference";
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/preference",$data,true));
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference');
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_save_preference()
+    {
+        if($this->input->post('item'))
+        {
+            $items_new=$this->input->post('item');
+        }
+        else
+        {
+            $items_new=array();
+        }
+
+        $items['name']= 0;
+        $items['name_short']= 0;
+        $items['type']= 0;
+        $items['division_name']= 0;
+        $items['zone_name']= 0;
+        $items['territory_name']= 0;
+        $items['district_name']= 0;
+        $items['customer_code']= 0;
+        $items['incharge']= 0;
+        $items['phone']= 0;
+        $items['ordering']= 0;
+        $items['status']= 0;
+        foreach($items as $index=>$item)
+        {
+            if(isset($items_new[$index]))
+            {
+                $items[$index]=$items_new[$index];
+            }
+        }
+        $user = User_helper::get_user();
+        if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+            die();
+        }
+        else
+        {
+            $time=time();
+            $this->db->trans_start();  //DB Transaction Handle START
+
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            if($result)
+            {
+                $data['user_updated']=$user->user_id;
+                $data['date_updated']=$time;
+                $data['preferences']=json_encode($items);
+                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
+            }
+            else
+            {
+                $data['user_id']=$user->user_id;
+                $data['controller']=$this->controller_url;
+                $data['method']='list';
+                $data['user_created']=$user->user_id;
+                $data['date_created']=$time;
+                $data['preferences']=json_encode($items);
+                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
+            }
+
+            $this->db->trans_complete();   //DB Transaction Handle END
+            if ($this->db->trans_status() === TRUE)
+            {
+                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+                $this->system_list();
+            }
+            else
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+                $this->json_return($ajax);
+            }
+        }
+    }
+
+
 }

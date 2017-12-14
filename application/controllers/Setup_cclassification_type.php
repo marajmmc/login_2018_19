@@ -67,6 +67,7 @@ class Setup_cclassification_type extends Root_Controller
     private function system_get_items()
     {
         $this->db->from($this->config->item('table_login_setup_classification_crop_types').' ct');
+        //$this->db->select('ct.id,ct.name,ct.status,ct.ordering');
         $this->db->select('ct.id,ct.name,ct.quantity_kg_acre,ct.status,ct.ordering');
         $this->db->select('crop.name crop_name');
         $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id = ct.crop_id','INNER');

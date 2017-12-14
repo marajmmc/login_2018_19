@@ -61,6 +61,14 @@ if(isset($CI->permissions['action5'])&&($CI->permissions['action5']==1))
     );
 }
 
+if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
+{
+    $action_buttons[]=array(
+        'label'=>'Preference',
+        'href'=>site_url($CI->controller_url.'/index/set_preference')
+    );
+}
+
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
     'href'=>site_url($CI->controller_url.'/index/list')
@@ -76,22 +84,24 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="clearfix"></div>
     </div>
+
+    <div class="col-xs-12" style="margin-bottom: 20px;">
         <div class="col-xs-12" style="margin-bottom: 20px;">
-            <div class="col-xs-12" style="margin-bottom: 20px;">
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name_short"><?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="type"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="division_name"><?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="zone_name"><?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="territory_name"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="district_name"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="customer_code"><?php echo $CI->lang->line('LABEL_CUSTOMER_CODE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="incharge">Incharge</label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="phone"><?php echo $CI->lang->line('LABEL_PHONE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
-            </div>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name_short']){echo 'checked';}?> value="name_short"><?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['type']){echo 'checked';}?> value="type"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['division_name']){echo 'checked';}?> value="division_name"><?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['zone_name']){echo 'checked';}?> value="zone_name"><?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['territory_name']){echo 'checked';}?> value="territory_name"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['district_name']){echo 'checked';}?> value="district_name"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['customer_code']){echo 'checked';}?> value="customer_code"><?php echo $CI->lang->line('LABEL_CUSTOMER_CODE'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['incharge']){echo 'checked';}?> value="incharge">Incharge</label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['phone']){echo 'checked';}?> value="phone"><?php echo $CI->lang->line('LABEL_PHONE'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
         </div>
+    </div>
+
     <div class="col-xs-12" id="system_jqx_container">
 
     </div>
