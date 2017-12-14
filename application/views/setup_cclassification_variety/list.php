@@ -51,26 +51,6 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'data-action-link'=>site_url($CI->controller_url.'/index/packing_setup')
     );
 }
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>'Pricing in KG',
-        //'class'=>'button_jqx_action',
-        //'data-action-link'=>site_url($CI->controller_url.'/index/edit')
-        'onclick'=>"alert('This button is under construction.');"
-    );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>'Set Season',
-        //'class'=>'button_jqx_action',
-        //'data-action-link'=>site_url($CI->controller_url.'/index/edit')
-        'onclick'=>"alert('This button is under construction.');"
-    );
-}
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
 {
     $action_buttons[]=array(
@@ -88,6 +68,13 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
         'label'=>$CI->lang->line("ACTION_DOWNLOAD"),
         'class'=>'button_action_download',
         'data-title'=>"Download"
+    );
+}
+if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
+{
+    $action_buttons[]=array(
+        'label'=>'Preference',
+        'href'=>site_url($CI->controller_url.'/index/set_preference')
     );
 }
 $action_buttons[]=array(
@@ -112,15 +99,15 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         ?>
         <div class="col-xs-12" style="margin-bottom: 20px;">
             <div class="col-xs-12" style="margin-bottom: 20px;">
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="id"><?php echo $CI->lang->line('ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="crop_name"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="crop_type_name"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="whose"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="competitor_name"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="stock_id"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['crop_name']){echo 'checked';}?> value="crop_name"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['crop_type_name']){echo 'checked';}?> value="crop_type_name"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['whose']){echo 'checked';}?> value="whose"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['competitor_name']){echo 'checked';}?> value="competitor_name"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['stock_id']){echo 'checked';}?> value="stock_id"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
 
 
             </div>
