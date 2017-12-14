@@ -174,7 +174,7 @@ class Transfer extends CI_Controller
         }
     }
 
-    public function customers()
+    /*public function customers()
     {
         $results=Query_helper::get_info('arm_ems.ems_csetup_customers','*',array());
         $this->db->trans_start();  //DB Transaction Handle START
@@ -267,9 +267,9 @@ class Transfer extends CI_Controller
         {
             echo 'failed';
         }
-    }
+    }*/
 
-    public function variety()
+    /*public function variety()
     {
         $source_tables=array(
             'varieties'=>'arm_ems.ems_varieties',
@@ -348,7 +348,7 @@ class Transfer extends CI_Controller
         {
             echo 'Failed';
         }
-    }
+    }*/
 
     public function clean_user_images()
     {

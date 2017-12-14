@@ -29,8 +29,8 @@ class Profile_info extends Root_Controller
 
     private function system_details()
     {
-        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
-        {
+        /*if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
+        {*/
             $user=User_helper::get_user();
             $user_id=$user->user_id;
 
@@ -154,12 +154,12 @@ class Profile_info extends Root_Controller
             }
             $ajax['system_page_url']=site_url($this->controller_url.'/index/details/'.$user_id);
             $this->json_return($ajax);
-        }
+        /*}
         else
         {
             $ajax['status']=false;
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
-        }
+        }*/
     }
 }

@@ -46,18 +46,18 @@ $CI = & get_instance();
                         <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span><?php echo !empty($user->designation)?$user->designation:'Designation not set'?></p></li>
                         <li>
                             <p>
-                                <button class="btn btn-success">
+                                <a href="<?php echo base_url()?>profile_info/index/details/<?php echo $user->id;?>" class="btn btn-success">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Profile View
-                                </button>
-                                <button class="btn btn-success">
+                                </a>
+                                <a href="<?php echo base_url()?>profile_password/" class="btn btn-success">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Change Password
-                                </button>
-                                <button class="btn btn-success">
+                                </a>
+                                <a href="<?php echo base_url()?>profile_picture/index/edit/<?php echo $user->id;?>" class="btn btn-success">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Change Profile Picture
-                                </button>
+                                </a>
                             </p>
                         </li>
                     </ul>

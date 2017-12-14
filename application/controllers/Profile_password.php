@@ -31,8 +31,8 @@ class Profile_password extends Root_Controller
     }
     private function system_edit()
     {
-        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
-        {
+        /*if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
+        {*/
             $data['title']='Change Password';
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
             if($this->message)
@@ -41,23 +41,23 @@ class Profile_password extends Root_Controller
             }
             $ajax['system_page_url']=site_url($this->controller_url);
             $this->json_return($ajax);
-        }
+        /*}
         else
         {
             $ajax['status']=false;
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
-        }
+        }*/
     }
     private function system_save()
     {
         $user = User_helper::get_user();
-        if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+        /*if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
         {
             $ajax['status']=false;
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
-        }
+        }*/
         if(!$this->check_validation())
         {
             $ajax['status']=false;
