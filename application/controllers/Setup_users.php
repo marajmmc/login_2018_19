@@ -96,6 +96,14 @@ class Setup_users extends Root_Controller
         {
             $this->system_save_assign_company();
         }
+        elseif($action=="set_preference")
+        {
+            $this->system_set_preference();
+        }
+        elseif($action=="save_preference")
+        {
+            $this->system_save_preference();
+        }
         else
         {
             $this->system_list();
@@ -105,6 +113,30 @@ class Setup_users extends Root_Controller
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
+            $user = User_helper::get_user();
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            if($result)
+            {
+                $data['items']=json_decode($result['preferences'],true);
+            }
+            else
+            {
+                $data['items']['id']= true;
+                $data['items']['employee_id']= true;
+                $data['items']['user_name']= true;
+                $data['items']['name']= true;
+                $data['items']['email']= true;
+                $data['items']['designation_name']= true;
+                $data['items']['department_name']= true;
+                $data['items']['mobile_no']= true;
+                $data['items']['blood_group']= true;
+                $data['items']['group_name']= true;
+                $data['items']['ordering']= true;
+                $data['items']['status']= true;
+            }
+
+//            print_r($data['items']);
+//            exit;
             $data['title']='List of Users';
             $ajax['status']=true;
             $ajax['system_content'][]=array('id'=>'#system_content','html'=>$this->load->view($this->controller_url.'/list',$data,true));
@@ -1405,5 +1437,119 @@ class Setup_users extends Root_Controller
     private function check_validation_for_assigned_company()
     {
         return true;
+    }
+    private function system_set_preference()
+    {
+        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
+        {
+            $user = User_helper::get_user();
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            if($result)
+            {
+                $data['items']=json_decode($result['preferences'],true);
+            }
+            else
+            {
+                $data['items']['id']= true;
+                $data['items']['employee_id']= true;
+                $data['items']['user_name']= true;
+                $data['items']['name']= true;
+                $data['items']['email']= true;
+                $data['items']['designation_name']= true;
+                $data['items']['department_name']= true;
+                $data['items']['mobile_no']= true;
+                $data['items']['blood_group']= true;
+                $data['items']['group_name']= true;
+                $data['items']['ordering']= true;
+                $data['items']['status']= true;
+            }
+            $data['title']="Set Preference";
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/preference",$data,true));
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference');
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_save_preference()
+    {
+        if($this->input->post('item'))
+        {
+            $items_new=$this->input->post('item');
+        }
+        else
+        {
+            $items_new=array();
+        }
+
+        $items['id']= 0;
+        $items['employee_id']= 0;
+        $items['user_name']= 0;
+        $items['name']= 0;
+        $items['email']= 0;
+        $items['designation_name']= 0;
+        $items['department_name']= 0;
+        $items['mobile_no']= 0;
+        $items['blood_group']= 0;
+        $items['group_name']= 0;
+        $items['ordering']= 0;
+        $items['status']= 0;
+        foreach($items as $index=>$item)
+        {
+            if(isset($items_new[$index]))
+            {
+                $items[$index]=$items_new[$index];
+            }
+        }
+        $user = User_helper::get_user();
+        if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+            die();
+        }
+        else
+        {
+            $time=time();
+            $this->db->trans_start();  //DB Transaction Handle START
+
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            if($result)
+            {
+                $data['user_updated']=$user->user_id;
+                $data['date_updated']=$time;
+                $data['preferences']=json_encode($items);
+                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
+            }
+            else
+            {
+                $data['user_id']=$user->user_id;
+                $data['controller']=$this->controller_url;
+                $data['method']='list';
+                $data['user_created']=$user->user_id;
+                $data['date_created']=$time;
+                $data['preferences']=json_encode($items);
+                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
+            }
+
+            $this->db->trans_complete();   //DB Transaction Handle END
+            if ($this->db->trans_status() === TRUE)
+            {
+                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+                $this->system_list();
+            }
+            else
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+                $this->json_return($ajax);
+            }
+        }
     }
 }
