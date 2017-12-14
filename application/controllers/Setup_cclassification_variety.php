@@ -122,6 +122,7 @@ class Setup_cclassification_variety extends Root_Controller
             }
             else
             {
+                $data['items']['id']= true;
                 $data['items']['name']= true;
                 $data['items']['crop_name']= true;
                 $data['items']['crop_type_name']= true;
