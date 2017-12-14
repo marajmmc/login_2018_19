@@ -93,7 +93,7 @@ class Setup_csetup_customer extends Root_Controller {
                 $data['items']['status']= true;
             }
 
-            $data['title']="Customers";
+            $data['title']="Outlets";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
             if($this->message)
@@ -151,7 +151,7 @@ class Setup_csetup_customer extends Root_Controller {
     {
         if(isset($this->permissions['action1'])&&($this->permissions['action1']==1))
         {
-            $data['title']="Create New Customer";
+            $data['title']="Create New Outlet";
             $data["customer"] = Array(
                 'id' => 0,
                 'status' => $this->config->item('system_status_active')
@@ -248,7 +248,7 @@ class Setup_csetup_customer extends Root_Controller {
             $data['zones']=Query_helper::get_info($this->config->item('table_login_setup_location_zones'),array('id value','name text'),array('division_id ='.$data['customer_info']['division_id']));
             $data['territories']=Query_helper::get_info($this->config->item('table_login_setup_location_territories'),array('id value','name text'),array('zone_id ='.$data['customer_info']['zone_id']));
             $data['districts']=Query_helper::get_info($this->config->item('table_login_setup_location_districts'),array('id value','name text'),array('territory_id ='.$data['customer_info']['territory_id']));
-            $data['title']="Edit Customer (".$data['customer_info']['name'].')';
+            $data['title']="Edit Outlet (".$data['customer_info']['name'].')';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
             if($this->message)
@@ -533,7 +533,7 @@ class Setup_csetup_customer extends Root_Controller {
                     $data['file_details'][]=$result;
                 }
             }
-            $data['title']="Customer (".$data['customer_info']['name'].') Details';
+            $data['title']="Outlet (".$data['customer_info']['name'].') Details';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/details",$data,true));
             if($this->message)
@@ -579,7 +579,7 @@ class Setup_csetup_customer extends Root_Controller {
                 $data['file_details']=$results;
             }
 
-            $data['title']='Customer ('.$info[0]['name'].') Documents :';
+            $data['title']='Outlet ('.$info[0]['name'].') Documents :';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/document",$data,true));
             if($this->message)

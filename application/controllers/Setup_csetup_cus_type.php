@@ -46,7 +46,7 @@ class Setup_csetup_cus_type extends Root_Controller
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
-            $data['title']="Customer Type List";
+            $data['title']="Outlet Type List";
             $ajax['status']=true;
             $ajax['system_content'][]=array('id'=>'#system_content','html'=>$this->load->view($this->controller_url.'/list',$data,true));
             if($this->message)
@@ -75,7 +75,7 @@ class Setup_csetup_cus_type extends Root_Controller
     {
         if(isset($this->permissions['action1']) && ($this->permissions['action1']==1))
         {
-            $data['title']="Create New Customer Type";
+            $data['title']="Create New Outlet Type";
             $data["cus_type"] = Array(
                 'id' => 0,
                 'name' => '',
@@ -112,7 +112,7 @@ class Setup_csetup_cus_type extends Root_Controller
                 $type_id=$id;
             }
             $data['cus_type']=Query_helper::get_info($this->config->item('table_login_csetup_cus_type'),'*',array('id ='.$type_id),1);
-            $data['title']="Edit Customer Type (".$data['cus_type']['name'].')';
+            $data['title']="Edit Outlet Type (".$data['cus_type']['name'].')';
             $ajax['status']=true;
             $ajax['system_content'][]=array('id'=>'#system_content','html'=>$this->load->view($this->controller_url.'/add_edit',$data,true));
             if($this->message)

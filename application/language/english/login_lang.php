@@ -159,7 +159,7 @@ $lang['LABEL_DATE_END'] = 'End Date';
 $lang['LABEL_CAPACITY'] = 'Capacity (KG)';
 
 //customer
-$lang['LABEL_CUSTOMER_CODE'] = 'Customer Code';
+$lang['LABEL_CUSTOMER_CODE'] = 'Outlet Code';
 $lang['LABEL_PHONE'] = 'Phone';
 $lang['LABEL_NAME_OWNER'] = 'Owner Name';
 $lang['LABEL_NAME_MARKET'] = 'Market Name';
@@ -169,7 +169,7 @@ $lang['LABEL_OPENING_BALANCE'] = 'Opening Balance';
 $lang['LABEL_CUSTOMER_CREDIT_LIMIT'] = 'Credit Limit';
 $lang['LABEL_DATE_OPENING'] = 'Opening Date';
 $lang['LABEL_DATE_CLOSING'] = 'Closing Date';
-$lang['LABEL_CUSTOMER_TYPE'] = 'Customer Type';
+$lang['LABEL_CUSTOMER_TYPE'] = 'Outlet Type';
 $lang['LABEL_PICTURE'] = 'Picture';
 $lang['LABEL_MAP_ADDRESS'] = 'Google Map Link';
 $lang['LABEL_INCHARGE'] = 'In-charge';
