@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 $CI = & get_instance();
 
-/*$system_crops=Query_helper::get_info($CI->config->item('table_login_setup_classification_crops'),array('id value','name text'),array('status ="'.$CI->config->item('system_status_active').'"'),0,0,array('ordering ASC'));
+$system_crops=Query_helper::get_info($CI->config->item('table_login_setup_classification_crops'),array('id value','name text'),array('status ="'.$CI->config->item('system_status_active').'"'),0,0,array('ordering ASC'));
 $results=Query_helper::get_info($CI->config->item('table_login_setup_classification_crop_types'),array('id value','name text','crop_id'),array('status ="'.$CI->config->item('system_status_active').'"'),0,0,array('ordering ASC'));
 $system_types=array();
 foreach($results as $result)
@@ -27,7 +27,7 @@ $system_districts=array();
 foreach($results as $result)
 {
     $system_districts[$result['territory_id']][]=$result;
-}*/
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,10 +83,10 @@ foreach($results as $result)
         <!--    for jqx grid end-->
 
         <?php
-        $system_divisions=array();
+        /*$system_divisions=array();
         $system_zones=array();
         $system_territories=array();
-        $system_districts=array();
+        $system_districts=array();*/
         ?>
         <script type="text/javascript">
             var base_url = "<?php echo base_url(); ?>";
