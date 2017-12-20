@@ -115,24 +115,24 @@ class Setup_users extends Root_Controller
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $data['items']['id']= true;
+            $data['items']['employee_id']= true;
+            $data['items']['user_name']= true;
+            $data['items']['name']= true;
+            $data['items']['email']= true;
+            $data['items']['designation_name']= true;
+            $data['items']['department_name']= true;
+            $data['items']['mobile_no']= true;
+            $data['items']['blood_group']= true;
+            $data['items']['group_name']= true;
+            $data['items']['ordering']= true;
+            $data['items']['status']= true;
             if($result)
             {
-                $data['items']=json_decode($result['preferences'],true);
-            }
-            else
-            {
-                $data['items']['id']= true;
-                $data['items']['employee_id']= true;
-                $data['items']['user_name']= true;
-                $data['items']['name']= true;
-                $data['items']['email']= true;
-                $data['items']['designation_name']= true;
-                $data['items']['department_name']= true;
-                $data['items']['mobile_no']= true;
-                $data['items']['blood_group']= true;
-                $data['items']['group_name']= true;
-                $data['items']['ordering']= true;
-                $data['items']['status']= true;
+                $str_replace=str_replace(0,99,$result['preferences']);
+                $str_replace=str_replace(1,0,$str_replace);
+                $str_replace=str_replace(99,1,$str_replace);
+                $data['items']=json_decode($str_replace,true);
             }
 
 //            print_r($data['items']);

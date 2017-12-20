@@ -43,7 +43,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[type]" <?php if($items['type']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
+                    <label><input type="checkbox" name="item[type_name]" <?php if($items['type_name']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
                 </div>
             </div>
             <div class="col-xs-4">
@@ -73,7 +73,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[incharge]" <?php if($items['incharge']){echo 'checked';}?> value="1">Incharge</label>
+                    <label><input type="checkbox" name="item[incharge_name]" <?php if($items['incharge_name']){echo 'checked';}?> value="1">Incharge</label>
                 </div>
             </div>
             <div class="col-xs-4">

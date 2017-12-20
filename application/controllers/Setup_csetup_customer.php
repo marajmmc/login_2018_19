@@ -73,24 +73,25 @@ class Setup_csetup_customer extends Root_Controller {
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+
+            $data['items']['name']= true;
+            $data['items']['name_short']= true;
+            $data['items']['type_name']= true;
+            $data['items']['division_name']= true;
+            $data['items']['zone_name']= true;
+            $data['items']['territory_name']= true;
+            $data['items']['district_name']= true;
+            $data['items']['customer_code']= true;
+            $data['items']['incharge_name']= true;
+            $data['items']['phone']= true;
+            $data['items']['ordering']= true;
+            $data['items']['status']= true;
             if($result)
             {
-                $data['items']=json_decode($result['preferences'],true);
-            }
-            else
-            {
-                $data['items']['name']= true;
-                $data['items']['name_short']= true;
-                $data['items']['type']= true;
-                $data['items']['division_name']= true;
-                $data['items']['zone_name']= true;
-                $data['items']['territory_name']= true;
-                $data['items']['district_name']= true;
-                $data['items']['customer_code']= true;
-                $data['items']['incharge']= true;
-                $data['items']['phone']= true;
-                $data['items']['ordering']= true;
-                $data['items']['status']= true;
+                $str_replace=str_replace(0,99,$result['preferences']);
+                $str_replace=str_replace(1,0,$str_replace);
+                $str_replace=str_replace(99,1,$str_replace);
+                $data['items']=json_decode($str_replace,true);
             }
 
             $data['title']="Outlets";
@@ -818,13 +819,13 @@ class Setup_csetup_customer extends Root_Controller {
             {
                 $data['items']['name']= true;
                 $data['items']['name_short']= true;
-                $data['items']['type']= true;
+                $data['items']['type_name']= true;
                 $data['items']['division_name']= true;
                 $data['items']['zone_name']= true;
                 $data['items']['territory_name']= true;
                 $data['items']['district_name']= true;
                 $data['items']['customer_code']= true;
-                $data['items']['incharge']= true;
+                $data['items']['incharge_name']= true;
                 $data['items']['phone']= true;
                 $data['items']['ordering']= true;
                 $data['items']['status']= true;
@@ -855,13 +856,13 @@ class Setup_csetup_customer extends Root_Controller {
 
         $items['name']= 0;
         $items['name_short']= 0;
-        $items['type']= 0;
+        $items['type_name']= 0;
         $items['division_name']= 0;
         $items['zone_name']= 0;
         $items['territory_name']= 0;
         $items['district_name']= 0;
         $items['customer_code']= 0;
-        $items['incharge']= 0;
+        $items['incharge_name']= 0;
         $items['phone']= 0;
         $items['ordering']= 0;
         $items['status']= 0;

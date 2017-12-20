@@ -28,6 +28,33 @@ foreach($results as $result)
 {
     $system_districts[$result['territory_id']][]=$result;
 }
+
+$this->db->from($this->config->item('table_login_csetup_customer').' lsc');
+$this->db->join($this->config->item('table_login_csetup_cus_info').' lsci','lsci.customer_id = lsc.id','LEFT');
+$this->db->select('lsc.id');
+$this->db->select('lsci.type, lsci.district_id, lsci.customer_id value, lsci.name text');
+$this->db->where('lsc.status',$CI->config->item('system_status_active'));
+$items=$this->db->get()->result_array();
+$system_customers=array();
+$system_outlets=array();
+$system_all_customers=array();
+foreach($items as $result)
+{
+    if($result['type']==$CI->config->item('system_customer_type_customer_id'))
+    {
+        $system_customers[$result['district_id']][]=$result;
+    }
+    elseif($result['type']==$CI->config->item('system_customer_type_outlet_id'))
+    {
+        $system_outlets[$result['district_id']][]=$result;
+    }
+    else
+    {
+
+    }
+    $system_all_customers[]=$result;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

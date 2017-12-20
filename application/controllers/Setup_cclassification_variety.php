@@ -116,21 +116,21 @@ class Setup_cclassification_variety extends Root_Controller
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $data['items']['id']= true;
+            $data['items']['name']= true;
+            $data['items']['crop_name']= true;
+            $data['items']['crop_type_name']= true;
+            $data['items']['whose']= true;
+            $data['items']['competitor_name']= true;
+            $data['items']['stock_id']= true;
+            $data['items']['ordering']= true;
+            $data['items']['status']= true;
             if($result)
             {
-                $data['items']=json_decode($result['preferences'],true);
-            }
-            else
-            {
-                $data['items']['id']= true;
-                $data['items']['name']= true;
-                $data['items']['crop_name']= true;
-                $data['items']['crop_type_name']= true;
-                $data['items']['whose']= true;
-                $data['items']['competitor_name']= true;
-                $data['items']['stock_id']= true;
-                $data['items']['ordering']= true;
-                $data['items']['status']= true;
+                $str_replace=str_replace(0,99,$result['preferences']);
+                $str_replace=str_replace(1,0,$str_replace);
+                $str_replace=str_replace(99,1,$str_replace);
+                $data['items']=json_decode($str_replace,true);
             }
 
             $data['title']="Varieties";
