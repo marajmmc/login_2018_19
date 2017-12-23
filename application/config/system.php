@@ -18,3 +18,7 @@ $config['system_status_not_done']='Not Done';
 $config['system_status_done']='Done';
 
 $config['system_save']='save';
+
+// Outlet Type Config
+$config['system_customer_type_outlet_id']=1;
+$config['system_customer_type_customer_id']=2;
