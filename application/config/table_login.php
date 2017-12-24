@@ -47,6 +47,7 @@ $config['table_login_setup_classification_hybrid'] = 'arm_login_2018_19.login_se
 $config['table_login_setup_variety_principals'] = 'arm_login_2018_19.login_setup_variety_principals';
 $config['table_login_setup_classification_variety_price'] = 'arm_login_2018_19.login_setup_classification_variety_price';
 $config['table_login_setup_classification_vpack_item'] = 'arm_login_2018_19.login_setup_classification_variety_pack_item';
+$config['table_login_setup_classification_type_acres'] = 'arm_login_2018_19.login_setup_classification_type_acres';
 
 //Basic Setup
 $config['table_login_basic_setup_fiscal_year'] = 'arm_login_2018_19.login_basic_setup_fiscal_year';
