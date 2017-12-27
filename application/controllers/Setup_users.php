@@ -115,28 +115,37 @@ class Setup_users extends Root_Controller
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['items']['id']= true;
-            $data['items']['employee_id']= true;
-            $data['items']['user_name']= true;
-            $data['items']['name']= true;
-            $data['items']['email']= true;
-            $data['items']['designation_name']= true;
-            $data['items']['department_name']= true;
-            $data['items']['mobile_no']= true;
-            $data['items']['blood_group']= true;
-            $data['items']['group_name']= true;
-            $data['items']['ordering']= true;
-            $data['items']['status']= true;
+            $data['items']['id']= 1;
+            $data['items']['employee_id']= 1;
+            $data['items']['user_name']= 1;
+            $data['items']['name']= 1;
+            $data['items']['email']= 1;
+            $data['items']['designation_name']= 1;
+            $data['items']['department_name']= 1;
+            $data['items']['mobile_no']= 1;
+            $data['items']['blood_group']= 1;
+            $data['items']['group_name']= 1;
+            $data['items']['ordering']= 1;
+            $data['items']['status']= 1;
             if($result)
             {
-                $str_replace=str_replace(0,99,$result['preferences']);
-                $str_replace=str_replace(1,0,$str_replace);
-                $str_replace=str_replace(99,1,$str_replace);
-                $data['items']=json_decode($str_replace,true);
+                if($result['preferences']!=null)
+                {
+                    $data['preferences']=json_decode($result['preferences'],true);
+                    foreach($data['items'] as $key=>$value)
+                    {
+                        if(isset($data['preferences'][$key]))
+                        {
+                            $data['items'][$key]=$value;
+                        }
+                        else
+                        {
+                            $data['items'][$key]=0;
+                        }
+                    }
+                }
             }
 
-//            print_r($data['items']);
-//            exit;
             $data['title']='List of Users';
             $ajax['status']=true;
             $ajax['system_content'][]=array('id'=>'#system_content','html'=>$this->load->view($this->controller_url.'/list',$data,true));
@@ -643,8 +652,11 @@ class Setup_users extends Root_Controller
     }
     private function system_save()
     {
+        // get user id
         $id = $this->input->post('id');
+        // get session information
         $user = User_helper::get_user();
+        // check save or update permission
         if($id>0)
         {
             if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
@@ -679,6 +691,7 @@ class Setup_users extends Root_Controller
         $time=time();
 
         $this->db->trans_start();  //DB Transaction Handle START
+        // new user or user update - revision information
         if($id==0)
         {
             $data_user=$this->input->post('user');
@@ -718,53 +731,30 @@ class Setup_users extends Root_Controller
                         Query_helper::add($this->config->item('table_login_setup_users_company'),$data_company);
                     }
                 }
-
-                $dir=(FCPATH).'images/profiles/'.$id;
-                if(!is_dir($dir))
-                {
-                    mkdir($dir, 0777);
-                }
             }
         }
+        else
+        {
+            $revision_history_data=array();
+            $revision_history_data['date_updated']=$time;
+            $revision_history_data['user_updated']=$user->user_id;
+            Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_history_data,array('revision=1','user_id='.$id), false);
 
-        $revision_history_data=array();
-        $revision_history_data['date_updated']=$time;
-        $revision_history_data['user_updated']=$user->user_id;
-        Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_history_data,array('revision=1','user_id='.$id), false);
+            $this->db->where('user_id',$id);
+            $this->db->set('revision', 'revision+1', FALSE);
+            $this->db->update($this->config->item('table_login_setup_user_info'));
+        }
 
-        $this->db->where('user_id',$id);
-        $this->db->set('revision', 'revision+1', FALSE);
-        $this->db->update($this->config->item('table_login_setup_user_info'),false);
-
+        // make dir for user profile if not exist
+        $dir=(FCPATH).'images/profiles/'.$id;
+        if(!is_dir($dir))
+        {
+            mkdir($dir, 0777);
+        }
+        // get user info post value
         $data_user_info=$this->input->post('user_info');
-        $data_user_info['user_id']=$id;
-        $data_user_info['user_created'] = $user->user_id;
-        $data_user_info['date_created'] = $time;
-        $data_user_info['revision'] = 1;
-
-        if(isset($data_user_info['date_birth']))
-        {
-            $data_user_info['date_birth']=System_helper::get_time($data_user_info['date_birth']);
-            if($data_user_info['date_birth']===0)
-            {
-                unset($data_user_info['date_birth']);
-            }
-        }
-        if(isset($data_user_info['date_join']))
-        {
-            $data_user_info['date_join']=System_helper::get_time($data_user_info['date_join']);
-            if($data_user_info['date_join']===0)
-            {
-                unset($data_user_info['date_join']);
-            }
-        }
         if($id>0)
         {
-            $dir=(FCPATH).'images/profiles/'.$id;
-            if(!is_dir($dir))
-            {
-                mkdir($dir, 0777);
-            }
             $uploaded_image = System_helper::upload_file('images/profiles/'.$id);
             if(array_key_exists('image_profile',$uploaded_image))
             {
@@ -776,6 +766,29 @@ class Setup_users extends Root_Controller
                 }
                 $data_user_info['image_name']=$uploaded_image['image_profile']['info']['file_name'];
                 $data_user_info['image_location']='images/profiles/'.$id.'/'.$uploaded_image['image_profile']['info']['file_name'];
+            }
+        }
+        else
+        {
+            $data_user_info['user_id']=$id;
+            $data_user_info['user_created'] = $user->user_id;
+            $data_user_info['date_created'] = $time;
+
+            if(isset($data_user_info['date_birth']))
+            {
+                $data_user_info['date_birth']=System_helper::get_time($data_user_info['date_birth']);
+                if($data_user_info['date_birth']===0)
+                {
+                    unset($data_user_info['date_birth']);
+                }
+            }
+            if(isset($data_user_info['date_join']))
+            {
+                $data_user_info['date_join']=System_helper::get_time($data_user_info['date_join']);
+                if($data_user_info['date_join']===0)
+                {
+                    unset($data_user_info['date_join']);
+                }
             }
         }
 
@@ -1444,25 +1457,26 @@ class Setup_users extends Root_Controller
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $data['items']['id']= 1;
+            $data['items']['employee_id']= 1;
+            $data['items']['user_name']= 1;
+            $data['items']['name']= 1;
+            $data['items']['email']= 1;
+            $data['items']['designation_name']= 1;
+            $data['items']['department_name']= 1;
+            $data['items']['mobile_no']= 1;
+            $data['items']['blood_group']= 1;
+            $data['items']['group_name']= 1;
+            $data['items']['ordering']= 1;
+            $data['items']['status']= 1;
             if($result)
             {
-                $data['items']=json_decode($result['preferences'],true);
+                if($result['preferences']!=null)
+                {
+                    $data['items']=json_decode($result['preferences'],true);
+                }
             }
-            else
-            {
-                $data['items']['id']= true;
-                $data['items']['employee_id']= true;
-                $data['items']['user_name']= true;
-                $data['items']['name']= true;
-                $data['items']['email']= true;
-                $data['items']['designation_name']= true;
-                $data['items']['department_name']= true;
-                $data['items']['mobile_no']= true;
-                $data['items']['blood_group']= true;
-                $data['items']['group_name']= true;
-                $data['items']['ordering']= true;
-                $data['items']['status']= true;
-            }
+
             $data['title']="Set Preference";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/preference",$data,true));
@@ -1478,16 +1492,21 @@ class Setup_users extends Root_Controller
     }
     private function system_save_preference()
     {
+        $items=array();
         if($this->input->post('item'))
         {
-            $items_new=$this->input->post('item');
+            $items=json_encode($this->input->post('item'));
         }
         else
         {
-            $items_new=array();
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("MSG_PLEASE_SELECT_ANY_ONE");
+            $this->json_return($ajax);
+            die();
         }
 
-        $items['id']= 0;
+
+        /*$items['id']= 0;
         $items['employee_id']= 0;
         $items['user_name']= 0;
         $items['name']= 0;
@@ -1498,14 +1517,15 @@ class Setup_users extends Root_Controller
         $items['blood_group']= 0;
         $items['group_name']= 0;
         $items['ordering']= 0;
-        $items['status']= 0;
-        foreach($items as $index=>$item)
+        $items['status']= 0;*/
+
+        /*foreach($items as $index=>$item)
         {
             if(isset($items_new[$index]))
             {
                 $items[$index]=$items_new[$index];
             }
-        }
+        }*/
         $user = User_helper::get_user();
         if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
         {
@@ -1524,7 +1544,7 @@ class Setup_users extends Root_Controller
             {
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
-                $data['preferences']=json_encode($items);
+                $data['preferences']=$items;
                 Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
             }
             else
@@ -1534,7 +1554,7 @@ class Setup_users extends Root_Controller
                 $data['method']='list';
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
-                $data['preferences']=json_encode($items);
+                $data['preferences']=$items;
                 Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
             }
 

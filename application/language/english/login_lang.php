@@ -6,6 +6,7 @@ $lang['MSG_LOGIN_SUCCESS'] = 'Successfully Logged In';
 $lang['MSG_LOGOUT_SUCCESS'] = 'Successfully Logged out';
 $lang['MSG_SITE_OFFLINE'] = 'Site is Currently Offline.Please contact with admin(01777709208).';
 $lang['MSG_CONFIRM_SAVE'] = 'Are You Sure to save?';
+$lang['MSG_PLEASE_SELECT_ANY_ONE'] = 'Please select minimum one item.';
 
 //Action buttons
 $lang['ACTION_DASHBOARD'] = 'Dashboard';
@@ -51,6 +52,7 @@ $lang['ACTIVE'] = 'Active';
 $lang['INACTIVE'] = 'In-active';
 $lang['DELETE'] = 'Delete';
 $lang['SELECT'] = 'Select';
+$lang['ALL_SELECT_CHECKBOX'] = 'All Select';
 
 $lang['SERIAL'] = 'Serial';
 $lang['STATUS'] = 'Status';

@@ -90,7 +90,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 {
                     ?>
                     <tr>
-                        <td colspan="20" class="text-center alert-danger">
+                        <td style="" colspan="20" class="text-center alert-danger">
                             <?php echo $CI->lang->line("NO_DATA_FOUND"); ?>
                         </td>
                     </tr>

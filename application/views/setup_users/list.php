@@ -131,18 +131,18 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     </div>
     <div class="col-xs-12" style="margin-bottom: 20px;">
         <div class="col-xs-12" style="margin-bottom: 20px;">
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['id'])){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['employee_id'])){echo 'checked';}?> value="employee_id"><?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['user_name'])){echo 'checked';}?> value="user_name"><?php echo $CI->lang->line('LABEL_USERNAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['name'])){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['email'])){echo 'checked';}?> value="email"><?php echo $CI->lang->line('LABEL_EMAIL'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['designation_name'])){echo 'checked';}?> value="designation_name"><?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['department_name'])){echo 'checked';}?> value="department_name"><?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['mobile_no'])){echo 'checked';}?> value="mobile_no"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['blood_group'])){echo 'checked';}?> value="blood_group"><?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['group_name'])){echo 'checked';}?> value="group_name"><?php echo $CI->lang->line('LABEL_USER_GROUP'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['ordering'])){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if(empty($items['status'])){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['employee_id']){echo 'checked';}?> value="employee_id"><?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['user_name']){echo 'checked';}?> value="user_name"><?php echo $CI->lang->line('LABEL_USERNAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['email']){echo 'checked';}?> value="email"><?php echo $CI->lang->line('LABEL_EMAIL'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['designation_name']){echo 'checked';}?> value="designation_name"><?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['department_name']){echo 'checked';}?> value="department_name"><?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['mobile_no']){echo 'checked';}?> value="mobile_no"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['blood_group']){echo 'checked';}?> value="blood_group"><?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['group_name']){echo 'checked';}?> value="group_name"><?php echo $CI->lang->line('LABEL_USER_GROUP'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
         </div>
     </div>
     <div class="col-xs-12" id="system_jqx_container">

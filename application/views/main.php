@@ -59,7 +59,7 @@ foreach($items as $result)
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Login 2018-19</title>
+        <title>Login V 2.0.1.8.19.1</title>
         <link rel="icon" type="image/ico" href="http://malikseeds.com/favicon.ico"/>
         <meta charset="utf-8">
         <link rel="stylesheet" href="<?php echo base_url('css/bootstrap.min.css');?>">
