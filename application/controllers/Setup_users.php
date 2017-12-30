@@ -1491,7 +1491,18 @@ class Setup_users extends Root_Controller
             {
                 if($result['preferences']!=null)
                 {
-                    $data['items']=json_decode($result['preferences'],true);
+                    $data['preferences']=json_decode($result['preferences'],true);
+                    foreach($data['items'] as $key=>$value)
+                    {
+                        if(isset($data['preferences'][$key]))
+                        {
+                            $data['items'][$key]=$value;
+                        }
+                        else
+                        {
+                            $data['items'][$key]=0;
+                        }
+                    }
                 }
             }
 
@@ -1562,7 +1573,7 @@ class Setup_users extends Root_Controller
             {
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
-                $data['preferences']=$items;
+                $data['preferences']=json_encode($items);
                 Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
             }
             else
@@ -1572,7 +1583,7 @@ class Setup_users extends Root_Controller
                 $data['method']='list';
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
-                $data['preferences']=$items;
+                $data['preferences']=json_encode($items);
                 Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
             }
 

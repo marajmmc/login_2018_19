@@ -2,7 +2,7 @@
 
 class Setup_company extends Root_Controller
 {
-    private  $message;
+    private $message;
     public $permissions;
     public $controller_url;
     public function __construct()

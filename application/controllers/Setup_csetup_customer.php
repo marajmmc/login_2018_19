@@ -74,26 +74,36 @@ class Setup_csetup_customer extends Root_Controller {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
 
-            $data['items']['name']= true;
-            $data['items']['name_short']= true;
-            $data['items']['type_name']= true;
-            $data['items']['division_name']= true;
-            $data['items']['zone_name']= true;
-            $data['items']['territory_name']= true;
-            $data['items']['district_name']= true;
-            $data['items']['customer_code']= true;
-            $data['items']['incharge_name']= true;
-            $data['items']['phone']= true;
-            $data['items']['ordering']= true;
-            $data['items']['status']= true;
+            $data['items']['name']= 1;
+            $data['items']['name_short']= 1;
+            $data['items']['type_name']= 1;
+            $data['items']['division_name']= 1;
+            $data['items']['zone_name']= 1;
+            $data['items']['territory_name']= 1;
+            $data['items']['district_name']= 1;
+            $data['items']['customer_code']= 1;
+            $data['items']['incharge_name']= 1;
+            $data['items']['phone']= 1;
+            $data['items']['ordering']= 1;
+            $data['items']['status']= 1;
             if($result)
             {
-                $str_replace=str_replace(0,99,$result['preferences']);
-                $str_replace=str_replace(1,0,$str_replace);
-                $str_replace=str_replace(99,1,$str_replace);
-                $data['items']=json_decode($str_replace,true);
+                if($result['preferences']!=null)
+                {
+                    $data['preferences']=json_decode($result['preferences'],true);
+                    foreach($data['items'] as $key=>$value)
+                    {
+                        if(isset($data['preferences'][$key]))
+                        {
+                            $data['items'][$key]=$value;
+                        }
+                        else
+                        {
+                            $data['items'][$key]=0;
+                        }
+                    }
+                }
             }
-
             $data['title']="Outlets";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
@@ -445,6 +455,7 @@ class Setup_csetup_customer extends Root_Controller {
         $this->form_validation->set_rules('customer_info[credit_limit]',$this->lang->line('LABEL_CUSTOMER_CREDIT_LIMIT'),'required|numeric');
         $this->form_validation->set_rules('customer_info[nid]',$this->lang->line('LABEL_NID'),'required|numeric');
         $this->form_validation->set_rules('customer_info[opening_date]',$this->lang->line('LABEL_DATE_OPENING'),'required');
+        $this->form_validation->set_rules('customer_info[email]',$this->lang->line('LABEL_EMAIL'),'required|valid_email');
         if($this->form_validation->run() == FALSE)
         {
             $this->message=validation_errors();
@@ -811,24 +822,35 @@ class Setup_csetup_customer extends Root_Controller {
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $data['items']['name']= 1;
+            $data['items']['name_short']= 1;
+            $data['items']['type_name']= 1;
+            $data['items']['division_name']= 1;
+            $data['items']['zone_name']= 1;
+            $data['items']['territory_name']= 1;
+            $data['items']['district_name']= 1;
+            $data['items']['customer_code']= 1;
+            $data['items']['incharge_name']= 1;
+            $data['items']['phone']= 1;
+            $data['items']['ordering']= 1;
+            $data['items']['status']= 1;
             if($result)
             {
-                $data['items']=json_decode($result['preferences'],true);
-            }
-            else
-            {
-                $data['items']['name']= true;
-                $data['items']['name_short']= true;
-                $data['items']['type_name']= true;
-                $data['items']['division_name']= true;
-                $data['items']['zone_name']= true;
-                $data['items']['territory_name']= true;
-                $data['items']['district_name']= true;
-                $data['items']['customer_code']= true;
-                $data['items']['incharge_name']= true;
-                $data['items']['phone']= true;
-                $data['items']['ordering']= true;
-                $data['items']['status']= true;
+                if($result['preferences']!=null)
+                {
+                    $data['preferences']=json_decode($result['preferences'],true);
+                    foreach($data['items'] as $key=>$value)
+                    {
+                        if(isset($data['preferences'][$key]))
+                        {
+                            $data['items'][$key]=$value;
+                        }
+                        else
+                        {
+                            $data['items'][$key]=0;
+                        }
+                    }
+                }
             }
             $data['title']="Set Preference";
             $ajax['status']=true;
@@ -845,16 +867,20 @@ class Setup_csetup_customer extends Root_Controller {
     }
     private function system_save_preference()
     {
+        $items=array();
         if($this->input->post('item'))
         {
-            $items_new=$this->input->post('item');
+            $items=$this->input->post('item');
         }
         else
         {
-            $items_new=array();
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("MSG_PLEASE_SELECT_ANY_ONE");
+            $this->json_return($ajax);
+            die();
         }
 
-        $items['name']= 0;
+        /*$items['name']= 0;
         $items['name_short']= 0;
         $items['type_name']= 0;
         $items['division_name']= 0;
@@ -872,7 +898,7 @@ class Setup_csetup_customer extends Root_Controller {
             {
                 $items[$index]=$items_new[$index];
             }
-        }
+        }*/
         $user = User_helper::get_user();
         if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
         {

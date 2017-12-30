@@ -204,7 +204,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'300', hidden: <?php echo $items['name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_EMAIL'); ?>', dataField: 'email',width:'200', hidden: <?php echo $items['email']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?>', dataField: 'designation_name',width:'200', hidden: <?php echo $items['designation_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?>', dataField: 'department_name',width:'200', hidden: <?php echo $items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?>', dataField: 'department_name',width:'200', hidden: <?php echo $items['department_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_no', hidden: <?php echo $items['mobile_no']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?>', dataField: 'blood_group',filtertype: 'list', hidden: <?php echo $items['blood_group']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_USER_GROUP'); ?>', dataField: 'group_name',filtertype: 'list', hidden: <?php echo $items['group_name']?0:1;?>},

@@ -75,7 +75,6 @@ $action_buttons[]=array(
 
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
-
 ?>
 
 <div class="row widget">
@@ -88,18 +87,18 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 
     <div class="col-xs-12" style="margin-bottom: 20px;">
         <div class="col-xs-12" style="margin-bottom: 20px;">
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['name'])){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['name_short'])){echo 'checked';}?> value="name_short"><?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['type'])){echo 'checked';}?> value="type"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['division_name'])){echo 'checked';}?> value="division_name"><?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['zone_name'])){echo 'checked';}?> value="zone_name"><?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['territory_name'])){echo 'checked';}?> value="territory_name"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['district_name'])){echo 'checked';}?> value="district_name"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['customer_code'])){echo 'checked';}?> value="customer_code"><?php echo $CI->lang->line('LABEL_CUSTOMER_CODE'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['incharge'])){echo 'checked';}?> value="incharge">Incharge</label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['phone'])){echo 'checked';}?> value="phone"><?php echo $CI->lang->line('LABEL_PHONE'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['ordering'])){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['status'])){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name_short']){echo 'checked';}?> value="name_short"><?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['type_name']){echo 'checked';}?> value="type"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['division_name']){echo 'checked';}?> value="division_name"><?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['zone_name']){echo 'checked';}?> value="zone_name"><?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['territory_name']){echo 'checked';}?> value="territory_name"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['district_name']){echo 'checked';}?> value="district_name"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['customer_code']){echo 'checked';}?> value="customer_code"><?php echo $CI->lang->line('LABEL_CUSTOMER_CODE'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['incharge_name']){echo 'checked';}?> value="incharge">Incharge</label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['phone']){echo 'checked';}?> value="phone"><?php echo $CI->lang->line('LABEL_PHONE'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
         </div>
     </div>
 
@@ -160,18 +159,18 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 autoheight: true,
                 columns:
                 [
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'300', hidden: <?php echo $items['name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?>', dataField: 'name_short',width:'100', hidden: <?php echo $items['name_short'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?>', dataField: 'type_name',width:'100',filtertype: 'list', hidden: <?php echo $items['type_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?>', dataField: 'division_name',filtertype: 'list', hidden: <?php echo $items['division_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?>', dataField: 'zone_name', hidden: <?php echo $items['zone_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?>', dataField: 'territory_name', hidden: <?php echo $items['territory_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?>', dataField: 'district_name', hidden: <?php echo $items['district_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CUSTOMER_CODE'); ?>', dataField: 'customer_code', hidden: <?php echo $items['customer_code'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_INCHARGE'); ?>', dataField: 'incharge_name',filtertype: 'list', hidden: <?php echo $items['incharge_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_PHONE'); ?>', dataField: 'phone', hidden: <?php echo $items['phone'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering'];?>},
-                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $items['status'];?>}
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'300', hidden: <?php echo $items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?>', dataField: 'name_short',width:'100', hidden: <?php echo $items['name_short']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?>', dataField: 'type_name',width:'100',filtertype: 'list', hidden: <?php echo $items['type_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?>', dataField: 'division_name',filtertype: 'list', hidden: <?php echo $items['division_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?>', dataField: 'zone_name', hidden: <?php echo $items['zone_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?>', dataField: 'territory_name', hidden: <?php echo $items['territory_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?>', dataField: 'district_name', hidden: <?php echo $items['district_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_CUSTOMER_CODE'); ?>', dataField: 'customer_code', hidden: <?php echo $items['customer_code']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_INCHARGE'); ?>', dataField: 'incharge_name',filtertype: 'list', hidden: <?php echo $items['incharge_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_PHONE'); ?>', dataField: 'phone', hidden: <?php echo $items['phone']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $items['status']?0:1;?>}
                 ]
             });
     });
