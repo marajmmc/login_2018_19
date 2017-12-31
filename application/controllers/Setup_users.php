@@ -263,8 +263,8 @@ class Setup_users extends Root_Controller
                 $ajax['system_message']='Wrong input. You use illegal way.';
                 $this->json_return($ajax);
             }
-            //$data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
-            $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id),1);
+            $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
+            //$data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id),1);
             $data['title']="Edit User (".$data['user_info']['name'].')';
 
             $data['offices']=Query_helper::get_info($this->config->item('table_login_setup_offices'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
@@ -448,6 +448,7 @@ class Setup_users extends Root_Controller
                 }
             }
 
+
             $revision_history_data=array();
             $revision_history_data['date_updated']=$time;
             $revision_history_data['user_updated']=$user->user_id;
@@ -499,8 +500,7 @@ class Setup_users extends Root_Controller
             {
                 $user_id=$id;
             }
-            //$data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
-            $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id),1);
+            $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
             $data['title']="Reset Password of (".$data['user_info']['name'].')';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/edit_password",$data,true));
@@ -1279,7 +1279,7 @@ class Setup_users extends Root_Controller
             $this->form_validation->set_rules('user_info[office_id]',$this->lang->line('LABEL_OFFICE_NAME'),'required|is_natural_no_zero');
             $this->form_validation->set_rules('user_info[department_id]',$this->lang->line('LABEL_DEPARTMENT_NAME'),'required|is_natural_no_zero');
             $this->form_validation->set_rules('user_info[designation]',$this->lang->line('LABEL_DESIGNATION_NAME'),'required|is_natural_no_zero');
-
+            //$this->form_validation->set_rules('user_info[email]',$this->lang->line('LABEL_EMAIL'),'required|email');
             $data_companies=$this->input->post('company');
             if(count($data_companies)==0)
             {
@@ -1351,6 +1351,7 @@ class Setup_users extends Root_Controller
             $this->form_validation->set_rules('user_info[office_id]',$this->lang->line('LABEL_OFFICE_NAME'),'required');
             $this->form_validation->set_rules('user_info[department_id]',$this->lang->line('LABEL_DEPARTMENT_NAME'),'required');
             $this->form_validation->set_rules('user_info[designation]',$this->lang->line('LABEL_DESIGNATION_NAME'),'required');
+            //$this->form_validation->set_rules('user_info[email]',$this->lang->line('LABEL_EMAIL'),'required|email');
         }
 
         if($this->form_validation->run() == FALSE)
