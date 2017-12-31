@@ -353,7 +353,7 @@ class Setup_csetup_customer extends Root_Controller {
                 $revision_history_data=array();
                 $revision_history_data['date_updated']=$time;
                 $revision_history_data['user_updated']=$user->user_id;
-                Query_helper::update($this->config->item('table_login_csetup_cus_info'),$revision_history_data,array('revision=1','customer_id='.$id));
+                Query_helper::update($this->config->item('table_login_csetup_cus_info'),$revision_history_data,array('revision=1','customer_id='.$id),false);
 
                 $this->db->where('customer_id',$id);
                 $this->db->set('revision', 'revision+1', FALSE);
@@ -380,7 +380,7 @@ class Setup_csetup_customer extends Root_Controller {
                     $data_customer_info['image_name']=$uploaded_image['image_profile']['info']['file_name'];
                     $data_customer_info['image_location']='images/customer_profiles/'.$id.'/'.$uploaded_image['image_profile']['info']['file_name'];
                 }
-                Query_helper::add($this->config->item('table_login_csetup_cus_info'),$data_customer_info);
+                Query_helper::add($this->config->item('table_login_csetup_cus_info'),$data_customer_info,false);
             }
             else
             {
@@ -418,7 +418,7 @@ class Setup_csetup_customer extends Root_Controller {
                         $data_customer_info['image_name']=$uploaded_image['image_profile']['info']['file_name'];
                         $data_customer_info['image_location']='images/customer_profiles/'.$customer_id.'/'.$uploaded_image['image_profile']['info']['file_name'];
                     }
-                    Query_helper::add($this->config->item('table_login_csetup_cus_info'),$data_customer_info);
+                    Query_helper::add($this->config->item('table_login_csetup_cus_info'),$data_customer_info,false);
                 }
             }
 
@@ -684,7 +684,7 @@ class Setup_csetup_customer extends Root_Controller {
             $revision_history_data=array();
             $revision_history_data['date_updated']=$time;
             $revision_history_data['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_csetup_cus_document'),$revision_history_data,array('revision=1','customer_id='.$id));
+            Query_helper::update($this->config->item('table_login_csetup_cus_document'),$revision_history_data,array('revision=1','customer_id='.$id),false);
 
             $this->db->where('customer_id',$id);
             $this->db->set('revision', 'revision+1', FALSE);
@@ -738,7 +738,7 @@ class Setup_csetup_customer extends Root_Controller {
             $data['user_created'] = $user->user_id;
             $data['date_created'] = $time;
             $data['revision']=1;
-            Query_helper::add($this->config->item('table_login_csetup_cus_document'),$data);
+            Query_helper::add($this->config->item('table_login_csetup_cus_document'),$data,false);
         }
 
         $this->db->trans_complete(); //DB Transaction Handle END
@@ -779,7 +779,7 @@ class Setup_csetup_customer extends Root_Controller {
             $revision_history_data=array();
             $revision_history_data['date_updated']=$time;
             $revision_history_data['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_csetup_cus_assign_upazillas'),$revision_history_data,array('revision=1','customer_id='.$customer_id));
+            Query_helper::update($this->config->item('table_login_csetup_cus_assign_upazillas'),$revision_history_data,array('revision=1','customer_id='.$customer_id), false);
             $this->db->where('customer_id',$customer_id);
             $this->db->set('revision', 'revision+1', FALSE);
             $this->db->update($this->config->item('table_login_csetup_cus_assign_upazillas'));
@@ -794,7 +794,7 @@ class Setup_csetup_customer extends Root_Controller {
                     $data['user_created'] = $user->user_id;
                     $data['date_created'] = $time;
                     $data['revision'] = 1;
-                    Query_helper::add($this->config->item('table_login_csetup_cus_assign_upazillas'),$data);
+                    Query_helper::add($this->config->item('table_login_csetup_cus_assign_upazillas'),$data, false);
                 }
             }
             $this->db->trans_complete();   //DB Transaction Handle END
@@ -815,7 +815,6 @@ class Setup_csetup_customer extends Root_Controller {
     {
         return true;
     }
-
     private function system_set_preference()
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
@@ -880,25 +879,6 @@ class Setup_csetup_customer extends Root_Controller {
             die();
         }
 
-        /*$items['name']= 0;
-        $items['name_short']= 0;
-        $items['type_name']= 0;
-        $items['division_name']= 0;
-        $items['zone_name']= 0;
-        $items['territory_name']= 0;
-        $items['district_name']= 0;
-        $items['customer_code']= 0;
-        $items['incharge_name']= 0;
-        $items['phone']= 0;
-        $items['ordering']= 0;
-        $items['status']= 0;
-        foreach($items as $index=>$item)
-        {
-            if(isset($items_new[$index]))
-            {
-                $items[$index]=$items_new[$index];
-            }
-        }*/
         $user = User_helper::get_user();
         if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
         {
@@ -918,7 +898,7 @@ class Setup_csetup_customer extends Root_Controller {
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
                 $data['preferences']=json_encode($items);
-                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
+                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']), false);
             }
             else
             {
@@ -928,7 +908,7 @@ class Setup_csetup_customer extends Root_Controller {
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
                 $data['preferences']=json_encode($items);
-                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
+                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data, false);
             }
 
             $this->db->trans_complete();   //DB Transaction Handle END
@@ -945,6 +925,4 @@ class Setup_csetup_customer extends Root_Controller {
             }
         }
     }
-
-
 }

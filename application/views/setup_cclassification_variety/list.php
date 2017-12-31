@@ -99,15 +99,15 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         ?>
         <div class="col-xs-12" style="margin-bottom: 20px;">
             <div class="col-xs-12" style="margin-bottom: 20px;">
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['id'])){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['name'])){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['crop_name'])){echo 'checked';}?> value="crop_name"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['crop_type_name'])){echo 'checked';}?> value="crop_type_name"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['whose'])){echo 'checked';}?> value="whose"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['competitor_name'])){echo 'checked';}?> value="competitor_name"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['stock_id'])){echo 'checked';}?> value="stock_id"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['ordering'])){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if(empty($items['status'])){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['crop_name']){echo 'checked';}?> value="crop_name"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['crop_type_name']){echo 'checked';}?> value="crop_type_name"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['whose']){echo 'checked';}?> value="whose"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['competitor_name']){echo 'checked';}?> value="competitor_name"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['stock_id']){echo 'checked';}?> value="stock_id"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
 
 
             </div>
@@ -165,15 +165,15 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',width:'40',cellsalign: 'right', hidden: <?php echo $items['id'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', hidden: <?php echo $items['name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',filtertype: 'list', hidden: <?php echo $items['crop_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', hidden: <?php echo $items['crop_type_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_WHOSE'); ?>', dataField: 'whose', hidden: <?php echo $items['whose'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?>', dataField: 'competitor_name', hidden: <?php echo $items['competitor_name'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_STOCK_ID'); ?>', dataField: 'stock_id', hidden: <?php echo $items['stock_id'];?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering'];?>},
-                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $items['status'];?>}
+                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',width:'40',cellsalign: 'right', hidden: <?php echo $items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', hidden: <?php echo $items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',filtertype: 'list', hidden: <?php echo $items['crop_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', hidden: <?php echo $items['crop_type_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_WHOSE'); ?>', dataField: 'whose', hidden: <?php echo $items['whose']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?>', dataField: 'competitor_name', hidden: <?php echo $items['competitor_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_STOCK_ID'); ?>', dataField: 'stock_id', hidden: <?php echo $items['stock_id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $items['status']?0:1;?>}
                 ]
             });
     });

@@ -31,49 +31,57 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             <div class="clearfix"></div>
         </div>
         <div style="" class="row show-grid">
-            <div class="col-xs-4">
-                <div class="checkbox">
-                    <label><input type="checkbox" name="item[id]" <?php if($items['id']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('ID'); ?></label>
+            <div class="col-xs-12 text-center">
+                <div class="checkbox  btn btn-danger">
+                    <label>
+                        <input type="checkbox" class="allSelectCheckbox" name="" checked>
+                        <?php echo $CI->lang->line('ALL_SELECT_CHECKBOX'); ?>
+                    </label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[name]" <?php if($items['name']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+                    <label><input type="checkbox" name="item[id]" <?php if($items['id']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('ID'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[crop_name]" <?php if($items['crop_name']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
+                    <label><input type="checkbox" name="item[name]" <?php if($items['name']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_NAME'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[crop_type_name]" <?php if($items['crop_type_name']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></label>
+                    <label><input type="checkbox" name="item[crop_name]" <?php if($items['crop_name']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[whose]" <?php if($items['whose']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></label>
+                    <label><input type="checkbox" name="item[crop_type_name]" <?php if($items['crop_type_name']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[competitor_name]" <?php if($items['competitor_name']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></label>
+                    <label><input type="checkbox" name="item[whose]" <?php if($items['whose']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[stock_id]" <?php if($items['stock_id']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></label>
+                    <label><input type="checkbox" name="item[competitor_name]" <?php if($items['competitor_name']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[ordering]" <?php if($items['ordering']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+                    <label><input type="checkbox" name="item[stock_id]" <?php if($items['stock_id']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="item[status]" <?php if($items['status']){echo 'checked';}?> value="1"><?php echo $CI->lang->line('STATUS'); ?></label>
+                    <label><input type="checkbox" name="item[ordering]" <?php if($items['ordering']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('LABEL_ORDER'); ?></span></label>
+                </div>
+            </div>
+            <div class="col-xs-4">
+                <div class="checkbox">
+                    <label><input type="checkbox" name="item[status]" <?php if($items['status']){echo 'checked';}?> value="1"><span class="label label-success"><?php echo $CI->lang->line('STATUS'); ?></span></label>
                 </div>
             </div>
         </div>
@@ -85,6 +93,17 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 <script type="text/javascript">
     jQuery(document).ready(function()
     {
-        system_preset({controller:'<?php echo $CI->router->class; ?>'});
+        $(document).on("click",'.allSelectCheckbox',function()
+        {
+            if($(this).is(':checked'))
+            {
+                $('input:checkbox').prop('checked', true);
+            }
+            else
+            {
+                $('input:checkbox').prop('checked', false);
+            }
+        });
     });
+
 </script>

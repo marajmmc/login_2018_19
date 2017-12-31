@@ -429,9 +429,7 @@ class Setup_users extends Root_Controller
             }
 
             /// user info
-            $data_user_info['user_id']=$id;
-            $data_user_info['user_created'] = $user->user_id;
-            $data_user_info['date_created'] = $time;
+
 
             if(isset($data_user_info['date_birth']))
             {
@@ -449,10 +447,21 @@ class Setup_users extends Root_Controller
                     unset($data_user_info['date_join']);
                 }
             }
+
+            $revision_history_data=array();
+            $revision_history_data['date_updated']=$time;
+            $revision_history_data['user_updated']=$user->user_id;
+            Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_history_data,array('revision=1','user_id='.$id), false);
+
+            $revision_change_data=array();
             $this->db->set('revision', 'revision+1', FALSE);
-            //Query_helper::update($this->config->item('table_login_setup_user_info'),$data_user_info,array('revision=1','user_id='.$id), false);
-            Query_helper::update($this->config->item('table_login_setup_user_info'),$data_user_info,array('user_id='.$id), false);
+            //$revision_change_data['revision']='revision+1';
+            Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_change_data,array('user_id='.$id), false);
+
             $data_user_info['revision'] = 1;
+            $data_user_info['user_id']=$id;
+            $data_user_info['user_created'] = $user->user_id;
+            $data_user_info['date_created'] = $time;
             Query_helper::add($this->config->item('table_login_setup_user_info'),$data_user_info,false);
 
         }
@@ -978,7 +987,7 @@ class Setup_users extends Root_Controller
             $revision_history_data=array();
             $revision_history_data['date_updated']=$time;
             $revision_history_data['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_setup_users_other_sites'),$revision_history_data,array('revision=1','user_id='.$id));
+            Query_helper::update($this->config->item('table_login_setup_users_other_sites'),$revision_history_data,array('revision=1','user_id='.$id),false);
 
             $this->db->where('user_id',$id);
             $this->db->set('revision', 'revision+1', FALSE);
@@ -994,7 +1003,7 @@ class Setup_users extends Root_Controller
                     $data['user_created'] = $user->user_id;
                     $data['date_created'] = $time;
                     $data['revision'] = 1;
-                    Query_helper::add($this->config->item('table_login_setup_users_other_sites'),$data);
+                    Query_helper::add($this->config->item('table_login_setup_users_other_sites'),$data,false);
                 }
             }
             $this->db->trans_complete();   //DB Transaction Handle END
@@ -1079,7 +1088,7 @@ class Setup_users extends Root_Controller
             $revision_history_data=array();
             $revision_history_data['date_updated']=$time;
             $revision_history_data['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_setup_users_company'),$revision_history_data,array('revision=1','user_id='.$id));
+            Query_helper::update($this->config->item('table_login_setup_users_company'),$revision_history_data,array('revision=1','user_id='.$id),false);
             $this->db->where('user_id',$id);
             $this->db->set('revision', 'revision+1', FALSE);
             $this->db->update($this->config->item('table_login_setup_users_company'));
@@ -1093,7 +1102,7 @@ class Setup_users extends Root_Controller
                     $data['user_created'] = $user->user_id;
                     $data['date_created'] = $time;
                     $data['revision'] = 1;
-                    Query_helper::add($this->config->item('table_login_setup_users_company'),$data);
+                    Query_helper::add($this->config->item('table_login_setup_users_company'),$data, false);
                 }
             }
             $this->db->trans_complete();   //DB Transaction Handle END
@@ -1230,7 +1239,7 @@ class Setup_users extends Root_Controller
             $revision_history_data=array();
             $revision_history_data['date_updated']=$time;
             $revision_history_data['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_setup_user_area'),$revision_history_data,array('revision=1','user_id='.$id));
+            Query_helper::update($this->config->item('table_login_setup_user_area'),$revision_history_data,array('revision=1','user_id='.$id),false);
 
             $this->db->where('user_id',$id);
             $this->db->set('revision', 'revision+1', FALSE);
@@ -1241,7 +1250,7 @@ class Setup_users extends Root_Controller
             $data['user_created'] = $user->user_id;
             $data['date_created'] = $time;
             $data['revision'] = 1;
-            Query_helper::add($this->config->item('table_login_setup_user_area'),$data);
+            Query_helper::add($this->config->item('table_login_setup_user_area'),$data,false);
 
             $this->db->trans_complete();   //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)
@@ -1524,7 +1533,7 @@ class Setup_users extends Root_Controller
         $items=array();
         if($this->input->post('item'))
         {
-            $items=json_encode($this->input->post('item'));
+            $items=$this->input->post('item');
         }
         else
         {
@@ -1534,27 +1543,6 @@ class Setup_users extends Root_Controller
             die();
         }
 
-
-        /*$items['id']= 0;
-        $items['employee_id']= 0;
-        $items['user_name']= 0;
-        $items['name']= 0;
-        $items['email']= 0;
-        $items['designation_name']= 0;
-        $items['department_name']= 0;
-        $items['mobile_no']= 0;
-        $items['blood_group']= 0;
-        $items['group_name']= 0;
-        $items['ordering']= 0;
-        $items['status']= 0;*/
-
-        /*foreach($items as $index=>$item)
-        {
-            if(isset($items_new[$index]))
-            {
-                $items[$index]=$items_new[$index];
-            }
-        }*/
         $user = User_helper::get_user();
         if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
         {
@@ -1574,7 +1562,7 @@ class Setup_users extends Root_Controller
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
                 $data['preferences']=json_encode($items);
-                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
+                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']),false);
             }
             else
             {
@@ -1584,7 +1572,7 @@ class Setup_users extends Root_Controller
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
                 $data['preferences']=json_encode($items);
-                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
+                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data,false);
             }
 
             $this->db->trans_complete();   //DB Transaction Handle END
