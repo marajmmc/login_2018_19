@@ -445,45 +445,6 @@ class Setup_csetup_customer extends Root_Controller {
             }
         }
     }
-    private function check_validation()
-    {
-        $this->load->library('form_validation');
-        $this->form_validation->set_rules('customer_info[type]',$this->lang->line('LABEL_CUSTOMER_TYPE'),'required');
-        $this->form_validation->set_rules('customer_info[incharge]',$this->lang->line('LABEL_INCHARGE'),'required');
-        $this->form_validation->set_rules('customer_info[name]',$this->lang->line('LABEL_NAME'),'required');
-        $this->form_validation->set_rules('customer_info[district_id]',$this->lang->line('LABEL_DISTRICT_NAME'),'required');
-        $this->form_validation->set_rules('customer_info[credit_limit]',$this->lang->line('LABEL_CUSTOMER_CREDIT_LIMIT'),'required|numeric');
-        $this->form_validation->set_rules('customer_info[nid]',$this->lang->line('LABEL_NID'),'required|numeric');
-        $this->form_validation->set_rules('customer_info[opening_date]',$this->lang->line('LABEL_DATE_OPENING'),'required');
-        $this->form_validation->set_rules('customer_info[email]',$this->lang->line('LABEL_EMAIL'),'required|valid_email');
-        if($this->form_validation->run() == FALSE)
-        {
-            $this->message=validation_errors();
-            return false;
-        }
-        $id=$this->input->post('id');
-        if($id>0)
-        {
-            $this->db->from($this->config->item('table_login_csetup_cus_info').' cus_info');
-            $this->db->select('cus_info.*');
-            $this->db->select('d.territory_id');
-            $this->db->select('t.zone_id zone_id');
-            $this->db->select('zone.division_id division_id');
-            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
-            $this->db->where('cus_info.customer_id',$id);
-            $this->db->where('cus_info.revision',1);
-            $customer=$this->db->get()->row_array();
-            if(!$customer)
-            {
-                System_helper::invalid_try($this->config->item('system_save'),$id,'Hack trying to edit an id that does not exits');
-                $this->message="Invalid Try";
-                return false;
-            }
-        }
-        return true;
-    }
     private function system_details($id)
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
@@ -811,10 +772,6 @@ class Setup_csetup_customer extends Root_Controller {
             }
         }
     }
-    private function check_validation_for_assigned_upazillas()
-    {
-        return true;
-    }
     private function system_set_preference()
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
@@ -924,5 +881,48 @@ class Setup_csetup_customer extends Root_Controller {
                 $this->json_return($ajax);
             }
         }
+    }
+    private function check_validation()
+    {
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('customer_info[type]',$this->lang->line('LABEL_CUSTOMER_TYPE'),'required');
+        $this->form_validation->set_rules('customer_info[incharge]',$this->lang->line('LABEL_INCHARGE'),'required');
+        $this->form_validation->set_rules('customer_info[name]',$this->lang->line('LABEL_NAME'),'required');
+        $this->form_validation->set_rules('customer_info[district_id]',$this->lang->line('LABEL_DISTRICT_NAME'),'required');
+        $this->form_validation->set_rules('customer_info[credit_limit]',$this->lang->line('LABEL_CUSTOMER_CREDIT_LIMIT'),'required|numeric');
+        $this->form_validation->set_rules('customer_info[nid]',$this->lang->line('LABEL_NID'),'required|numeric');
+        $this->form_validation->set_rules('customer_info[opening_date]',$this->lang->line('LABEL_DATE_OPENING'),'required');
+        //$this->form_validation->set_rules('customer_info[email]',$this->lang->line('LABEL_EMAIL'),'required|valid_email');
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->message=validation_errors();
+            return false;
+        }
+        $id=$this->input->post('id');
+        if($id>0)
+        {
+            $this->db->from($this->config->item('table_login_csetup_cus_info').' cus_info');
+            $this->db->select('cus_info.*');
+            $this->db->select('d.territory_id');
+            $this->db->select('t.zone_id zone_id');
+            $this->db->select('zone.division_id division_id');
+            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
+            $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
+            $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
+            $this->db->where('cus_info.customer_id',$id);
+            $this->db->where('cus_info.revision',1);
+            $customer=$this->db->get()->row_array();
+            if(!$customer)
+            {
+                System_helper::invalid_try($this->config->item('system_save'),$id,'Hack trying to edit an id that does not exits');
+                $this->message="Invalid Try";
+                return false;
+            }
+        }
+        return true;
+    }
+    private function check_validation_for_assigned_upazillas()
+    {
+        return true;
     }
 }
