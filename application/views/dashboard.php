@@ -45,16 +45,16 @@ $sites=User_helper::get_accessed_sites();
                         <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span><?php echo !empty($user->email)?$user->email:'Email not set'?></p></li>
                         <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span><?php echo !empty($user->designation)?$user->designation:'Designation not set'?></p></li>
                         <li>
-                            <p>
-                                <a href="<?php echo base_url()?>profile_info/index/details/<?php echo $user->id;?>" class="btn btn-success">
+                            <p class="btn-group btn-group-lg">
+                                <a href="<?php echo base_url()?>profile_info/index/details/<?php echo $user->id;?>" class="btn btn-primary">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Profile View
                                 </a>
-                                <a href="<?php echo base_url()?>profile_password/" class="btn btn-success">
+                                <a href="<?php echo base_url()?>profile_password/" class="btn btn-danger">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Change Password
                                 </a>
-                                <a href="<?php echo base_url()?>profile_picture/index/edit/<?php echo $user->id;?>" class="btn btn-success">
+                                <a href="<?php echo base_url()?>profile_picture/index/edit/<?php echo $user->id;?>" class="btn btn-warning">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Change Profile Picture
                                 </a>
@@ -86,16 +86,16 @@ $sites=User_helper::get_accessed_sites();
             foreach($sites as $site)
             {
                 ?>
-                <div class="col-md-3">
-                    <div class="content-box text-center">
-                        <a class="external" target="_blank" href="<?php echo site_url('other_sites_visit/visit_site/'.$site['id']); ?>">
+                <a class="external" target="_blank" href="<?php echo site_url('other_sites_visit/visit_site/'.$site['id']); ?>">
+                    <div class="col-md-3">
+                        <div class="content-box text-center">
                             <span class="content-box-icon bg-vaiolet">
                                 <img src="<?php echo base_url()?>images/logo.png" alt="" style="width: 100%"/>
                             </span>
                             <h4><?php echo strtoupper($site['short_name']);?></h4>
-                        </a>
+                        </div>
                     </div>
-                </div>
+                </a>
                 <?php
             }
         }
