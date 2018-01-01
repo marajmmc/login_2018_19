@@ -130,7 +130,6 @@ $sites=User_helper::get_accessed_sites();
     .content-box-icon {
         width: 50px;
         height: 50px;
-        /*background: #ce2a1b;*/
         display: block;
         text-align: center;
         line-height: 50px;
