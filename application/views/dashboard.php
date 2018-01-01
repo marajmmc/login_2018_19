@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 $user=User_helper::get_user();
 $CI = & get_instance();
-//$sites=User_helper::get_accessed_sites();
+$sites=User_helper::get_accessed_sites();
 
 ?>
 <div class="row widget">
@@ -73,29 +73,70 @@ $CI = & get_instance();
 
     </div>
     <?php
-        /*if(sizeof($sites)>0)
+        if(sizeof($sites)>0)
         {
-            */?><!--
+            ?>
             <div class="widget-header">
-                <div class="title">
-                    Other Sites
+                <div class="text-center text-danger underline">
+                    <strong>You will be login with your accessible below application:</strong>
                 </div>
                 <div class="clearfix"></div>
             </div>
             <?php
-/*            foreach($sites as $site)
+            foreach($sites as $site)
             {
-                */?>
-                <div style="" class="row show-grid">
-                    <div class="col-xs-12">
-                        <label class="control-label"><?php /*echo strtoupper($site['short_name']);*/?></label>- - -
-                        <a class="external" target="_blank" href="<?php /*echo site_url('other_sites_visit/visit_site/'.$site['id']); */?>">Visit Site</a>
+                ?>
+                <div class="col-md-4">
+                    <div class="content-box text-center">
+                        <a class="external" target="_blank" href="<?php echo site_url('other_sites_visit/visit_site/'.$site['id']); ?>">
+                            <span class="content-box-icon bg-vaiolet">
+                                <img src="<?php echo base_url()?>images/logo.png" alt="" style="width: 100%"/>
+                            </span>
+                            <h4><?php echo strtoupper($site['short_name']);?></h4>
+                        </a>
                     </div>
                 </div>
-                --><?php
-/*            }
-        }*/
+                <?php
+            }
+        }
     ?>
 
 </div>
 <div class="clearfix"></div>
+<style>
+    .content-box
+    {
+        position: relative;
+        box-shadow: 0px 2px 20px 5px #222;
+        margin-bottom: 20px;
+        padding: 10px;
+        margin-top:30px;
+        border-radius: 6px;
+    }
+    .content-box:hover .content-box-icon{
+        box-shadow: 1px 4px 10px -6px;
+    }
+    .content-box:hover ,.content-box:hover a ,.content-box:active a ,.content-box:focus a
+    {
+        text-decoration: none;
+        box-shadow: 0px 2px 20px 5px grey;
+    }
+    .content-box a h4 {
+        color: #222;
+        font-weight: 600;
+        font-family: serif;
+        font-size: 17px;
+    }
+    .content-box-icon {
+        width: 50px;
+        height: 50px;
+        /*background: #ce2a1b;*/
+        display: block;
+        text-align: center;
+        line-height: 50px;
+        font-size: 25px;
+        border-radius: 100%;
+        margin: auto;
+        color: #fff;
+    }
+</style>
