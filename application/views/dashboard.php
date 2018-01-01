@@ -86,7 +86,7 @@ $sites=User_helper::get_accessed_sites();
             foreach($sites as $site)
             {
                 ?>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="content-box text-center">
                         <a class="external" target="_blank" href="<?php echo site_url('other_sites_visit/visit_site/'.$site['id']); ?>">
                             <span class="content-box-icon bg-vaiolet">
