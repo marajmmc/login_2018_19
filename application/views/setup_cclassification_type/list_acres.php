@@ -6,20 +6,12 @@ $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_BACK"),
     'href'=>site_url($CI->controller_url)
 );
-if(isset($CI->permissions['action1']) && ($CI->permissions['action1']==1))
-{
-    $action_buttons[]=array(
-        'label'=>$CI->lang->line("ACTION_NEW"),
-        'href'=>site_url($CI->controller_url.'/index/assign_acres/'.$item['id'])
-    );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
+if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
 {
     $action_buttons[]=array(
         'type'=>'button',
-        'label'=>$CI->lang->line('ACTION_EDIT'),
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/edit_acres/'.$item['id'])
+        'label'=>$CI->lang->line("ACTION_SAVE"),
+        'id'=>'button_action_save_jqx'
     );
 }
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
@@ -43,10 +35,17 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
 }
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
-    'href'=>site_url($CI->controller_url.'/index/acres/'.$item['id'])
+    'href'=>site_url($CI->controller_url.'/index/list')
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 ?>
+
+<form class="form_valid" id="save_form_jqx" action="<?php echo site_url($CI->controller_url.'/index/save_amount_acres');?>" method="post">
+    <input type="hidden" name="id" value="<?php echo $id; ?>" />
+
+    <div id="jqx_inputs">
+    </div>
+</form>
 
 <div class="row widget">
     <div class="widget-header">
@@ -61,7 +60,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_CROP_NAME');?></label>
         </div>
         <div class="col-sm-4 col-xs-8">
-            <label class="control-label"><?php echo $item['crop_name'];;?></label>
+            <label class="control-label"><?php echo $info['crop_name'];;?></label>
         </div>
     </div>
 
@@ -70,7 +69,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_CROP_TYPE');?></label>
         </div>
         <div class="col-sm-4 col-xs-8">
-            <label class="control-label"><?php echo $item['name'];;?></label>
+            <label class="control-label"><?php echo $info['name'];;?></label>
         </div>
     </div>
     <?php
@@ -83,9 +82,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="zone_name"><?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="territory_name"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="district_name"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="upazila_name"><?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="crop_name"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="type_name"><?php echo $CI->lang->line('LABEL_TYPE'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name"><?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="quantity_acres">Acres</label>
             </div>
         </div>
@@ -101,8 +98,26 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     $(document).ready(function ()
     {
         system_preset({controller:'<?php echo $CI->router->class; ?>'});
+        $(document).off('click', '#button_action_save_jqx');
+        $(document).on("click", "#button_action_save_jqx", function(event)
+        {
+            //alert('hi');
+            $('#save_form_jqx #jqx_inputs').html('');
+            var data=$('#system_jqx_container').jqxGrid('getrows');
+            for(var i=0;i<data.length;i++)
+            {
+                $('#save_form_jqx  #jqx_inputs').append('<input type="hidden" name="items['+data[i]['id']+']" value="'+data[i]['quantity_acres']+'">');
+            }
+            var sure = confirm('<?php echo $CI->lang->line('MSG_CONFIRM_SAVE'); ?>');
+            if(sure)
+            {
+                //alert('hi');
+                $("#save_form_jqx").submit();
+            }
 
-        var url = "<?php echo site_url($CI->controller_url.'/index/get_acres_items/');?>";
+        });
+
+        var url = "<?php echo site_url($CI->controller_url.'/index/get_acres/');?>";
 
         // prepare the data
         var source =
@@ -115,17 +130,28 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'zone_name', type: 'string' },
                 { name: 'territory_name', type: 'string' },
                 { name: 'district_name', type: 'string' },
-                { name: 'upazila_name', type: 'string' },
-                { name: 'crop_name', type: 'string' },
-                { name: 'type_name', type: 'string' },
+                { name: 'name', type: 'string' },
                 { name: 'quantity_acres', type: 'string' }
+                //{ name: 'quantity_acres', type: 'string' }
             ],
             id: 'id',
             url: url,
-            data:{id:<?php echo $item['id']; ?>}
+            data:{id:<?php echo $id; ?>}
         };
 
         var dataAdapter = new $.jqx.dataAdapter(source);
+        var cellsrenderer = function(row, column, value, defaultHtml, columnSettings, record)
+        {
+            var element = $(defaultHtml);
+            element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+            if(column=='quantity_acres' && <?php if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))){echo 'true';}else{echo 'false';} ?>)
+            {
+                element.html('<div class="jqxgrid_input">'+value+'</div>');
+            }
+
+            return element[0].outerHTML;
+
+        };
         // create jqxgrid.
         $("#system_jqx_container").jqxGrid(
             {
@@ -143,15 +169,40 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columnsreorder: true,
                 altrows: true,
                 autoheight: true,
+                rowsheight: 35,
+                editable:true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?>',pinned:true, dataField: 'division_name',filtertype: 'list',width:'100'},
-                    { text: '<?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?>', dataField: 'zone_name',filtertype: 'list',width:'150'},
-                    { text: '<?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?>', dataField: 'territory_name',filtertype: 'list',width:'150'},
-                    { text: '<?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?>', dataField: 'district_name',filtertype: 'list',width:'200'},
-                    { text: '<?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?>', dataField: 'upazila_name',filtertype: 'list',width:'200'},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',filtertype: 'list',width:'200'},
-                    { text: '<?php echo $CI->lang->line('LABEL_TYPE'); ?>', dataField: 'type_name',width:'150',filtertype: 'list',cellsalign:'right'},
-                    { text: 'Acres', dataField: 'quantity_acres',width:'150',cellsalign:'left'}
+                    { text: '<?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?>', dataField: 'division_name',filtertype: 'list',width:'200',editable:false},
+                    { text: '<?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?>', dataField: 'zone_name',filtertype: 'list',width:'200',editable:false},
+                    { text: '<?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?>', dataField: 'territory_name',filtertype: 'list',width:'200',editable:false},
+
+                    { text: '<?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?>', dataField: 'district_name',filtertype: 'list',width:'200',editable:false},
+                    { text: '<?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?>', dataField: 'name',filtertype: 'list',width:'200',editable:false},
+                    { text: 'Quantity Acres', dataField: 'quantity_acres',cellsalign: 'right',cellsrenderer: cellsrenderer
+                        <?php
+                        if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
+                        {
+                            ?>
+                        ,columntype:'custom',
+                        initeditor: function (row, cellvalue, editor, celltext, pressedkey) {
+                            editor.html('<div style="margin: 0px;width: 100%;height: 100%;padding: 5px;"><input type="text" value="'+cellvalue+'" class="jqxgrid_input float_type_positive"><div>');
+                        },
+                        geteditorvalue: function (row, cellvalue, editor) {
+                            // return the editor's value.
+                            var value=editor.find('input').val();
+                            var selectedRowData = $('#system_jqx_container').jqxGrid('getrowdata', row);
+                            return editor.find('input').val();
+                        }
+                        <?php
+                    }
+                    else
+                    {
+                        ?>
+                        ,editable:false
+                        <?php
+                    }
+                    ?>
+                    }
                 ]
             });
     });
