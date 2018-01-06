@@ -44,10 +44,15 @@ class Transfer extends CI_Controller
         $users=Query_helper::get_info($source_tables['setup_user'],'*',array());
 
         $results=Query_helper::get_info($source_tables['setup_user_info'],'*',array('revision=1'));
+        $super_user_group=array();
         $user_infos=array();
         foreach($results as $result)
         {
             $user_infos[$result['user_id']]=$result;
+            if($result['user_group']==1 || $result['user_group']==2)
+            {
+                $super_user_group[$result['user_id']]=$result;
+            }
         }
 
         $results=array();
@@ -79,6 +84,11 @@ class Transfer extends CI_Controller
 
         foreach($users as $user)
         {
+            if(isset($super_user_group[$user['id']]))
+            {
+                $user['password']=md5("Arm!@#$");
+            }
+
             if(!($this->insert($destination_tables['setup_user'],$user)))
             {
                 $this->db->trans_complete();
@@ -104,6 +114,7 @@ class Transfer extends CI_Controller
                     $data_user_info['user_id']=$user['id'];
                     $data_user_info['revision']=1;
                 }
+
                 if(!($this->insert($destination_tables['setup_user_info'],$data_user_info)))
                 {
                     $this->db->trans_complete();
@@ -174,7 +185,7 @@ class Transfer extends CI_Controller
         }
     }
 
-    /*public function customers()
+    public function customers()
     {
         $results=Query_helper::get_info('arm_ems.ems_csetup_customers','*',array());
         $this->db->trans_start();  //DB Transaction Handle START
@@ -267,9 +278,9 @@ class Transfer extends CI_Controller
         {
             echo 'failed';
         }
-    }*/
+    }
 
-    /*public function variety()
+    public function variety()
     {
         $source_tables=array(
             'varieties'=>'arm_ems.ems_varieties',
@@ -279,18 +290,14 @@ class Transfer extends CI_Controller
             'varieties'=>$this->config->item('table_login_setup_classification_varieties'),
             'variety_principals'=>$this->config->item('table_login_setup_variety_principals')
         );
-
         $varieties_kg_price=array();
         $results=Query_helper::get_info($source_tables['varietiy_price_kg'],'*',array());
         foreach($results as $result)
         {
             $varieties_kg_price[$result['variety_id']]=$result['price_net'];
         }
-
         $results=Query_helper::get_info('arm_ems.ems_varieties','*',array());
-
         $this->db->trans_start();  //DB Transaction Handle START
-
         foreach($results as $result)
         {
             $principal_id=$result['principal_id'];
@@ -338,7 +345,6 @@ class Transfer extends CI_Controller
                 }
             }
         }
-
         $this->db->trans_complete();   //DB Transaction Handle END
         if ($this->db->trans_status() === TRUE)
         {
@@ -348,9 +354,77 @@ class Transfer extends CI_Controller
         {
             echo 'Failed';
         }
-    }*/
+    }
 
-    public function clean_user_images()
+    public function user_role_transfer()
+    {
+        $destination_tables=array(
+            'system_task'=>$this->config->item('table_system_task'),
+            'user_group'=>$this->config->item('table_system_user_group'),
+            'user_group_role'=>$this->config->item('table_system_user_group_role')
+        );
+
+        // super admin default task define
+        $groups=Query_helper::get_info($destination_tables['user_group'],'*',array());
+        //$this->db->trans_start();  //DB Transaction Handle START
+        foreach($groups as $group)
+        {
+            if($group['id']==1)
+            {
+                $results=Query_helper::get_info($destination_tables['system_task'],'*',array("type ='TASK'"));
+                foreach($results as $result)
+                {
+                    $data=array();
+                    $data['user_group_id']=$group['id'];
+                    $data['task_id']=$result['id'];
+                    $data['action0']=1;
+                    $data['action1']=1;
+                    $data['action2']=1;
+                    $data['action3']=1;
+                    $data['action4']=1;
+                    $data['action5']=1;
+                    $data['action6']=1;
+                    $data['revision']=1;
+                    $data['date_created']=$result['date_created'];
+                    $data['user_created']=$result['user_created'];
+                    Query_helper::add($this->config->item('table_system_user_group_role'),$data, false);
+                }
+            }
+            elseif($group['id']==2)
+            {
+                $results=Query_helper::get_info($destination_tables['system_task'],'*',array("type ='TASK'"));
+                foreach($results as $result)
+                {
+                    if($result['id']!=2)
+                    {
+                        $data=array();
+                        $data['user_group_id']=$group['id'];
+                        $data['task_id']=$result['id'];
+                        $data['action0']=1;
+                        $data['action1']=1;
+                        $data['action2']=1;
+                        $data['action3']=1;
+                        $data['action4']=1;
+                        $data['action5']=1;
+                        $data['action6']=1;
+                        $data['revision']=1;
+                        $data['date_created']=$result['date_created'];
+                        $data['user_created']=$result['user_created'];
+                        Query_helper::add($this->config->item('table_system_user_group_role'),$data, false);
+                    }
+                }
+            }
+            else
+            {
+
+
+            }
+
+        }
+
+    }
+
+    /*public function clean_user_images()
     {
         $folder=FCPATH.'images/profiles/';
         $counter_deleted=0;
@@ -390,9 +464,9 @@ class Transfer extends CI_Controller
         {
             echo 'Expected folder is not exists.';
         }
-    }
+    }*/
 
-    public function copy_profile_image($limit=0,$start=0)
+    /*public function copy_profile_image($limit=0,$start=0)
     {
 
         $remote_server_url=$this->config->item('system_base_url_profile_picture');
@@ -442,5 +516,5 @@ class Transfer extends CI_Controller
 
         }
 
-    }
+    }*/
 }
