@@ -104,6 +104,14 @@ class Setup_users extends Root_Controller
         {
             $this->system_save_preference();
         }
+        elseif($action=="change_user_group")
+        {
+            $this->system_change_user_group($id);
+        }
+        elseif($action=="save_change_user_group")
+        {
+            $this->system_save_change_user_group();
+        }
         else
         {
             $this->system_list();
@@ -1059,66 +1067,66 @@ class Setup_users extends Root_Controller
         }
     }
     private function system_save_assign_company()
+{
+    $id = $this->input->post("id");
+    $user = User_helper::get_user();
+    if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
     {
-        $id = $this->input->post("id");
-        $user = User_helper::get_user();
-        if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+        $ajax['status']=false;
+        $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+        $this->json_return($ajax);
+        die();
+    }
+    if(!$this->check_validation_for_assigned_company())
+    {
+        $ajax['status']=false;
+        $ajax['system_message']=$this->message;
+        $this->json_return($ajax);
+    }
+    else
+    {
+        $time=time();
+        $this->db->trans_start();  //DB Transaction Handle START
+        $companies=$this->input->post('companies');
+        if(count($companies)==0)
         {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $ajax['system_message']='At least one company needed';
             $this->json_return($ajax);
-            die();
         }
-        if(!$this->check_validation_for_assigned_company())
+        $revision_history_data=array();
+        $revision_history_data['date_updated']=$time;
+        $revision_history_data['user_updated']=$user->user_id;
+        Query_helper::update($this->config->item('table_login_setup_users_company'),$revision_history_data,array('revision=1','user_id='.$id),false);
+        $this->db->where('user_id',$id);
+        $this->db->set('revision', 'revision+1', FALSE);
+        $this->db->update($this->config->item('table_login_setup_users_company'));
+        if(is_array($companies))
         {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->message;
-            $this->json_return($ajax);
+            foreach($companies as $company)
+            {
+                $data=array();
+                $data['user_id']=$id;
+                $data['company_id']=$company;
+                $data['user_created'] = $user->user_id;
+                $data['date_created'] = $time;
+                $data['revision'] = 1;
+                Query_helper::add($this->config->item('table_login_setup_users_company'),$data, false);
+            }
+        }
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status() === TRUE)
+        {
+            $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+            $this->system_list();
         }
         else
         {
-            $time=time();
-            $this->db->trans_start();  //DB Transaction Handle START
-            $companies=$this->input->post('companies');
-            if(count($companies)==0)
-            {
-                $ajax['system_message']='At least one company needed';
-                $this->json_return($ajax);
-            }
-            $revision_history_data=array();
-            $revision_history_data['date_updated']=$time;
-            $revision_history_data['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_setup_users_company'),$revision_history_data,array('revision=1','user_id='.$id),false);
-            $this->db->where('user_id',$id);
-            $this->db->set('revision', 'revision+1', FALSE);
-            $this->db->update($this->config->item('table_login_setup_users_company'));
-            if(is_array($companies))
-            {
-                foreach($companies as $company)
-                {
-                    $data=array();
-                    $data['user_id']=$id;
-                    $data['company_id']=$company;
-                    $data['user_created'] = $user->user_id;
-                    $data['date_created'] = $time;
-                    $data['revision'] = 1;
-                    Query_helper::add($this->config->item('table_login_setup_users_company'),$data, false);
-                }
-            }
-            $this->db->trans_complete();   //DB Transaction Handle END
-            if ($this->db->trans_status() === TRUE)
-            {
-                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
-                $this->system_list();
-            }
-            else
-            {
-                $ajax['status']=false;
-                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
-                $this->json_return($ajax);
-            }
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+            $this->json_return($ajax);
         }
     }
+}
     private function system_edit_area($id)
     {
         if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
@@ -1252,6 +1260,95 @@ class Setup_users extends Root_Controller
             $data['revision'] = 1;
             Query_helper::add($this->config->item('table_login_setup_user_area'),$data,false);
 
+            $this->db->trans_complete();   //DB Transaction Handle END
+            if ($this->db->trans_status() === TRUE)
+            {
+                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+                $this->system_list();
+            }
+            else
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+                $this->json_return($ajax);
+            }
+        }
+    }
+    private function system_change_user_group($id)
+    {
+        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
+        {
+            if(($this->input->post('id')))
+            {
+                $user_id=$this->input->post('id');
+            }
+            else
+            {
+                $user_id=$id;
+            }
+            $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
+            $data['title']="Assign User Group for ".$data['user_info']['name'];
+            $data['user_groups']=Query_helper::get_info($this->config->item('table_system_user_group'),'*',array('status ="'.$this->config->item('system_status_active').'"'));
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/change_user_group",$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/change_user_group/'.$user_id);
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_save_change_user_group()
+    {
+        $id = $this->input->post("id");
+        $user = User_helper::get_user();
+        if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+            die();
+        }
+        if(!$this->check_validation_for_assigned_user_group())
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->message;
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $time=time();
+            $this->db->trans_start();  //DB Transaction Handle START
+
+            $data=array();
+            $data=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$id,'revision =1'),1);
+
+            $revision_history_data=array();
+            $revision_history_data['date_updated']=$time;
+            $revision_history_data['user_updated']=$user->user_id;
+            Query_helper::update($this->config->item('table_login_setup_user_info'),$revision_history_data,array('revision=1','user_id='.$id),false);
+
+            $this->db->where('user_id',$id);
+            $this->db->set('revision', 'revision+1', FALSE);
+            $this->db->update($this->config->item('table_login_setup_user_info'));
+
+            $user_group_id=$this->input->post('user_group_id');
+
+            unset($data['id']);
+            unset($data['date_updated']);
+            unset($data['user_updated']);
+            $data['user_group']=$user_group_id;
+            $data['user_created'] = $user->user_id;
+            $data['date_created'] = $time;
+            $data['revision'] = 1;
+            Query_helper::add($this->config->item('table_login_setup_user_info'),$data, false);
             $this->db->trans_complete();   //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)
             {
@@ -1477,6 +1574,17 @@ class Setup_users extends Root_Controller
     }
     private function check_validation_for_assigned_company()
     {
+        return true;
+    }
+    private function check_validation_for_assigned_user_group()
+    {
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('user_group_id',$this->lang->line('LABEL_USER_GROUP'),'required');
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->message=validation_errors();
+            return false;
+        }
         return true;
     }
     private function system_set_preference()
