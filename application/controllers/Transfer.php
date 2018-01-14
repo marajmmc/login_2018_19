@@ -210,11 +210,14 @@ class Transfer extends CI_Controller
                 $data=array();
                 $data['customer_id']=$result['id'];
                 $data['name']=$result['name'];
-                if($result['type']=='Outlet')
+
+                //if($result['type']=='Outlet')
+                //else if($result['type']=='Customer')
+                if(strtolower($result['type'])=='outlet')
                 {
                     $data['type']=1;
                 }
-                else if($result['type']=='Customer')
+                else if(strtolower($result['type'])=='customer')
                 {
                     $data['type']=2;
                 }
@@ -222,13 +225,16 @@ class Transfer extends CI_Controller
                 {
                     $data['type']=null;
                 }
+
                 if(isset($result['incharge']))
                 {
-                    if($result['incharge']=='ARM')
+                    //if($result['incharge']=='Arm')
+                    //else if($result['incharge']=='Distributor')
+                    if(strtolower($result['incharge'])=='arm')
                     {
                         $data['incharge']=1;
                     }
-                    else if($result['incharge']=='Distributor')
+                    else if(strtolower($result['incharge'])=='customer')
                     {
                         $data['incharge']=2;
                     }
@@ -278,6 +284,13 @@ class Transfer extends CI_Controller
         {
             echo 'failed';
         }
+        /*
+         customer in-charge update query
+        UPDATE
+arm_login_2018_19.login_csetup_customer_info cci
+INNER JOIN arm_ems.ems_csetup_customers ecc ON ecc.id=cci.id
+SET cci.incharge=CASE WHEN ecc.incharge='Arm' THEN 1 WHEN ecc.incharge='Customer' THEN 2 END
+         * */
     }
 
     public function variety()
