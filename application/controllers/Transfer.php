@@ -44,15 +44,15 @@ class Transfer extends CI_Controller
         $users=Query_helper::get_info($source_tables['setup_user'],'*',array());
 
         $results=Query_helper::get_info($source_tables['setup_user_info'],'*',array('revision=1'));
-        $super_user_group=array();
+        //$super_user_group=array(); //WILL BE OMITTED
         $user_infos=array();
         foreach($results as $result)
         {
             $user_infos[$result['user_id']]=$result;
-            if($result['user_group']==1 || $result['user_group']==2)
-            {
-                $super_user_group[$result['user_id']]=$result;
-            }
+//            if($result['user_group']==1 || $result['user_group']==2)
+//            {
+//                $super_user_group[$result['user_id']]=$result;
+//            }//WILL BE OMITTED
         }
 
         $results=array();
@@ -63,13 +63,13 @@ class Transfer extends CI_Controller
             $user_areas[$result['user_id']]=$result;
         }
 
-        $results=array();
-        $results=Query_helper::get_info($source_tables['setup_users_other_sites'],'*',array('revision=1'));
-        $user_sites=array();
-        foreach($results as $result)
-        {
-            $user_sites[$result['user_id']][]=$result;
-        }
+//        $results=array();
+//        $results=Query_helper::get_info($source_tables['setup_users_other_sites'],'*',array('revision=1'));
+//        $user_sites=array();
+//        foreach($results as $result)
+//        {
+//            $user_sites[$result['user_id']][]=$result;
+//        } // It will be omitted
 
         $results=array();
         $results=Query_helper::get_info($source_tables['setup_users_company'],'*',array('revision=1'));
@@ -121,7 +121,7 @@ class Transfer extends CI_Controller
                     echo 'Failed';
                     exit();
                 }
-
+                //HAVE TO CHECK
                 $data_user_area=array();
                 if(isset($user_areas[$user['id']]))
                 {
@@ -132,29 +132,30 @@ class Transfer extends CI_Controller
                 {
                     $data_user_area['user_id']=$user['id'];
                     $data_user_area['revision']=1;
-                }
+                }  //HAVE TO CHECK
                 if(!($this->insert($destination_tables['setup_user_area'],$data_user_area)))
                 {
                     $this->db->trans_complete();
                     echo 'Failed';
                     exit();
                 }
+                //HAVE TO CHECK
 
-                if(isset($user_sites[$user['id']]))
-                {
-                    $data_user_sites_array=$user_sites[$user['id']];
-
-                    foreach($data_user_sites_array  as $data_user_sites)
-                    {
-                        unset($data_user_sites['id']);
-                        if(!($this->insert($destination_tables['setup_users_other_sites'],$data_user_sites)))
-                        {
-                            $this->db->trans_complete();
-                            echo 'Failed';
-                            exit();
-                        }
-                    }
-                }
+//                if(isset($user_sites[$user['id']]))
+//                {
+//                    $data_user_sites_array=$user_sites[$user['id']];
+//
+//                    foreach($data_user_sites_array  as $data_user_sites)
+//                    {
+//                        unset($data_user_sites['id']);
+//                        if(!($this->insert($destination_tables['setup_users_other_sites'],$data_user_sites)))
+//                        {
+//                            $this->db->trans_complete();
+//                            echo 'Failed';
+//                            exit();
+//                        }
+//                    }
+//                }
 
                 if(isset($user_companies[$user['id']]))
                 {

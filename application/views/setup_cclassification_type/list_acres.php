@@ -177,7 +177,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?>', dataField: 'territory_name',filtertype: 'list',width:'200',editable:false},
 
                     { text: '<?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?>', dataField: 'district_name',filtertype: 'list',width:'200',editable:false},
-                    { text: '<?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?>', dataField: 'name',filtertype: 'list',width:'200',editable:false},
+                    { text: '<?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?>', dataField: 'name',width:'200',editable:false},
                     { text: 'Quantity Acres', dataField: 'quantity_acres',cellsalign: 'right',cellsrenderer: cellsrenderer
                         <?php
                         if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
