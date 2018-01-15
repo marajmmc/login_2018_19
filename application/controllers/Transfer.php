@@ -355,7 +355,7 @@ class Transfer extends CI_Controller
             $data['revision']=1;
             $data['date_created']=$result['date_created'];
             $data['user_created']=$result['user_created'];
-            if(!(Query_helper::add($destination_tables['table_system_user_group_role'],$data, false)))
+            if(!(Query_helper::add($destination_tables['user_group_role'],$data, false)))
             {
                 $this->db->trans_complete();
                 echo 'Failed';
@@ -376,7 +376,7 @@ class Transfer extends CI_Controller
                 $data['revision']=1;
                 $data['date_created']=$result['date_created'];
                 $data['user_created']=$result['user_created'];
-                if(!(Query_helper::add($destination_tables['table_system_user_group_role'],$data, false)))
+                if(!(Query_helper::add($destination_tables['user_group_role'],$data, false)))
                 {
                     $this->db->trans_complete();
                     echo 'Failed';
