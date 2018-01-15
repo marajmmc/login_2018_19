@@ -44,18 +44,12 @@ class Transfer extends CI_Controller
         $users=Query_helper::get_info($source_tables['setup_user'],'*',array());
 
         $results=Query_helper::get_info($source_tables['setup_user_info'],'*',array('revision=1'));
-        //$super_user_group=array(); //WILL BE OMITTED
         $user_infos=array();
         foreach($results as $result)
         {
             $user_infos[$result['user_id']]=$result;
-//            if($result['user_group']==1 || $result['user_group']==2)
-//            {
-//                $super_user_group[$result['user_id']]=$result;
-//            }//WILL BE OMITTED
         }
 
-        $results=array();
         $results=Query_helper::get_info($source_tables['setup_user_area'],'*',array('revision=1'));
         $user_areas=array();
         foreach($results as $result)
@@ -63,28 +57,18 @@ class Transfer extends CI_Controller
             $user_areas[$result['user_id']]=$result;
         }
 
-//        $results=array();
-//        $results=Query_helper::get_info($source_tables['setup_users_other_sites'],'*',array('revision=1'));
-//        $user_sites=array();
-//        foreach($results as $result)
-//        {
-//            $user_sites[$result['user_id']][]=$result;
-//        } // It will be omitted
-
-        $results=array();
         $results=Query_helper::get_info($source_tables['setup_users_company'],'*',array('revision=1'));
         $user_companies=array();
         foreach($results as $result)
         {
             $user_companies[$result['user_id']][]=$result;
         }
-        $results=array();
 
         $this->db->trans_start();  //DB Transaction Handle START
 
         foreach($users as $user)
         {
-            if(isset($super_user_group[$user['id']]))
+            if($user['id']==1)
             {
                 $user['password']=md5("Arm!@#$");
             }
@@ -139,23 +123,6 @@ class Transfer extends CI_Controller
                     echo 'Failed';
                     exit();
                 }
-                //HAVE TO CHECK
-
-//                if(isset($user_sites[$user['id']]))
-//                {
-//                    $data_user_sites_array=$user_sites[$user['id']];
-//
-//                    foreach($data_user_sites_array  as $data_user_sites)
-//                    {
-//                        unset($data_user_sites['id']);
-//                        if(!($this->insert($destination_tables['setup_users_other_sites'],$data_user_sites)))
-//                        {
-//                            $this->db->trans_complete();
-//                            echo 'Failed';
-//                            exit();
-//                        }
-//                    }
-//                }
 
                 if(isset($user_companies[$user['id']]))
                 {
@@ -188,7 +155,15 @@ class Transfer extends CI_Controller
 
     public function customers()
     {
-        $results=Query_helper::get_info('arm_ems.ems_csetup_customers','*',array());
+        $source_tables=array(
+            'ems_customers'=>'arm_ems.ems_csetup_customers'
+        );
+        $destination_tables=array(
+            'customers'=>$this->config->item('table_login_csetup_customer'),
+            'customers_info'=>$this->config->item('table_login_csetup_cus_info')
+        );
+
+        $results=Query_helper::get_info($source_tables['ems_customers'],'*',array());
         $this->db->trans_start();  //DB Transaction Handle START
         foreach($results as $result)
         {
@@ -197,10 +172,10 @@ class Transfer extends CI_Controller
             $data['status']=$result['status'];
             $data['date_created']=$result['date_created'];
             $data['user_created']=1;
-            $this->db->insert($this->config->item('table_login_csetup_customer'),$data);
-            $result_id = $this->db->insert_id();
+            $customer_result=$this->db->insert($destination_tables['customers'],$data);
+            //$customer_id = $this->db->insert_id();
 
-            if(!$result_id)
+            if(!$customer_result)
             {
                 $this->db->trans_complete();
                 echo 'failed';
@@ -212,8 +187,6 @@ class Transfer extends CI_Controller
                 $data['customer_id']=$result['id'];
                 $data['name']=$result['name'];
 
-                //if($result['type']=='Outlet')
-                //else if($result['type']=='Customer')
                 if(strtolower($result['type'])=='outlet')
                 {
                     $data['type']=1;
@@ -227,43 +200,24 @@ class Transfer extends CI_Controller
                     $data['type']=null;
                 }
 
-                if(isset($result['incharge']))
+                if(strtolower($result['incharge'])=='arm')
                 {
-                    //if($result['incharge']=='Arm')
-                    //else if($result['incharge']=='Distributor')
-                    if(strtolower($result['incharge'])=='arm')
-                    {
-                        $data['incharge']=1;
-                    }
-                    else if(strtolower($result['incharge'])=='customer')
-                    {
-                        $data['incharge']=2;
-                    }
-                    else
-                    {
-                        $data['incharge']=null;
-                    }
+                    $data['incharge']=1;
+                }
+                else if(strtolower($result['incharge'])=='customer')
+                {
+                    $data['incharge']=2;
                 }
                 else
                 {
                     $data['incharge']=null;
                 }
+
                 $data['name_short']=$result['name_short'];
                 $data['district_id']=$result['district_id'];
                 $data['customer_code']=$result['customer_code'];
+                $data['credit_limit']=$result['credit_limit'];
                 $data['name_owner']=$result['name_owner'];
-                if(isset($result['credit_limit']))
-                {
-                    $data['credit_limit']=$result['credit_limit'];
-                }
-                if(isset($result['tin']))
-                {
-                    $data['tin']=$result['tin'];
-                }
-                if(isset($result['nid']))
-                {
-                    $data['nid']=$result['nid'];
-                }
                 $data['name_market']=$result['name_market'];
                 $data['address']=$result['address'];
                 $data['phone']=$result['phone'];
@@ -273,7 +227,7 @@ class Transfer extends CI_Controller
                 $data['date_created']=$result['date_created'];
                 $data['user_created']=1;
                 $data['old_cs_id']=$result['old_cs_id'];
-                $this->db->insert($this->config->item('table_login_csetup_cus_info'),$data);
+                $this->db->insert($destination_tables['customers_info'],$data);
             }
         }
         $this->db->trans_complete();   //DB Transaction Handle END
@@ -287,10 +241,10 @@ class Transfer extends CI_Controller
         }
         /*
          customer in-charge update query
-        UPDATE
-arm_login_2018_19.login_csetup_customer_info cci
-INNER JOIN arm_ems.ems_csetup_customers ecc ON ecc.id=cci.id
-SET cci.incharge=CASE WHEN ecc.incharge='Arm' THEN 1 WHEN ecc.incharge='Customer' THEN 2 END
+                UPDATE
+        arm_login_2018_19.login_csetup_customer_info cci
+        INNER JOIN arm_ems.ems_csetup_customers ecc ON ecc.id=cci.id
+        SET cci.incharge=CASE WHEN ecc.incharge='Arm' THEN 1 WHEN ecc.incharge='Customer' THEN 2 END
          * */
     }
 
@@ -319,11 +273,11 @@ SET cci.incharge=CASE WHEN ecc.incharge='Arm' THEN 1 WHEN ecc.incharge='Customer
             unset($result['principal_id']);
             unset($result['name_import']);
             
-            if($result['hybrid']=='F1 Hybrid')
+            if(strtolower($result['hybrid'])=='f1 hybrid')
             {
                 $result['hybrid']=1;
             }
-            else if($result['hybrid']=='OP')
+            else if(strtolower($result['hybrid'])=='op')
             {
                 $result['hybrid']=2;
             }
@@ -372,70 +326,90 @@ SET cci.incharge=CASE WHEN ecc.incharge='Arm' THEN 1 WHEN ecc.incharge='Customer
 
     public function user_role_transfer()
     {
-        $destination_tables=array(
+        $source_tables=array
+        (
             'system_task'=>$this->config->item('table_system_task'),
-            'user_group'=>$this->config->item('table_system_user_group'),
-            'user_group_role'=>$this->config->item('table_system_user_group_role')
+            'system_other_sites'=>$this->config->item('table_login_system_other_sites')
+        );
+        $destination_tables=array
+        (
+            'user_group_role'=>$this->config->item('table_system_user_group_role'),
+            'setup_users_other_sites'=>$this->config->item('table_login_setup_users_other_sites')
         );
 
-        // super admin default task define
-        $groups=Query_helper::get_info($destination_tables['user_group'],'*',array());
-        //$this->db->trans_start();  //DB Transaction Handle START
-        foreach($groups as $group)
+        $this->db->trans_start();  //DB Transaction Handle START
+
+        $results=Query_helper::get_info($source_tables['system_task'],'*',array("type ='TASK'"));
+        foreach($results as $result)
         {
-            if($group['id']==1)
+            $data=array();
+            $data['user_group_id']=1;
+            $data['task_id']=$result['id'];
+            $data['action0']=1;
+            $data['action1']=1;
+            $data['action2']=1;
+            $data['action3']=1;
+            $data['action4']=1;
+            $data['action5']=1;
+            $data['action6']=1;
+            $data['revision']=1;
+            $data['date_created']=$result['date_created'];
+            $data['user_created']=$result['user_created'];
+            if(!(Query_helper::add($destination_tables['table_system_user_group_role'],$data, false)))
             {
-                $results=Query_helper::get_info($destination_tables['system_task'],'*',array("type ='TASK'"));
-                foreach($results as $result)
+                $this->db->trans_complete();
+                echo 'Failed';
+                exit();
+            }
+            if($result['id']!=2)
+            {
+                $data=array();
+                $data['user_group_id']=2;
+                $data['task_id']=$result['id'];
+                $data['action0']=1;
+                $data['action1']=1;
+                $data['action2']=1;
+                $data['action3']=1;
+                $data['action4']=1;
+                $data['action5']=1;
+                $data['action6']=1;
+                $data['revision']=1;
+                $data['date_created']=$result['date_created'];
+                $data['user_created']=$result['user_created'];
+                if(!(Query_helper::add($destination_tables['table_system_user_group_role'],$data, false)))
                 {
-                    $data=array();
-                    $data['user_group_id']=$group['id'];
-                    $data['task_id']=$result['id'];
-                    $data['action0']=1;
-                    $data['action1']=1;
-                    $data['action2']=1;
-                    $data['action3']=1;
-                    $data['action4']=1;
-                    $data['action5']=1;
-                    $data['action6']=1;
-                    $data['revision']=1;
-                    $data['date_created']=$result['date_created'];
-                    $data['user_created']=$result['user_created'];
-                    Query_helper::add($this->config->item('table_system_user_group_role'),$data, false);
+                    $this->db->trans_complete();
+                    echo 'Failed';
+                    exit();
                 }
             }
-            elseif($group['id']==2)
-            {
-                $results=Query_helper::get_info($destination_tables['system_task'],'*',array("type ='TASK'"));
-                foreach($results as $result)
-                {
-                    if($result['id']!=2)
-                    {
-                        $data=array();
-                        $data['user_group_id']=$group['id'];
-                        $data['task_id']=$result['id'];
-                        $data['action0']=1;
-                        $data['action1']=1;
-                        $data['action2']=1;
-                        $data['action3']=1;
-                        $data['action4']=1;
-                        $data['action5']=1;
-                        $data['action6']=1;
-                        $data['revision']=1;
-                        $data['date_created']=$result['date_created'];
-                        $data['user_created']=$result['user_created'];
-                        Query_helper::add($this->config->item('table_system_user_group_role'),$data, false);
-                    }
-                }
-            }
-            else
-            {
-
-
-            }
-
         }
 
+        $results=Query_helper::get_info($source_tables['system_other_sites'],'*',array());
+        foreach($results as $result)
+        {
+            $data=array();
+            $data['user_id']=1;
+            $data['site_id']=$result['id'];
+            $data['revision']=1;
+            $data['date_created']=time();
+            $data['user_created']=1;
+            if(!(Query_helper::add($destination_tables['setup_users_other_sites'],$data, false)))
+            {
+                $this->db->trans_complete();
+                echo 'Failed';
+                exit();
+            }
+        }
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status() === TRUE)
+        {
+            echo 'Success';
+        }
+        else
+        {
+            echo 'Failed';
+        }
     }
 
     /*public function clean_user_images()
