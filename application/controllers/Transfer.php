@@ -4,12 +4,10 @@ class Transfer extends CI_Controller
 {
     public function index()
     {
-        /*$this->load->dbforge();
-        $tables = $this->db->list_tables();
-        foreach ($tables as $i=>$table)
-        {
-            $this->dbforge->rename_table($table, 'ems_'.$table);
-        }*/
+        //$this->users();
+        //$this->customers();
+        //$this->variety();
+        //$this->user_role_transfer();
     }
     private function insert($table_name,$data)
     {
@@ -24,7 +22,7 @@ class Transfer extends CI_Controller
             return false;
         }
     }
-    public function users()
+    private function users()
     {
         $source_tables=array(
             'setup_user'=>'arm_login.setup_user',
@@ -105,25 +103,18 @@ class Transfer extends CI_Controller
                     echo 'Failed';
                     exit();
                 }
-                //HAVE TO CHECK
-                $data_user_area=array();
+                //user area
                 if(isset($user_areas[$user['id']]))
                 {
                     $data_user_area=$user_areas[$user['id']];
                     unset($data_user_area['id']);
+                    if(!($this->insert($destination_tables['setup_user_area'],$data_user_area)))
+                    {
+                        $this->db->trans_complete();
+                        echo 'Failed';
+                        exit();
+                    }
                 }
-                else
-                {
-                    $data_user_area['user_id']=$user['id'];
-                    $data_user_area['revision']=1;
-                }  //HAVE TO CHECK
-                if(!($this->insert($destination_tables['setup_user_area'],$data_user_area)))
-                {
-                    $this->db->trans_complete();
-                    echo 'Failed';
-                    exit();
-                }
-
                 if(isset($user_companies[$user['id']]))
                 {
                     $data_user_companies_array=$user_companies[$user['id']];
@@ -153,7 +144,7 @@ class Transfer extends CI_Controller
         }
     }
 
-    public function customers()
+    private function customers()
     {
         $source_tables=array(
             'ems_customers'=>'arm_ems.ems_csetup_customers'
@@ -248,7 +239,7 @@ class Transfer extends CI_Controller
          * */
     }
 
-    public function variety()
+    private function variety()
     {
         $source_tables=array(
             'varieties'=>'arm_ems.ems_varieties',
@@ -324,7 +315,7 @@ class Transfer extends CI_Controller
         }
     }
 
-    public function user_role_transfer()
+    private function user_role_transfer()
     {
         $source_tables=array
         (
