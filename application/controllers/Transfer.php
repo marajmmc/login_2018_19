@@ -8,6 +8,7 @@ class Transfer extends CI_Controller
         //$this->customers();
         //$this->variety();
         //$this->user_role_transfer();
+        //$this->stock();
     }
     private function insert($table_name,$data)
     {
@@ -496,4 +497,160 @@ class Transfer extends CI_Controller
         }
 
     }*/
+    private function stock()
+    {
+        $source_tables=array(
+            'table_stockin_varieties'=>'arm_ems.ems_stockin_varieties',
+            'table_stockin_excess_inventory'=>'arm_ems.ems_stockin_excess_inventory',
+            'table_stockout'=>'arm_ems.ems_stockout',
+            'table_sales_po'=>'arm_ems.ems_sales_po',
+            'table_sales_po_details'=>'arm_ems.ems_sales_po_details',
+            'table_login_setup_classification_vpack_size'=>'arm_login_2018_19.login_setup_classification_variety_pack_size'
+        );
+        $destination_tables=array(
+            'table_sms_stock_in_variety'=>'arm_sms_2018_19.sms_stock_in_variety',
+            'table_sms_stock_in_variety_details'=>'arm_sms_2018_19.sms_stock_in_variety_details',
+            'table_sms_stock_summary_variety'=>'arm_sms_2018_19.sms_stock_summary_variety'
+        );
+
+        $stocks=array();
+        //stock in
+        $this->db->from($source_tables['table_stockin_varieties'].' stv');
+        $this->db->select('stv.variety_id,stv.pack_size_id');
+        $this->db->select('SUM(stv.quantity) stock_in');
+
+        $this->db->group_by(array('stv.variety_id','stv.pack_size_id'));
+
+
+        $this->db->order_by('stv.variety_id');
+        $this->db->order_by('stv.pack_size_id');
+        $this->db->where('stv.status',$this->config->item('system_status_active'));
+        $results=$this->db->get()->result_array();
+
+        foreach($results as $result)
+        {
+            $stocks[$result['variety_id']][$result['pack_size_id']]['stock_in']=$result['stock_in'];
+            $stocks[$result['variety_id']][$result['pack_size_id']]['excess']=0;
+            $stocks[$result['variety_id']][$result['pack_size_id']]['stock_out']=0;
+            $stocks[$result['variety_id']][$result['pack_size_id']]['sales']=0;
+            $stocks[$result['variety_id']][$result['pack_size_id']]['outlet_total']=0;
+        }
+        //excess
+        $this->db->from($source_tables['table_stockin_excess_inventory'].' ste');
+        $this->db->select('ste.variety_id,ste.pack_size_id');
+        $this->db->select('SUM(ste.quantity) stock_in');
+        $this->db->group_by(array('ste.variety_id','ste.pack_size_id'));
+        $this->db->where('ste.status',$this->config->item('system_status_active'));
+        $results=$this->db->get()->result_array();
+        foreach($results as $result)
+        {
+            if(isset($stocks[$result['variety_id']][$result['pack_size_id']]))
+            {
+                $stocks[$result['variety_id']][$result['pack_size_id']]['excess']=$result['stock_in'];
+            }
+
+        }
+        //stock out
+        $this->db->from($source_tables['table_stockout'].' sout');
+        $this->db->select('sout.variety_id,sout.pack_size_id');
+        $this->db->select('SUM(sout.quantity) stockout');
+        $this->db->group_by(array('sout.variety_id','sout.pack_size_id'));
+        $this->db->where('sout.status',$this->config->item('system_status_active'));
+        $results=$this->db->get()->result_array();
+        foreach($results as $result)
+        {
+            if(isset($stocks[$result['variety_id']][$result['pack_size_id']]))
+            {
+                $stocks[$result['variety_id']][$result['pack_size_id']]['stock_out']=$result['stockout'];
+            }
+
+        }
+
+        //sales-sales return
+        $this->db->from($source_tables['table_sales_po_details'].' spd');
+        $this->db->select('spd.variety_id,spd.pack_size_id');
+        $this->db->select('SUM(spd.quantity-spd.quantity_return) sales');
+        $this->db->join($source_tables['table_sales_po'].' sp','sp.id =spd.sales_po_id','INNER');
+
+        $this->db->group_by(array('spd.variety_id','spd.pack_size_id'));
+
+        $this->db->where('sp.status_approved','Approved');
+        $this->db->where('spd.revision',1);
+        $results=$this->db->get()->result_array();
+
+        foreach($results as $result)
+        {
+            if(isset($stocks[$result['variety_id']][$result['pack_size_id']]))
+            {
+                $stocks[$result['variety_id']][$result['pack_size_id']]['sales']=$result['sales'];
+            }
+        }
+        $time=System_helper::get_time('31-05-2017');
+        $pack_size=array();
+        $results=Query_helper::get_info($source_tables['table_login_setup_classification_vpack_size'],array('id value','name text'),array());
+        foreach($results as $result)
+        {
+            $pack_size[$result['value']]=$result['text'];
+        }
+        $quantity_total=0;
+        $this->db->trans_start();  //DB Transaction Handle START
+        foreach($stocks as $variety_id=>$variety_stock)
+        {
+            foreach($variety_stock  as $pack_size_id=>$stock)
+            {
+
+                //insert to stockin variety details table
+                $data=array();
+                $data['stock_in_id']=1;
+                $data['variety_id']=$variety_id;
+                $data['pack_size_id']=$pack_size_id;
+                $data['warehouse_id']=1;//will come from setup
+                $data['quantity']=$stock['stock_in']+$stock['excess']-$stock['stock_out']-$stock['sales']+$stock['outlet_total'];
+                $data['revision']=1;
+                $data['date_created']=$time;
+                $data['user_created']=1;
+                Query_helper::add($destination_tables['table_sms_stock_in_variety_details'],$data,false);
+
+                /*echo '<pre>';
+                print_r($data);
+                echo '</pre>';*/
+                $quantity_total+=(($pack_size[$pack_size_id]*$data['quantity'])/1000);
+
+                //insert to current stock table
+                $data=array();
+                $data['variety_id']=$variety_id;
+                $data['pack_size_id']=$pack_size_id;
+                $data['warehouse_id']=1;//will come from setup
+                $data['in_stock']=$stock['stock_in']+$stock['excess']-$stock['stock_out']-$stock['sales']+$stock['outlet_total'];
+                //$data['out_transfer_outlet']=$stock['outlet_total'];
+                $data['current_stock']=$stock['stock_in']+$stock['excess']-$stock['stock_out']-$stock['sales'];
+                /*echo '<pre>';
+                print_r($data);
+                echo '</pre>';*/
+                Query_helper::add($destination_tables['table_sms_stock_summary_variety'],$data,false);
+            }
+
+            //insert all varieties
+        }
+        $data=array();
+        $data['date_stock_in']=$time;
+        $data['remarks']='initial stock';
+        $data['purpose']='Stock-In';
+        $data['quantity_total']=$quantity_total;
+        $data['revision']=1;
+        $data['date_created']=$time;
+        $data['user_created']=1;
+        Query_helper::add($destination_tables['table_sms_stock_in_variety'],$data,false);
+
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status()===true)
+        {
+            echo "Transfer completed";
+        }
+        else
+        {
+            echo "Transfer Failed";
+        }
+
+    }
 }
