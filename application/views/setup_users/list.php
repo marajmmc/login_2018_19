@@ -17,13 +17,37 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/edit')
     );
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>'Change password',
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/edit_password')
+    );
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>'Assign sites',
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/assign_sites')
+    );
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>'Change company',
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/change_company')
+    );
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>'Change area',
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/edit_area')
+    );
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>'Change user group',
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/change_user_group')
+    );
 }
-$action_buttons[]=array(
-    'type'=>'button',
-    'label'=>$CI->lang->line('ACTION_DETAILS'),
-    'class'=>'button_jqx_action',
-    'data-action-link'=>site_url($CI->controller_url.'/index/details')
-);
 if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
 {
     $action_buttons[]=array(
@@ -32,27 +56,12 @@ if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/edit_employee_id')
     );
-}
-if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
-{
     $action_buttons[]=array(
         'type'=>'button',
         'label'=>'Change username',
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/edit_username')
     );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>'Change password',
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/edit_password')
-    );
-}
-if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
-{
     $action_buttons[]=array(
         'type'=>'button',
         'label'=>'Change status',
@@ -61,40 +70,13 @@ if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
         'data-action-link'=>site_url($CI->controller_url.'/index/edit_status')
     );
 }
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
+if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
 {
     $action_buttons[]=array(
         'type'=>'button',
-        'label'=>'Assign sites',
+        'label'=>$CI->lang->line('ACTION_DETAILS'),
         'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/assign_sites')
-    );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>'Change company',
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/change_company')
-    );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>'Change area',
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/edit_area')
-    );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>'Change user group',
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/change_user_group')
+        'data-action-link'=>site_url($CI->controller_url.'/index/details')
     );
 }
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
@@ -116,7 +98,7 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
         'data-title'=>"Download"
     );
 }
-if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
+if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
 {
     $action_buttons[]=array(
         'label'=>'Preference',
@@ -138,22 +120,29 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="clearfix"></div>
     </div>
-    <div class="col-xs-12" style="margin-bottom: 20px;">
+    <?php
+    if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
+    {
+        ?>
         <div class="col-xs-12" style="margin-bottom: 20px;">
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['employee_id']){echo 'checked';}?> value="employee_id"><?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['user_name']){echo 'checked';}?> value="user_name"><?php echo $CI->lang->line('LABEL_USERNAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['email']){echo 'checked';}?> value="email"><?php echo $CI->lang->line('LABEL_EMAIL'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['designation_name']){echo 'checked';}?> value="designation_name"><?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['department_name']){echo 'checked';}?> value="department_name"><?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['mobile_no']){echo 'checked';}?> value="mobile_no"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['blood_group']){echo 'checked';}?> value="blood_group"><?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['group_name']){echo 'checked';}?> value="group_name"><?php echo $CI->lang->line('LABEL_USER_GROUP'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
+            <div class="col-xs-12" style="margin-bottom: 20px;">
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['employee_id']){echo 'checked';}?> value="employee_id"><?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['user_name']){echo 'checked';}?> value="user_name"><?php echo $CI->lang->line('LABEL_USERNAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['email']){echo 'checked';}?> value="email"><?php echo $CI->lang->line('LABEL_EMAIL'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['designation_name']){echo 'checked';}?> value="designation_name"><?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['department_name']){echo 'checked';}?> value="department_name"><?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['mobile_no']){echo 'checked';}?> value="mobile_no"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['blood_group']){echo 'checked';}?> value="blood_group"><?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['group_name']){echo 'checked';}?> value="group_name"><?php echo $CI->lang->line('LABEL_USER_GROUP'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
+                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
+            </div>
         </div>
-    </div>
+    <?php
+    }
+    ?>
     <div class="col-xs-12" id="system_jqx_container">
 
     </div>

@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Setup_cclassification_variety extends Root_Controller
 {
-    private  $message;
+    public $message;
     public $permissions;
     public $controller_url;
     public function __construct()
@@ -115,7 +115,7 @@ class Setup_cclassification_variety extends Root_Controller
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
             $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
             $data['items']['id']= 1;
             $data['items']['name']= 1;
             $data['items']['crop_name']= 1;
@@ -1186,7 +1186,7 @@ class Setup_cclassification_variety extends Root_Controller
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
             $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
             $data['items']['id']= 1;
             $data['items']['name']= 1;
             $data['items']['crop_name']= 1;
@@ -1237,7 +1237,7 @@ class Setup_cclassification_variety extends Root_Controller
         else
         {
             $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("MSG_PLEASE_SELECT_ANY_ONE");
+            $ajax['system_message']=$this->lang->line("MSG_SELECT_ONE");
             $this->json_return($ajax);
             die();
         }
@@ -1255,13 +1255,13 @@ class Setup_cclassification_variety extends Root_Controller
             $time=time();
             $this->db->trans_start();  //DB Transaction Handle START
 
-            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
             if($result)
             {
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
                 $data['preferences']=json_encode($items);
-                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']));
+                Query_helper::update($this->config->item('table_system_user_preference'),$data,array('id='.$result['id']));
             }
             else
             {
@@ -1271,7 +1271,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
                 $data['preferences']=json_encode($items);
-                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data);
+                Query_helper::add($this->config->item('table_system_user_preference'),$data);
             }
 
             $this->db->trans_complete();   //DB Transaction Handle END

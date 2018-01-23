@@ -16,18 +16,12 @@ if(isset($CI->permissions['action2'])&&($CI->permissions['action2']==1))
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/edit')
     );
-}
-if(isset($CI->permissions['action2'])&&($CI->permissions['action2']==1))
-{
     $action_buttons[]=array(
         'type'=>'button',
         'label'=>$CI->lang->line("ACTION_DOCUMENT"),
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/document')
     );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
     $action_buttons[]=array(
         'type'=>'button',
         'label'=>'Assign Upazilla',
@@ -35,6 +29,7 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'data-action-link'=>site_url($CI->controller_url.'/index/assign_upazilla')
     );
 }
+
 $action_buttons[]=array(
     'type'=>'button',
     'label'=>$CI->lang->line('ACTION_DETAILS'),
@@ -60,8 +55,7 @@ if(isset($CI->permissions['action5'])&&($CI->permissions['action5']==1))
         'data-title'=>'Download'
     );
 }
-
-if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
+if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
 {
     $action_buttons[]=array(
         'label'=>'Preference',
@@ -69,7 +63,8 @@ if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
     );
 }
 
-$action_buttons[]=array(
+$action_buttons[]=array
+(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
     'href'=>site_url($CI->controller_url.'/index/list')
 
@@ -84,7 +79,10 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="clearfix"></div>
     </div>
-
+    <?php
+    if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
+    {
+    ?>
     <div class="col-xs-12" style="margin-bottom: 20px;">
         <div class="col-xs-12" style="margin-bottom: 20px;">
             <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
@@ -101,7 +99,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
         </div>
     </div>
-
+    <?php
+    }
+    ?>
     <div class="col-xs-12" id="system_jqx_container">
 
     </div>

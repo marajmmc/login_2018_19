@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Setup_csetup_customer extends Root_Controller {
 
-    private  $message;
+    public $message;
     public $permissions;
     public $controller_url;
     public function __construct()
@@ -44,7 +44,7 @@ class Setup_csetup_customer extends Root_Controller {
         }
         elseif($action=="save_preference")
         {
-            $this->system_save_preference();
+            System_helper::save_preference();
         }
         elseif($action=="details")
         {
@@ -72,7 +72,7 @@ class Setup_csetup_customer extends Root_Controller {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
         {
             $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
 
             $data['items']['name']= 1;
             $data['items']['name_short']= 1;
@@ -247,7 +247,7 @@ class Setup_csetup_customer extends Root_Controller {
             {
                 System_helper::invalid_try($this->config->item('system_edit_not_exists'),$customer_id);
                 $ajax['status']=false;
-                $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+                $ajax['system_message']='Invalid Outlet';
                 $this->json_return($ajax);
             }
             $data['customer']['id']=$data['customer_info']['customer_id'];
@@ -346,6 +346,16 @@ class Setup_csetup_customer extends Root_Controller {
 
             if($id>0)
             {
+                $result=Query_helper::get_info($this->config->item('table_login_csetup_customer'),array('id'),array('id ='.$id, 'status !="'.$this->config->item('system_status_delete').'"'),1);
+                if(!$result)
+                {
+                    System_helper::invalid_try('Update Non Exists.',$id);
+                    $ajax['status']=false;
+                    $ajax['system_message']='Invalid Outlet.';
+                    $this->json_return($ajax);
+                    die();
+                }
+
                 $data_customer['user_updated'] = $user->user_id;
                 $data_customer['date_updated'] = $time;
                 Query_helper::update($this->config->item('table_login_csetup_customer'),$data_customer,array("id = ".$id));
@@ -651,6 +661,14 @@ class Setup_csetup_customer extends Root_Controller {
             $this->db->set('revision', 'revision+1', FALSE);
             $this->db->update($this->config->item('table_login_csetup_cus_document'));
         }
+        /*else
+        {
+            System_helper::invalid_try('Update Non Exists (Document).',$id);
+            $ajax['status']=false;
+            $ajax['system_message']='Invalid Outlet.';
+            $this->json_return($ajax);
+            die();
+        }*/
         $file_folder='images/customer_documents/'.$id;
         $dir=(FCPATH).$file_folder;
         if(!is_dir($dir))
@@ -735,6 +753,15 @@ class Setup_csetup_customer extends Root_Controller {
         }
         else
         {
+            $result=Query_helper::get_info($this->config->item('table_login_csetup_customer'),array('id'),array('id ='.$customer_id, 'status !="'.$this->config->item('system_status_delete').'"'),1);
+            if(!$result)
+            {
+                System_helper::invalid_try('Update Non Exists (Assign Upazilla).',$customer_id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Outlet.';
+                $this->json_return($ajax);
+                die();
+            }
             $time=time();
             $this->db->trans_start();  //DB Transaction Handle START
             $revision_history_data=array();
@@ -777,7 +804,7 @@ class Setup_csetup_customer extends Root_Controller {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
             $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
             $data['items']['name']= 1;
             $data['items']['name_short']= 1;
             $data['items']['type_name']= 1;
@@ -821,67 +848,7 @@ class Setup_csetup_customer extends Root_Controller {
             $this->json_return($ajax);
         }
     }
-    private function system_save_preference()
-    {
-        $items=array();
-        if($this->input->post('item'))
-        {
-            $items=$this->input->post('item');
-        }
-        else
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("MSG_PLEASE_SELECT_ANY_ONE");
-            $this->json_return($ajax);
-            die();
-        }
 
-        $user = User_helper::get_user();
-        if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
-            $this->json_return($ajax);
-            die();
-        }
-        else
-        {
-            $time=time();
-            $this->db->trans_start();  //DB Transaction Handle START
-
-            $result=Query_helper::get_info($this->config->item('table_login_setup_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            if($result)
-            {
-                $data['user_updated']=$user->user_id;
-                $data['date_updated']=$time;
-                $data['preferences']=json_encode($items);
-                Query_helper::update($this->config->item('table_login_setup_user_preference'),$data,array('id='.$result['id']), false);
-            }
-            else
-            {
-                $data['user_id']=$user->user_id;
-                $data['controller']=$this->controller_url;
-                $data['method']='list';
-                $data['user_created']=$user->user_id;
-                $data['date_created']=$time;
-                $data['preferences']=json_encode($items);
-                Query_helper::add($this->config->item('table_login_setup_user_preference'),$data, false);
-            }
-
-            $this->db->trans_complete();   //DB Transaction Handle END
-            if ($this->db->trans_status() === TRUE)
-            {
-                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
-                $this->system_list();
-            }
-            else
-            {
-                $ajax['status']=false;
-                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
-                $this->json_return($ajax);
-            }
-        }
-    }
     private function check_validation()
     {
         $this->load->library('form_validation');

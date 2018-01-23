@@ -6,7 +6,7 @@ $lang['MSG_LOGIN_SUCCESS'] = 'Successfully Logged In';
 $lang['MSG_LOGOUT_SUCCESS'] = 'Successfully Logged out';
 $lang['MSG_SITE_OFFLINE'] = 'Site is Currently Offline.Please contact with admin(01777709208).';
 $lang['MSG_CONFIRM_SAVE'] = 'Are You Sure to save?';
-$lang['MSG_PLEASE_SELECT_ANY_ONE'] = 'Please select minimum one item.';
+$lang['MSG_SELECT_ONE'] = 'Please Select At least one item';
 
 //Action buttons
 $lang['ACTION_DASHBOARD'] = 'Dashboard';
