@@ -46,7 +46,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-xs-4">
                 <div class="checkbox">
-                    <label><input type="checkbox" name="items[id]" <?php if($items['id']){echo 'checked';}?> checked><span class="label label-success"><?php echo $CI->lang->line('ID'); ?></span></label>
+                    <label><input type="checkbox" name="items[id]" <?php if($items['id']){echo 'checked';}?> ><span class="label label-success"><?php echo $CI->lang->line('ID'); ?></span></label>
                 </div>
             </div>
             <div class="col-xs-4">
