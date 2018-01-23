@@ -246,7 +246,7 @@ class Setup_cclassification_variety extends Root_Controller
             {
                 System_helper::invalid_try('Edit Non Exists.',$item_id);
                 $ajax['status']=false;
-                $ajax['system_message']='Invalid Valid.';
+                $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
                 die();
             }
@@ -303,7 +303,7 @@ class Setup_cclassification_variety extends Root_Controller
             {
                 System_helper::invalid_try('View Non Exists.',$item_id);
                 $ajax['status']=false;
-                $ajax['system_message']='Invalid Valid.';
+                $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
                 die();
             }

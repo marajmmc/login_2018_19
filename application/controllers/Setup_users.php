@@ -681,7 +681,7 @@ class Setup_users extends Root_Controller
                 $user_id=$id;
             }
             $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
-            if(!$data['user'])
+            if(!$data['user_info'])
             {
                 System_helper::invalid_try('Edit Non Exists (Employee ID)',$user_id);
                 $ajax['status']=false;
@@ -1398,7 +1398,7 @@ class Setup_users extends Root_Controller
                 $user_id=$id;
             }
             $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
-            if(!$data['user'])
+            if(!$data['user_info'])
             {
                 System_helper::invalid_try('Edit Non Exists (User Group)',$user_id);
                 $ajax['status']=false;
