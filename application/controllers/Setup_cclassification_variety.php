@@ -102,7 +102,7 @@ class Setup_cclassification_variety extends Root_Controller
         }
         elseif($action=="save_preference")
         {
-            $this->system_save_preference();
+            System_helper::save_preference();
         }
         else
         {
@@ -242,7 +242,14 @@ class Setup_cclassification_variety extends Root_Controller
             $this->db->join($this->config->item('table_login_setup_classification_crop_types').' type','type.id = v.crop_type_id','INNER');
             $this->db->where('v.id',$item_id);
             $data['item']=$this->db->get()->row_array();
-
+            if(!$data['item'])
+            {
+                System_helper::invalid_try('Edit Non Exists.',$item_id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Valid.';
+                $this->json_return($ajax);
+                die();
+            }
             $data['item']['date_release']=System_helper::display_date($data['item']['date_release']);
 
             $data['crops']=Query_helper::get_info($this->config->item('table_login_setup_classification_crops'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
@@ -292,6 +299,14 @@ class Setup_cclassification_variety extends Root_Controller
             $this->db->join($this->config->item('table_login_setup_classification_hybrid').' h','h.id = v.hybrid','LEFT');
             $this->db->where('v.id',$item_id);
             $data['item']=$this->db->get()->row_array();
+            if(!$data['item'])
+            {
+                System_helper::invalid_try('View Non Exists.',$item_id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Valid.';
+                $this->json_return($ajax);
+                die();
+            }
 
             $this->db->select('p.name,vp.name_import');
             $this->db->from($this->config->item('table_login_setup_variety_principals').' vp');
@@ -331,6 +346,14 @@ class Setup_cclassification_variety extends Root_Controller
             }
 
             $data['item']=Query_helper::get_info($this->config->item('table_login_setup_classification_varieties'),'id,name',array('id ='.$item_id),1);
+            if(!$data['item'])
+            {
+                System_helper::invalid_try('Edit Non Exists (Variety Change Principal).',$item_id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Variety.';
+                $this->json_return($ajax);
+                die();
+            }
             $data['principals']=Query_helper::get_info($this->config->item('table_login_basic_setup_principal'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
 
             $results=Query_helper::get_info($this->config->item('table_login_setup_variety_principals'),'*',array('variety_id ='.$item_id,'revision =1'));
@@ -380,6 +403,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['item']=$this->db->get()->row_array();
             if(!$data['item'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Pricing).',$item_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -425,6 +449,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['item']=$this->db->get()->row_array();
             if(!$data['item'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Packing Setup).',$item_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -498,6 +523,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['info']=$this->db->get()->row_array();
             if(!$data['info'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Assign Pricing).',$item_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -556,6 +582,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['info']=$this->db->get()->row_array();
             if(!$data['info'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Pack Item).',$item_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -615,6 +642,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['info']=$this->db->get()->row_array();
             if(!$data['info'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Pricing).',$variety_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -675,6 +703,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['info']=$this->db->get()->row_array();
             if(!$data['info'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Pack Item).',$variety_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -735,6 +764,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['item']=$this->db->get()->row_array();
             if(!$data['item'])
             {
+                System_helper::invalid_try('Edit Non Exists (Variety Price in Kg).',$item_id);
                 $ajax['status']=false;
                 $ajax['system_message']='Invalid Variety.';
                 $this->json_return($ajax);
@@ -1183,7 +1213,7 @@ class Setup_cclassification_variety extends Root_Controller
 
     private function system_set_preference()
     {
-        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
+        if(isset($this->permissions['action6']) && ($this->permissions['action6']==1))
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
@@ -1227,65 +1257,5 @@ class Setup_cclassification_variety extends Root_Controller
             $this->json_return($ajax);
         }
     }
-    private function system_save_preference()
-    {
-        $items=array();
-        if($this->input->post('item'))
-        {
-            $items=$this->input->post('item');
-        }
-        else
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("MSG_SELECT_ONE");
-            $this->json_return($ajax);
-            die();
-        }
 
-        $user = User_helper::get_user();
-        if(!(isset($this->permissions['action0']) && ($this->permissions['action0']==1)))
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
-            $this->json_return($ajax);
-            die();
-        }
-        else
-        {
-            $time=time();
-            $this->db->trans_start();  //DB Transaction Handle START
-
-            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            if($result)
-            {
-                $data['user_updated']=$user->user_id;
-                $data['date_updated']=$time;
-                $data['preferences']=json_encode($items);
-                Query_helper::update($this->config->item('table_system_user_preference'),$data,array('id='.$result['id']));
-            }
-            else
-            {
-                $data['user_id']=$user->user_id;
-                $data['controller']=$this->controller_url;
-                $data['method']='list';
-                $data['user_created']=$user->user_id;
-                $data['date_created']=$time;
-                $data['preferences']=json_encode($items);
-                Query_helper::add($this->config->item('table_system_user_preference'),$data);
-            }
-
-            $this->db->trans_complete();   //DB Transaction Handle END
-            if ($this->db->trans_status() === TRUE)
-            {
-                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
-                $this->system_list();
-            }
-            else
-            {
-                $ajax['status']=false;
-                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
-                $this->json_return($ajax);
-            }
-        }
-    }
 }
