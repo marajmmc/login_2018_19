@@ -124,7 +124,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                         {
                             ?>
                             <td>
-                                <label for="<?php echo $key?>">
+                                <label for="purpose_<?php echo $key?>">
                                     <input type="radio" name="items[purpose][]" id="purpose_<?php echo $key?>" class="" value="<?php echo $key;?>" <?php if(isset($purpose[$key])){echo "checked='checked'";}?> />
                                     <?php echo $value;?>
                                 </label>
