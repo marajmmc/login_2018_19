@@ -24,9 +24,6 @@ $config['system_customer_type_outlet_id']=1;
 $config['system_customer_type_customer_id']=2;
 
 /*Bank & Account Config*/
-// account type
-$config['system_bank_account_type']['receive']='Receive';
-$config['system_bank_account_type']['expense']='Expense';
 // purpose
 $config['system_bank_account_purpose']['lc']='Lc';
 $config['system_bank_account_purpose']['sale_receive']='Sale Receive';

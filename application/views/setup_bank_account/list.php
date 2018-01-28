@@ -46,7 +46,8 @@ if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
         'href'=>site_url($CI->controller_url.'/index/set_preference')
     );
 }
-$action_buttons[]=array(
+$action_buttons[]=array
+(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
     'href'=>site_url($CI->controller_url.'/index/list')
 );
@@ -84,8 +85,11 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataType: "json",
             dataFields: [
                 { name: 'id', type: 'int' },
-                { name: 'name', type: 'string' },
-                { name: 'description', type: 'string' },
+                { name: 'bank_name', type: 'string' },
+                { name: 'branch_name', type: 'string' },
+                { name: 'account_number', type: 'string' },
+                { name: 'account_type_receive', type: 'string' },
+                { name: 'account_type_expense', type: 'string' },
                 { name: 'status', type: 'string' }
             ],
             id: 'id',
@@ -112,9 +116,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columnsreorder: true,
                 columns:
                 [
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', hidden: <?php echo $system_preference_items['name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DESCRIPTION'); ?>', dataField: 'description', hidden: <?php echo $system_preference_items['description']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_STATUS');?>', dataField: 'status',cellsalign: 'center',filtertype: 'list', width:70, hidden: <?php echo $system_preference_items['status']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('LABEL_BANK_NAME'); ?>', dataField: 'bank_name', hidden: <?php echo $system_preference_items['bank_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_BRANCH_NAME'); ?>', dataField: 'branch_name', hidden: <?php echo $system_preference_items['branch_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ACCOUNT_NUMBER'); ?>', dataField: 'account_number', hidden: <?php echo $system_preference_items['account_number']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ACCOUNT_TYPE_RECEIVE'); ?>', dataField: 'account_type_receive',filtertype: 'list', hidden: <?php echo $system_preference_items['account_type_receive']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ACCOUNT_TYPE_EXPENSE'); ?>', dataField: 'account_type_expense',filtertype: 'list', hidden: <?php echo $system_preference_items['account_type_expense']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_STATUS');?>', dataField: 'status',cellsalign: 'center',filtertype: 'list', width:80, hidden: <?php echo $system_preference_items['status']?0:1;?>}
                 ]
             });
     });

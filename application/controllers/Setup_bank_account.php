@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Setup_bank extends Root_Controller
+class Setup_bank_account extends Root_Controller
 {
     public $message;
     public $permissions;
@@ -9,8 +9,8 @@ class Setup_bank extends Root_Controller
     {
         parent::__construct();
         $this->message="";
-        $this->permissions=User_helper::get_permission('Setup_bank');
-        $this->controller_url='setup_bank';
+        $this->permissions=User_helper::get_permission('Setup_bank_account');
+        $this->controller_url='setup_bank_account';
     }
 
     public function index($action="list",$id=0)
@@ -54,8 +54,11 @@ class Setup_bank extends Root_Controller
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['system_preference_items']['name']= 1;
-            $data['system_preference_items']['description']= 1;
+            $data['system_preference_items']['bank_name']= 1;
+            $data['system_preference_items']['branch_name']= 1;
+            $data['system_preference_items']['account_number']= 1;
+            $data['system_preference_items']['account_type_receive']= 1;
+            $data['system_preference_items']['account_type_expense']= 1;
             $data['system_preference_items']['status']= 1;
             if($result)
             {
@@ -76,7 +79,7 @@ class Setup_bank extends Root_Controller
                 }
             }
 
-            $data['title']="Bank List";
+            $data['title']="Bank Account List";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
             if($this->message)
@@ -95,9 +98,13 @@ class Setup_bank extends Root_Controller
     }
     private function system_get_items()
     {
-        $this->db->from($this->config->item('table_login_setup_bank').' bank');
-        $this->db->where('bank.status !=',$this->config->item('system_status_delete'));
-        $this->db->order_by('bank.name','ASC');
+        $this->db->from($this->config->item('table_login_setup_bank_account').' ba');
+        $this->db->select('ba.*');
+        $this->db->select('IF(ba.account_type_receive=1, "Yes","No") account_type_receive');
+        $this->db->select('IF(ba.account_type_expense=1, "Yes","No") account_type_expense');
+        $this->db->join($this->config->item('table_login_setup_bank').' bank',"bank.id = ba.bank_id AND bank.status !='".$this->config->item('system_status_delete')."'",'INNER');
+        $this->db->select('bank.name bank_name');
+        $this->db->where('ba.status !=',$this->config->item('system_status_delete'));
         $items=$this->db->get()->result_array();
         $this->json_return($items);
     }
@@ -105,11 +112,17 @@ class Setup_bank extends Root_Controller
     {
         if(isset($this->permissions['action1'])&&($this->permissions['action1']==1))
         {
-            $data['title']="Create New Bank";
+            $data['title']="Create New Bank Account";
             $data['item']['id']=0;
-            $data['item']['name']='';
+            $data['item']['bank_id']=0;
+            $data['item']['branch_name']='';
+            $data['item']['account_number']='';
+            $data['item']['account_type_receive']=0;
+            $data['item']['account_type_expense']=0;
             $data['item']['description']='';
-            $data['item']['ordering']=0;
+            $data['items']=array();
+
+            $data['banks']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('id value','name text'),array('status !="'.$this->config->item('system_status_delete').'"'),0,0,array('ordering'));
 
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
@@ -140,16 +153,19 @@ class Setup_bank extends Root_Controller
                 $item_id=$this->input->post('id');
             }
 
-            $data['item']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('*'),array('id ='.$item_id,'status !="'.$this->config->item('system_status_delete').'"'),1,0,array('id ASC'));
+            $data['item']=Query_helper::get_info($this->config->item('table_login_setup_bank_account'),array('*'),array('id ='.$item_id,'status !="'.$this->config->item('system_status_delete').'"'),1,0,array('id ASC'));
             if(!$data['item'])
             {
                 System_helper::invalid_try('Edit Non Exists',$item_id);
                 $ajax['status']=false;
-                $ajax['system_message']='Invalid Bank.';
+                $ajax['system_message']='Invalid Bank Account.';
                 $this->json_return($ajax);
             }
 
-            $data['title']="Edit Bank :: ". $data['item']['name'];
+            $data['items']=Query_helper::get_info($this->config->item('table_login_setup_bank_account_purpose'),array('*'),array('bank_account_id ='.$item_id,'revision = 1'),0);
+            $data['banks']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('id value','name text'),array('status !="'.$this->config->item('system_status_delete').'"'),0,0,array('ordering'));
+
+            $data['title']="Edit Bank Account :: ".$data['item']['branch_name']. " ( " .$data['item']['account_number']." )";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
             if($this->message)
@@ -197,32 +213,68 @@ class Setup_bank extends Root_Controller
 
         $time=time();
         $item=$this->input->post('item');
+        $items=$this->input->post('items');
 
         $this->db->trans_start();  //DB Transaction Handle START
 
         if($id>0)
         {
-
-            $result=Query_helper::get_info($this->config->item('table_login_setup_bank'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
+            $result=Query_helper::get_info($this->config->item('table_login_setup_bank_account'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
             if(!$result)
             {
                 $this->db->trans_complete();
                 System_helper::invalid_try('Update Non Exists',$id);
                 $ajax['status']=false;
-                $ajax['system_message']='Invalid Bank.';
+                $ajax['system_message']='Invalid Bank Account.';
                 $this->json_return($ajax);
             }
 
+
+            $data=array();
+            $data['date_updated'] = $time;
+            $data['user_updated'] = $user->user_id;
+            Query_helper::update($this->config->item('table_login_setup_bank_account_purpose'),$data, array('bank_account_id='.$id,'revision=1'), false);
+
+            $this->db->where('bank_account_id',$id);
+            $this->db->set('revision', 'revision+1', FALSE);
+            $this->db->update($this->config->item('table_login_setup_bank_account_purpose'));
+
+            foreach($items['purpose'] as $purpose)
+            {
+                $data=array();
+                $data['bank_account_id'] = $id;
+                $data['purpose'] = $purpose;
+                $data['revision'] = 1;
+                $data['date_created'] = $time;
+                $data['user_created'] = $user->user_id;
+                Query_helper::add($this->config->item('table_login_setup_bank_account_purpose'),$data, false);
+            }
+
+            $item['account_type_receive']=isset($item['account_type_receive'])?1:0;
+            $item['account_type_expense']=isset($item['account_type_expense'])?1:0;
             $item['date_updated']=$time;
             $item['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_setup_bank'),$item,array('id='.$id));
+            Query_helper::update($this->config->item('table_login_setup_bank_account'),$item,array('id='.$id));
         }
         else
         {
+            $item['account_type_receive']=isset($item['account_type_receive'])?1:0;
+            $item['account_type_expense']=isset($item['account_type_expense'])?1:0;
             $item['status']=$this->config->item('system_status_active');
             $item['date_created']=$time;
             $item['user_created']=$user->user_id;
-            Query_helper::add($this->config->item('table_login_setup_bank'),$item,array('id='.$id));
+            $id=Query_helper::add($this->config->item('table_login_setup_bank_account'),$item,array('id='.$id));
+
+            foreach($items['purpose'] as $purpose)
+            {
+                $data=array();
+                $data['bank_account_id'] = $id;
+                $data['purpose'] = $purpose;
+                $data['revision'] = 1;
+                $data['date_created'] = $time;
+                $data['user_created'] = $user->user_id;
+                Query_helper::add($this->config->item('table_login_setup_bank_account_purpose'),$data, false);
+            }
         }
 
         $this->db->trans_complete();   //DB Transaction Handle END
@@ -248,8 +300,23 @@ class Setup_bank extends Root_Controller
     }
     private function check_validation()
     {
+        $item=$this->input->post('item');
+        $items=$this->input->post('items');
         $this->load->library('form_validation');
-        $this->form_validation->set_rules('item[name]',$this->lang->line('LABEL_NAME'),'required');
+        $this->form_validation->set_rules('item[bank_id]',$this->lang->line('LABEL_BANK_NAME'),'required');
+        $this->form_validation->set_rules('item[branch_name]',$this->lang->line('LABEL_BRANCH_NAME'),'required');
+        $this->form_validation->set_rules('item[account_number]',$this->lang->line('LABEL_ACCOUNT_NUMBER'),'required');
+        if(!(isset($item['account_type_receive']) || isset($item['account_type_expense'])))
+        {
+            $this->message= $this->lang->line('LABEL_ACCOUNT_TYPE'). ' is empty. '.$this->lang->line('MSG_SELECT_ONE');
+            return false;
+        }
+        if(!(sizeof($items)>0))
+        {
+            $this->message=$this->lang->line('LABEL_ACCOUNT_PURPOSE'). ' is empty. '.$this->lang->line('MSG_SELECT_ONE');
+            return false;
+        }
+
         if($this->form_validation->run() == FALSE)
         {
             $this->message=validation_errors();
@@ -263,8 +330,11 @@ class Setup_bank extends Root_Controller
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['system_preference_items']['name']= 1;
-            $data['system_preference_items']['description']= 1;
+            $data['system_preference_items']['bank_name']= 1;
+            $data['system_preference_items']['branch_name']= 1;
+            $data['system_preference_items']['account_number']= 1;
+            $data['system_preference_items']['account_type_receive']= 1;
+            $data['system_preference_items']['account_type_expense']= 1;
             $data['system_preference_items']['status']= 1;
             if($result)
             {

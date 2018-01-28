@@ -176,5 +176,13 @@ $lang['LABEL_PICTURE'] = 'Picture';
 $lang['LABEL_MAP_ADDRESS'] = 'Google Map Link';
 $lang['LABEL_INCHARGE'] = 'In-charge';
 
-// Preference button lang config :: added by maraj
+/*Preference button lang config :: added by maraj*/
 $lang['LABEL_STATUS'] = 'Status';
+// setup bank account
+$lang['LABEL_BANK_NAME'] = 'Bank Name';
+$lang['LABEL_BRANCH_NAME'] = 'Branch Name';
+$lang['LABEL_ACCOUNT_NUMBER'] = 'Account Number';
+$lang['LABEL_ACCOUNT_TYPE'] = 'Account Type';
+$lang['LABEL_ACCOUNT_TYPE_RECEIVE'] = 'Account Type Receive';
+$lang['LABEL_ACCOUNT_TYPE_EXPENSE'] = 'Account Type Expense';
+$lang['LABEL_ACCOUNT_PURPOSE'] = 'Account Purpose';
