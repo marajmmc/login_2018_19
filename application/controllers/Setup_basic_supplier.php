@@ -143,6 +143,14 @@ class Setup_basic_supplier extends Root_Controller
                 $this->json_return($ajax);
                 die();
             }
+            $old_item=Query_helper::get_info($this->config->item('table_login_basic_setup_supplier'),'*',array('status !="'.$this->config->item('system_status_delete').'"','id ='.$id),1);
+            if(!$old_item)
+            {
+                System_helper::invalid_try('Update Non Exists',$id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid try.';
+                $this->json_return($ajax);
+            }
         }
         else
         {
