@@ -63,7 +63,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="mobile_number"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="address"><?php echo $CI->lang->line('LABEL_ADDRESS'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
             </div>
         </div>
     <?php
@@ -91,7 +90,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'mobile_number', type: 'string' },
                 { name: 'address', type: 'string' },
                 { name: 'ordering', type: 'int' },
-                { name: 'status', type: 'string' }
             ],
             id: 'id',
             url: url
@@ -119,8 +117,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name'},
                     { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_number',width: '200',cellsalign: 'right'},
                     { text: '<?php echo $CI->lang->line('LABEL_ADDRESS'); ?>', dataField: 'address',width: '200',cellsalign: 'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'150',cellsalign: 'right'},
-                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right'}
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'150',cellsalign: 'right'}
                 ]
             });
     });
