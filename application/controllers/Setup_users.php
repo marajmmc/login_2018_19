@@ -1428,6 +1428,14 @@ class Setup_users extends Root_Controller
     {
         $id = $this->input->post("id");
         $user = User_helper::get_user();
+        $user_group_id=$this->input->post('user_group_id');
+        if($user_group_id==1 && $user->user_group!=1)
+        {
+            $ajax['status']=false;
+            $ajax['system_message']='Invalid action';
+            $this->json_return($ajax);
+            die();
+        }
         if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
         {
             $ajax['status']=false;
@@ -1464,7 +1472,7 @@ class Setup_users extends Root_Controller
             $this->db->set('revision', 'revision+1', FALSE);
             $this->db->update($this->config->item('table_login_setup_user_info'));
 
-            $user_group_id=$this->input->post('user_group_id');
+
 
             unset($data['id']);
             unset($data['date_updated']);

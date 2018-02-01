@@ -20,7 +20,7 @@ $action_buttons[]=array(
     'data-form'=>'#save_form'
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
-
+$user = User_helper::get_user();
 ?>
 <form class="form_valid" id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save_change_user_group');?>" method="post">
     <input type="hidden" id="id" name="id" value="<?php echo $user_info['user_id']; ?>" />
@@ -40,6 +40,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <?php
                 foreach($user_groups as $user_group)
                 {
+                    if(($user_group['id']!=1)||$user->user_group==1)
+                    {
                     ?>
                     <div class="checkbox">
                         <label title="<?php echo $user_group['name']; ?>">
@@ -47,7 +49,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                             <?php echo $user_group['name']; ?>
                         </label>
                     </div>
-                <?php
+                    <?php
+                    }
                 }
                 ?>
             </div>
