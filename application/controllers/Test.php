@@ -20,6 +20,7 @@ class Test extends CI_Controller {
 	 */
     public function index()
     {
+        echo System_helper::display_date_time(1517473991);
         //$this->user_order();
     }
 	private function user_order()

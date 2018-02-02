@@ -34,7 +34,7 @@ class Setup_cclassification_type extends Root_Controller
         }
         elseif($action=="acres")
         {
-            $this->system_acres();
+            $this->system_acres($id);
         }
         elseif($action=="get_acres")
         {
@@ -229,12 +229,20 @@ class Setup_cclassification_type extends Root_Controller
         }
     }
 
-    private function system_acres()
+    private function system_acres($id)
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
+            if($id>0)
+            {
+                $item_id=$id;
+            }
+            else
+            {
+                $item_id=$this->input->post('id');
+            }
 
-            $data['id']=$this->input->post('id');
+            $data['id']=$item_id;
 
             $this->db->from($this->config->item('table_login_setup_classification_crop_types').' t');
             $this->db->select('t.*');
@@ -257,7 +265,7 @@ class Setup_cclassification_type extends Root_Controller
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url);
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/acres/'.$item_id);
             $this->json_return($ajax);
         }
         else
@@ -270,8 +278,7 @@ class Setup_cclassification_type extends Root_Controller
 
     private function system_get_acres()
     {
-        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
-        {
+
             $item_id=$this->input->post('id');
             $this->db->from($this->config->item('table_login_setup_location_upazillas').' u');
             $this->db->select('u.*');
@@ -293,91 +300,71 @@ class Setup_cclassification_type extends Root_Controller
             $items=$this->db->get()->result_array();
             foreach($items as &$item)
             {
-                if($item['quantity_acres']==0)
+                if(!$item['quantity_acres'])
                 {
                     $item['quantity_acres']=0;
                 }
             }
 
             $this->json_return($items);
-        }
-        else
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
-            $this->json_return($ajax);
-        }
+
     }
 
     private function system_save_amount_acres()
     {
         $type_id = $this->input->post("id");
-        $old_items=Query_helper::get_info($this->config->item('table_login_setup_classification_type_acres'),'*',array('type_id ='.$type_id),1);
         $user = User_helper::get_user();
         $time=time();
+        $items=$this->input->post('items');
         if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
         {
             $ajax['status']=false;
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
         }
-        if(!(isset($this->permissions['action1']) && ($this->permissions['action1']==1)))
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
-            $this->json_return($ajax);
-        }
-        if(!$this->check_validation_acres_amount())
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->message;
-            $this->json_return($ajax);
-        }
         else
         {
-            $data['type_id']=$type_id;
-            $this->db->trans_start();  //DB Transaction Handle START
-            if($old_items)
+            $results=Query_helper::get_info($this->config->item('table_login_setup_classification_type_acres'),'*',array('type_id ='.$type_id));
+            $old_items=array();
+            foreach($results as $result)
             {
-                $data['type_id']=$type_id;
-                $data['user_updated']=$user->user_id;
-                $data['date_updated']=$time;
-
-                $items=$this->input->post('items');
-                foreach($items as $index=>$item)
-                {
-                    $data['quantity_acres']=$item;
-                    $this->db->set('revision','revision+1',false);
-                    Query_helper::update($this->config->item('table_login_setup_classification_type_acres'),$data,array("type_id = ".$type_id,"upazilla_id = ".$index));
-                }
+                $old_items[$result['upazilla_id']]=$result;
             }
-            else
+            $this->db->trans_start();  //DB Transaction Handle START
+            foreach($items as $upazilla_id=>$quantity_acres)
             {
-                $data['type_id']=$type_id;
-                $data['user_created']=$user->user_id;
-                $data['date_created']=$time;
-                $data['revision']=1;
-                $items=$this->input->post('items');
-                foreach($items as $index=>$item)
+                if(isset($old_items[$upazilla_id]))
                 {
-                    $data['upazilla_id']=$index;
-                    $data['quantity_acres']=$item;
-                    Query_helper::add($this->config->item('table_login_setup_classification_type_acres'),$data,false);
+                    if($old_items[$upazilla_id]['quantity_acres']!=$quantity_acres)
+                    {
+                        $data=array();
+                        $data['quantity_acres']=$quantity_acres;
+                        $this->db->set('revision','revision+1',false);
+                        //both way correct
+                        //Query_helper::update($this->config->item('table_login_setup_classification_type_acres'),$data,array("type_id = ".$type_id,"upazilla_id = ".$index));
+                        Query_helper::update($this->config->item('table_login_setup_classification_type_acres'),$data,array("id = ".$old_items[$upazilla_id]['id']));
+                    }
+
                 }
+                else
+                {
+                    $data=array();
+                    $data['type_id']=$type_id;
+                    $data['user_created']=$user->user_id;
+                    $data['date_created']=$time;
+                    $data['revision']=1;
+                    $data['upazilla_id']=$upazilla_id;
+                    $data['quantity_acres']=$quantity_acres;
+                    Query_helper::add($this->config->item('table_login_setup_classification_type_acres'),$data,false);
+
+                }
+
             }
             $this->db->trans_complete();   //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)
             {
-                $save_and_new=$this->input->post('system_save_new_status');
                 $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
-                if($save_and_new==1)
-                {
-                    $this->system_list();
-                }
-                else
-                {
-                    $this->system_list();
-                }
+                $this->system_acres($type_id);
             }
             else
             {
@@ -398,11 +385,6 @@ class Setup_cclassification_type extends Root_Controller
             $this->message=validation_errors();
             return false;
         }
-        return true;
-    }
-
-    public function check_validation_acres_amount()
-    {
         return true;
     }
 }

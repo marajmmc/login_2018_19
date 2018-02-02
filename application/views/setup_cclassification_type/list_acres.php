@@ -35,7 +35,7 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
 }
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
-    'href'=>site_url($CI->controller_url.'/index/list')
+    'href'=>site_url($CI->controller_url.'/index/acres/'.$id)
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 ?>
@@ -77,14 +77,13 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     {
         ?>
         <div class="col-xs-12" style="margin-bottom: 20px;">
-            <div class="col-xs-12" style="margin-bottom: 20px;">
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="division_name"><?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="zone_name"><?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="territory_name"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="district_name"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name"><?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?></label>
                 <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="quantity_acres">Acres</label>
-            </div>
+
         </div>
     <?php
     }
@@ -111,7 +110,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             var sure = confirm('<?php echo $CI->lang->line('MSG_CONFIRM_SAVE'); ?>');
             if(sure)
             {
-                //alert('hi');
                 $("#save_form_jqx").submit();
             }
 
@@ -132,7 +130,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'district_name', type: 'string' },
                 { name: 'name', type: 'string' },
                 { name: 'quantity_acres', type: 'string' }
-                //{ name: 'quantity_acres', type: 'string' }
             ],
             id: 'id',
             url: url,
@@ -157,13 +154,10 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             {
                 width: '100%',
                 source: dataAdapter,
-                pageable: true,
                 filterable: true,
                 sortable: true,
                 showfilterrow: true,
                 columnsresize: true,
-                pagesize:50,
-                pagesizeoptions: ['20', '50', '100', '200','300','500'],
                 selectionmode: 'singlerow',
                 enablebrowserselection: true,
                 columnsreorder: true,
@@ -172,6 +166,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 rowsheight: 35,
                 editable:true,
                 columns: [
+                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',width:'50',cellsAlign:'right'},
                     { text: '<?php echo $CI->lang->line('LABEL_DIVISION_NAME'); ?>', dataField: 'division_name',filtertype: 'list',width:'200',editable:false},
                     { text: '<?php echo $CI->lang->line('LABEL_ZONE_NAME'); ?>', dataField: 'zone_name',filtertype: 'list',width:'200',editable:false},
                     { text: '<?php echo $CI->lang->line('LABEL_TERRITORY_NAME'); ?>', dataField: 'territory_name',filtertype: 'list',width:'200',editable:false},
