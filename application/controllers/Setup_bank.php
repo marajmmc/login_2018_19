@@ -109,6 +109,7 @@ class Setup_bank extends Root_Controller
             $data['item']['id']=0;
             $data['item']['name']='';
             $data['item']['description']='';
+            $data['item']['status']='Active';
             $data['item']['ordering']=0;
 
             $ajax['status']=true;
@@ -170,12 +171,23 @@ class Setup_bank extends Root_Controller
     {
         $id = $this->input->post("id");
         $user = User_helper::get_user();
+        $time=time();
+        $item=$this->input->post('item');
         if($id>0)
         {
             if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
             {
                 $ajax['status']=false;
                 $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+                $this->json_return($ajax);
+            }
+
+            $result=Query_helper::get_info($this->config->item('table_login_setup_bank'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
+            if(!$result)
+            {
+                System_helper::invalid_try('Update Non Exists',$id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Bank.';
                 $this->json_return($ajax);
             }
         }
@@ -195,34 +207,19 @@ class Setup_bank extends Root_Controller
             $this->json_return($ajax);
         }
 
-        $time=time();
-        $item=$this->input->post('item');
-
         $this->db->trans_start();  //DB Transaction Handle START
 
         if($id>0)
         {
-
-            $result=Query_helper::get_info($this->config->item('table_login_setup_bank'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
-            if(!$result)
-            {
-                $this->db->trans_complete();
-                System_helper::invalid_try('Update Non Exists',$id);
-                $ajax['status']=false;
-                $ajax['system_message']='Invalid Bank.';
-                $this->json_return($ajax);
-            }
-
             $item['date_updated']=$time;
             $item['user_updated']=$user->user_id;
             Query_helper::update($this->config->item('table_login_setup_bank'),$item,array('id='.$id));
         }
         else
         {
-            $item['status']=$this->config->item('system_status_active');
             $item['date_created']=$time;
             $item['user_created']=$user->user_id;
-            Query_helper::add($this->config->item('table_login_setup_bank'),$item,array('id='.$id));
+            Query_helper::add($this->config->item('table_login_setup_bank'),$item);
         }
 
         $this->db->trans_complete();   //DB Transaction Handle END
@@ -250,6 +247,7 @@ class Setup_bank extends Root_Controller
     {
         $this->load->library('form_validation');
         $this->form_validation->set_rules('item[name]',$this->lang->line('LABEL_NAME'),'required');
+        $this->form_validation->set_rules('item[status]',$this->lang->line('LABEL_STATUS'),'required');
         if($this->form_validation->run() == FALSE)
         {
             $this->message=validation_errors();
@@ -285,8 +283,6 @@ class Setup_bank extends Root_Controller
                 }
             }
             $data['preference_method_name']='list';
-
-            $data['title']="Set Preference";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
             $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference');

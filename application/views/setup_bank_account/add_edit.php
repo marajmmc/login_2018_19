@@ -83,11 +83,11 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-sm-4 col-xs-8">
                 <label for="account_type_receive">
-                    <input type="checkbox" name="item[account_type_receive]" id="account_type_receive" class="" value="<?php echo $item['account_type_receive'];?>" <?php if($item['account_type_receive']){echo "checked='checked'";}?> />
+                    <input type="checkbox" name="item[account_type_receive]" id="account_type_receive" class="" value="1" <?php if($item['account_type_receive']==1){echo "checked='checked'";}?> />
                     Receive
                 </label>
                 <label for="account_type_expense">
-                    <input type="checkbox" name="item[account_type_expense]" id="account_type_expense" class="" value="<?php echo $item['account_type_expense'];?>" <?php if($item['account_type_expense']){echo "checked='checked'";}?> />
+                    <input type="checkbox" name="item[account_type_expense]" id="account_type_expense" class="" value="1" <?php if($item['account_type_expense']==1){echo "checked='checked'";}?> />
                     Expense
                 </label>
             </div>
@@ -98,6 +98,18 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-sm-4 col-xs-8">
                 <textarea name="item[description]" id="description" class="form-control" ><?php echo $item['description'];?></textarea>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label for="status" class="control-label pull-right"><?php echo $CI->lang->line('LABEL_STATUS');?><span style="color:#FF0000">*</span></label>
+            </div>
+            <div class="col-sm-4 col-xs-8">
+                <select id="status" name="item[status]" class="form-control">
+                    <!--<option value=""></option>-->
+                    <option value="<?php echo $CI->config->item('system_status_active'); ?>" <?php if ($item['status'] == $CI->config->item('system_status_active')) { echo "selected='selected'"; } ?> ><?php echo $CI->lang->line('ACTIVE') ?></option>
+                    <option value="<?php echo $CI->config->item('system_status_inactive'); ?>" <?php if ($item['status'] == $CI->config->item('system_status_inactive')) { echo "selected='selected'"; } ?> ><?php echo $CI->lang->line('INACTIVE') ?></option>
+                </select>
             </div>
         </div>
         <div class="row show-grid">
@@ -125,7 +137,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                             ?>
                             <td>
                                 <label for="purpose_<?php echo $key?>">
-                                    <input type="radio" name="items[purpose][]" id="purpose_<?php echo $key?>" class="" value="<?php echo $key;?>" <?php if(isset($purpose[$key])){echo "checked='checked'";}?> />
+                                    <input type="checkbox" name="items[purpose][]" id="purpose_<?php echo $key?>" class="" value="<?php echo $key;?>" <?php if(isset($purpose[$key])){echo "checked='checked'";}?> />
                                     <?php echo $value;?>
                                 </label>
                             </td>

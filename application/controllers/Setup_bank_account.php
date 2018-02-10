@@ -80,8 +80,8 @@ class Setup_bank_account extends Root_Controller
             }
 
             $data['title']="Bank Account List";
-            $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
+            $ajax['status']=true;
             if($this->message)
             {
                 $ajax['system_message']=$this->message;
@@ -120,9 +120,10 @@ class Setup_bank_account extends Root_Controller
             $data['item']['account_type_receive']=0;
             $data['item']['account_type_expense']=0;
             $data['item']['description']='';
+            $data['item']['status']='Active';
             $data['items']=array();
 
-            $data['banks']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('id value','name text'),array('status !="'.$this->config->item('system_status_delete').'"'),0,0,array('ordering'));
+            $data['banks']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'),0,0,array('name'));
 
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
@@ -186,12 +187,24 @@ class Setup_bank_account extends Root_Controller
     {
         $id = $this->input->post("id");
         $user = User_helper::get_user();
+        $time=time();
+        $item=$this->input->post('item');
+        $items=$this->input->post('items');
+
         if($id>0)
         {
             if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
             {
                 $ajax['status']=false;
                 $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+                $this->json_return($ajax);
+            }
+            $result=Query_helper::get_info($this->config->item('table_login_setup_bank_account'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
+            if(!$result)
+            {
+                System_helper::invalid_try('Update Non Exists',$id);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Bank Account.';
                 $this->json_return($ajax);
             }
         }
@@ -211,25 +224,11 @@ class Setup_bank_account extends Root_Controller
             $this->json_return($ajax);
         }
 
-        $time=time();
-        $item=$this->input->post('item');
-        $items=$this->input->post('items');
+
 
         $this->db->trans_start();  //DB Transaction Handle START
-
         if($id>0)
         {
-            $result=Query_helper::get_info($this->config->item('table_login_setup_bank_account'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
-            if(!$result)
-            {
-                $this->db->trans_complete();
-                System_helper::invalid_try('Update Non Exists',$id);
-                $ajax['status']=false;
-                $ajax['system_message']='Invalid Bank Account.';
-                $this->json_return($ajax);
-            }
-
-
             $data=array();
             $data['date_updated'] = $time;
             $data['user_updated'] = $user->user_id;
@@ -250,17 +249,44 @@ class Setup_bank_account extends Root_Controller
                 Query_helper::add($this->config->item('table_login_setup_bank_account_purpose'),$data, false);
             }
 
-            $item['account_type_receive']=isset($item['account_type_receive'])?1:0;
-            $item['account_type_expense']=isset($item['account_type_expense'])?1:0;
+            if(isset($item['account_type_receive']) && $item['account_type_receive']==1)
+            {
+                $item['account_type_receive']=1;
+            }
+            else
+            {
+                $item['account_type_receive']=0;
+            }
+            if(isset($item['account_type_expense']) && $item['account_type_expense']==1)
+            {
+                $item['account_type_expense']=1;
+            }
+            else
+            {
+                $item['account_type_expense']=0;
+            }
             $item['date_updated']=$time;
             $item['user_updated']=$user->user_id;
             Query_helper::update($this->config->item('table_login_setup_bank_account'),$item,array('id='.$id));
         }
         else
         {
-            $item['account_type_receive']=isset($item['account_type_receive'])?1:0;
-            $item['account_type_expense']=isset($item['account_type_expense'])?1:0;
-            $item['status']=$this->config->item('system_status_active');
+            if(isset($item['account_type_receive']) && $item['account_type_receive']==1)
+            {
+                $item['account_type_receive']=1;
+            }
+            else
+            {
+                $item['account_type_receive']=0;
+            }
+            if(isset($item['account_type_expense']) && $item['account_type_expense']==1)
+            {
+                $item['account_type_expense']=1;
+            }
+            else
+            {
+                $item['account_type_expense']=0;
+            }
             $item['date_created']=$time;
             $item['user_created']=$user->user_id;
             $id=Query_helper::add($this->config->item('table_login_setup_bank_account'),$item,array('id='.$id));
@@ -355,8 +381,6 @@ class Setup_bank_account extends Root_Controller
                 }
             }
             $data['preference_method_name']='list';
-
-            $data['title']="Set Preference";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
             $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference');
