@@ -585,7 +585,7 @@ class Transfer extends CI_Controller
                 $stocks[$result['variety_id']][$result['pack_size_id']]['sales']=$result['sales'];
             }
         }
-        $time=System_helper::get_time('31-05-2017');
+        $time=System_helper::get_time('31-05-2016');
         $pack_size=array();
         $results=Query_helper::get_info($source_tables['table_login_setup_classification_vpack_size'],array('id value','name text'),array());
         foreach($results as $result)
