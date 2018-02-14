@@ -67,7 +67,7 @@ class Setup_cclassification_vpack_size extends Root_Controller
 
     private function system_get_items()
     {
-        $items=Query_helper::get_info($this->config->item('table_login_setup_classification_vpack_size'),'*',array('status !="'.$this->config->item('system_status_delete').'"'),0,0,array('name ASC'));
+        $items=Query_helper::get_info($this->config->item('table_login_setup_classification_pack_size'),'*',array('status !="'.$this->config->item('system_status_delete').'"'),0,0,array('name ASC'));
         $this->json_return($items);
     }
 
@@ -112,7 +112,7 @@ class Setup_cclassification_vpack_size extends Root_Controller
                 $pack_id=$id;
             }
 
-            $data['pack']=Query_helper::get_info($this->config->item('table_login_setup_classification_vpack_size'),'*',array('id ='.$pack_id),1);
+            $data['pack']=Query_helper::get_info($this->config->item('table_login_setup_classification_pack_size'),'*',array('id ='.$pack_id),1);
             $data['title']="Edit Pack (".$data['pack']['name'].')';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
@@ -172,14 +172,14 @@ class Setup_cclassification_vpack_size extends Root_Controller
                 $data['user_updated'] = $user->user_id;
                 $data['date_updated'] = time();
 
-                Query_helper::update($this->config->item('table_login_setup_classification_vpack_size'),$data,array("id = ".$id));
+                Query_helper::update($this->config->item('table_login_setup_classification_pack_size'),$data,array("id = ".$id));
 
             }
             else
             {
                 $data['user_created'] = $user->user_id;
                 $data['date_created'] = time();
-                Query_helper::add($this->config->item('table_login_setup_classification_vpack_size'),$data);
+                Query_helper::add($this->config->item('table_login_setup_classification_pack_size'),$data);
             }
             $this->db->trans_complete();   //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)

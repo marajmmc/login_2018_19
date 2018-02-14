@@ -479,7 +479,7 @@ class Setup_cclassification_variety extends Root_Controller
         $this->db->select('ps.name,ps.id');
         $this->db->select('price.price,price.price_net');
         $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
-        $this->db->join($this->config->item('table_login_setup_classification_vpack_size').' ps','ps.id=price.pack_size_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_classification_pack_size').' ps','ps.id=price.pack_size_id','INNER');
         $this->db->where('price.variety_id',$id);
         $this->db->where('price.revision',1);
         $this->db->order_by('price.pack_size_id','ASC');
@@ -492,8 +492,8 @@ class Setup_cclassification_variety extends Root_Controller
 
         $this->db->select('ps.name,ps.id');
         $this->db->select('p_item.masterfoil,p_item.foil,p_item.sticker');
-        $this->db->from($this->config->item('table_login_setup_classification_vpack_item').' p_item');
-        $this->db->join($this->config->item('table_login_setup_classification_vpack_size').' ps','ps.id=p_item.pack_size_id','INNER');
+        $this->db->from($this->config->item('table_login_setup_classification_variety_raw_config').' p_item');
+        $this->db->join($this->config->item('table_login_setup_classification_pack_size').' ps','ps.id=p_item.pack_size_id','INNER');
         $this->db->where('p_item.variety_id',$id);
         $this->db->where('p_item.revision',1);
         $this->db->order_by('p_item.pack_size_id','ASC');
@@ -530,7 +530,7 @@ class Setup_cclassification_variety extends Root_Controller
             }
 
             $this->db->select('ps.id value,ps.name text');
-            $this->db->from($this->config->item('table_login_setup_classification_vpack_size').' ps');
+            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' ps');
             $this->db->join($this->config->item('table_login_setup_classification_variety_price').' price','price.pack_size_id=ps.id AND price.variety_id='.$item_id.' AND price.revision=1','LEFT');
             $this->db->where('price.id IS NULL',null,false);
             $data['pack_sizes']=$this->db->get()->result_array();
@@ -589,8 +589,8 @@ class Setup_cclassification_variety extends Root_Controller
             }
 
             $this->db->select('ps.id value,ps.name text');
-            $this->db->from($this->config->item('table_login_setup_classification_vpack_size').' ps');
-            $this->db->join($this->config->item('table_login_setup_classification_vpack_item').' p_item','p_item.pack_size_id=ps.id AND p_item.variety_id='.$item_id.' AND p_item.revision=1','LEFT');
+            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' ps');
+            $this->db->join($this->config->item('table_login_setup_classification_variety_raw_config').' p_item','p_item.pack_size_id=ps.id AND p_item.variety_id='.$item_id.' AND p_item.revision=1','LEFT');
             $this->db->where('p_item.id IS NULL',null,false);
             $data['pack_sizes']=$this->db->get()->result_array();
 
@@ -650,7 +650,7 @@ class Setup_cclassification_variety extends Root_Controller
 
             $this->db->select('ps.name');
             $this->db->select('price.*');
-            $this->db->from($this->config->item('table_login_setup_classification_vpack_size').' ps');
+            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' ps');
             $this->db->join($this->config->item('table_login_setup_classification_variety_price').' price','price.pack_size_id=ps.id','INNER');
             $this->db->where('price.variety_id',$variety_id);
             $this->db->where('price.pack_size_id',$pack_size_id);
@@ -711,8 +711,8 @@ class Setup_cclassification_variety extends Root_Controller
 
             $this->db->select('ps.name');
             $this->db->select('p_item.*');
-            $this->db->from($this->config->item('table_login_setup_classification_vpack_size').' ps');
-            $this->db->join($this->config->item('table_login_setup_classification_vpack_item').' p_item','p_item.pack_size_id=ps.id','INNER');
+            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' ps');
+            $this->db->join($this->config->item('table_login_setup_classification_variety_raw_config').' p_item','p_item.pack_size_id=ps.id','INNER');
             $this->db->where('p_item.variety_id',$variety_id);
             $this->db->where('p_item.pack_size_id',$pack_size_id);
             $this->db->where('p_item.revision',1);
@@ -1069,16 +1069,16 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->db->where('revision',1);
                 $this->db->set('user_updated',$user->user_id);
                 $this->db->set('date_updated',$time);
-                $this->db->update($this->config->item('table_login_setup_classification_vpack_item'));
+                $this->db->update($this->config->item('table_login_setup_classification_variety_raw_config'));
 
                 $this->db->where('variety_id',$data['variety_id']);
                 $this->db->where('pack_size_id',$id);
                 $this->db->set('revision','revision+1',FALSE);
-                $this->db->update($this->config->item('table_login_setup_classification_vpack_item'));
+                $this->db->update($this->config->item('table_login_setup_classification_variety_raw_config'));
             }
             else
             {
-                $result=Query_helper::get_info($this->config->item('table_login_setup_classification_vpack_item'),'*',array('variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'revision=1'),1);
+                $result=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_raw_config'),'*',array('variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'revision=1'),1);
                 if($result)
                 {
                     $ajax['status']=false;
@@ -1089,7 +1089,7 @@ class Setup_cclassification_variety extends Root_Controller
             $data['user_created']=$user->user_id;
             $data['date_created']=$time;
             $data['revision']=1;
-            Query_helper::add($this->config->item('table_login_setup_classification_vpack_item'),$data,false);
+            Query_helper::add($this->config->item('table_login_setup_classification_variety_raw_config'),$data,false);
 
             $this->db->trans_complete();   //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)

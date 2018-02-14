@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Setup_bank extends Root_Controller
+class Direct_cost_items extends Root_Controller
 {
     public $message;
     public $permissions;
@@ -9,10 +9,9 @@ class Setup_bank extends Root_Controller
     {
         parent::__construct();
         $this->message="";
-        $this->permissions=User_helper::get_permission('Setup_bank');
-        $this->controller_url='setup_bank';
+        $this->permissions=User_helper::get_permission('Direct_cost_items');
+        $this->controller_url='direct_cost_items';
     }
-
     public function index($action="list",$id=0)
     {
         if($action=="list")
@@ -52,31 +51,8 @@ class Setup_bank extends Root_Controller
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
         {
-            $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['system_preference_items']['name']= 1;
-            $data['system_preference_items']['description']= 1;
-            $data['system_preference_items']['status']= 1;
-            if($result)
-            {
-                if($result['preferences']!=null)
-                {
-                    $preferences=json_decode($result['preferences'],true);
-                    foreach($data['system_preference_items'] as $key=>$value)
-                    {
-                        if(isset($preferences[$key]))
-                        {
-                            $data['system_preference_items'][$key]=$value;
-                        }
-                        else
-                        {
-                            $data['system_preference_items'][$key]=0;
-                        }
-                    }
-                }
-            }
-
-            $data['title']="Bank List";
+            $data['system_preference_items']= $this->get_preference();
+            $data['title']="Direct Cost List";
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
             if($this->message)
@@ -95,9 +71,9 @@ class Setup_bank extends Root_Controller
     }
     private function system_get_items()
     {
-        $this->db->from($this->config->item('table_login_setup_bank').' bank');
-        $this->db->where('bank.status !=',$this->config->item('system_status_delete'));
-        $this->db->order_by('bank.name','ASC');
+        $this->db->from($this->config->item('table_login_setup_direct_cost_items').' direct_cost_items');
+        $this->db->where('direct_cost_items.status !=',$this->config->item('system_status_delete'));
+        $this->db->order_by('direct_cost_items.id','DESC');
         $items=$this->db->get()->result_array();
         $this->json_return($items);
     }
@@ -105,12 +81,13 @@ class Setup_bank extends Root_Controller
     {
         if(isset($this->permissions['action1'])&&($this->permissions['action1']==1))
         {
-            $data['title']="Create New Bank";
+            $data['title']="Create Direct Cost Item";
             $data['item']['id']=0;
             $data['item']['name']='';
             $data['item']['description']='';
+            $data['item']['percentage']='';
             $data['item']['status']='Active';
-            $data['item']['ordering']=0;
+            $data['item']['ordering']=99;
 
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
@@ -141,16 +118,16 @@ class Setup_bank extends Root_Controller
                 $item_id=$this->input->post('id');
             }
 
-            $data['item']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('*'),array('id ='.$item_id,'status !="'.$this->config->item('system_status_delete').'"'),1,0,array('id ASC'));
+            $data['item']=Query_helper::get_info($this->config->item('table_login_setup_direct_cost_items'),array('*'),array('id ='.$item_id,'status !="'.$this->config->item('system_status_delete').'"'),1,0,array('id ASC'));
             if(!$data['item'])
             {
                 System_helper::invalid_try('Edit Non Exists',$item_id);
                 $ajax['status']=false;
-                $ajax['system_message']='Invalid Bank.';
+                $ajax['system_message']='Invalid Direct Cost Item.';
                 $this->json_return($ajax);
             }
 
-            $data['title']="Edit Bank :: ". $data['item']['name'];
+            $data['title']="Edit Direct Cost Item :: ". $data['item']['name'];
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
             if($this->message)
@@ -181,13 +158,12 @@ class Setup_bank extends Root_Controller
                 $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
                 $this->json_return($ajax);
             }
-
-            $result=Query_helper::get_info($this->config->item('table_login_setup_bank'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
+            $result=Query_helper::get_info($this->config->item('table_login_setup_direct_cost_items'),'*',array('id ='.$id, 'status != "'.$this->config->item('system_status_delete').'"'),1);
             if(!$result)
             {
                 System_helper::invalid_try('Update Non Exists',$id);
                 $ajax['status']=false;
-                $ajax['system_message']='Invalid Bank.';
+                $ajax['system_message']='Invalid Direct Cost Item.';
                 $this->json_return($ajax);
             }
         }
@@ -213,13 +189,15 @@ class Setup_bank extends Root_Controller
         {
             $item['date_updated']=$time;
             $item['user_updated']=$user->user_id;
-            Query_helper::update($this->config->item('table_login_setup_bank'),$item,array('id='.$id));
+            $this->db->set('revision_count', 'revision_count+1', FALSE);
+            Query_helper::update($this->config->item('table_login_setup_direct_cost_items'),$item,array('id='.$id));
         }
         else
         {
+            $item['revision_count']=1;
             $item['date_created']=$time;
             $item['user_created']=$user->user_id;
-            Query_helper::add($this->config->item('table_login_setup_bank'),$item);
+            Query_helper::add($this->config->item('table_login_setup_direct_cost_items'),$item);
         }
 
         $this->db->trans_complete();   //DB Transaction Handle END
@@ -259,29 +237,7 @@ class Setup_bank extends Root_Controller
     {
         if(isset($this->permissions['action6']) && ($this->permissions['action6']==1))
         {
-            $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['system_preference_items']['name']= 1;
-            $data['system_preference_items']['description']= 1;
-            $data['system_preference_items']['status']= 1;
-            if($result)
-            {
-                if($result['preferences']!=null)
-                {
-                    $preferences=json_decode($result['preferences'],true);
-                    foreach($data['system_preference_items'] as $key=>$value)
-                    {
-                        if(isset($preferences[$key]))
-                        {
-                            $data['system_preference_items'][$key]=$value;
-                        }
-                        else
-                        {
-                            $data['system_preference_items'][$key]=0;
-                        }
-                    }
-                }
-            }
+            $data['system_preference_items']=$this->get_preference();
             $data['preference_method_name']='list';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
@@ -294,5 +250,35 @@ class Setup_bank extends Root_Controller
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
         }
+    }
+    private function get_preference()
+    {
+        $user = User_helper::get_user();
+        $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+        $data['id']= 1;
+        $data['name']= 1;
+        $data['description']= 1;
+        $data['percentage']= 1;
+        $data['status']= 1;
+        if($result)
+        {
+            if($result['preferences']!=null)
+            {
+                $preferences=json_decode($result['preferences'],true);
+                foreach($data as $key=>$value)
+                {
+
+                    if(isset($preferences[$key]))
+                    {
+                        $data[$key]=$value;
+                    }
+                    else
+                    {
+                        $data[$key]=0;
+                    }
+                }
+            }
+        }
+        return $data;
     }
 }

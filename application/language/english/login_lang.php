@@ -62,6 +62,7 @@ $lang['MSG_SAVED_SUCCESS'] = 'Successfully Saved';
 $lang['MSG_SAVED_FAIL'] = 'Failed to Save!';
 $lang['MSG_INVALID_INPUT'] = 'Invalid data entry';
 
+$lang['LABEL_ID']='Id';
 $lang['LABEL_SL_NO']='SL#';
 $lang['LABEL_DATE']='Date';
 $lang['LABEL_DATE_CREATED']='Creation date';
@@ -186,3 +187,5 @@ $lang['LABEL_ACCOUNT_TYPE'] = 'Account Type';
 $lang['LABEL_ACCOUNT_TYPE_RECEIVE'] = 'Account Type Receive';
 $lang['LABEL_ACCOUNT_TYPE_EXPENSE'] = 'Account Type Expense';
 $lang['LABEL_ACCOUNT_PURPOSE'] = 'Account Purpose';
+// SETUP DIRECT COST ITEMS
+$lang['LABEL_PERCENTAGE'] = 'Percentage';

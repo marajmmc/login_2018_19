@@ -505,7 +505,7 @@ class Transfer extends CI_Controller
             'table_stockout'=>'arm_ems.ems_stockout',
             'table_sales_po'=>'arm_ems.ems_sales_po',
             'table_sales_po_details'=>'arm_ems.ems_sales_po_details',
-            'table_login_setup_classification_vpack_size'=>'arm_login_2018_19.login_setup_classification_variety_pack_size'
+            'table_login_setup_classification_pack_size'=>'arm_login_2018_19.login_setup_classification_variety_pack_size'
         );
         $destination_tables=array(
             'table_sms_stock_in_variety'=>'arm_sms_2018_19.sms_stock_in_variety',
@@ -587,7 +587,7 @@ class Transfer extends CI_Controller
         }
         $time=System_helper::get_time('31-05-2016');
         $pack_size=array();
-        $results=Query_helper::get_info($source_tables['table_login_setup_classification_vpack_size'],array('id value','name text'),array());
+        $results=Query_helper::get_info($source_tables['table_login_setup_classification_pack_size'],array('id value','name text'),array());
         foreach($results as $result)
         {
             $pack_size[$result['value']]=$result['text'];
