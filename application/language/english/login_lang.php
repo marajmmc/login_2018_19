@@ -187,5 +187,8 @@ $lang['LABEL_ACCOUNT_TYPE'] = 'Account Type';
 $lang['LABEL_ACCOUNT_TYPE_RECEIVE'] = 'Account Type Receive';
 $lang['LABEL_ACCOUNT_TYPE_EXPENSE'] = 'Account Type Expense';
 $lang['LABEL_ACCOUNT_PURPOSE'] = 'Account Purpose';
-// SETUP DIRECT COST ITEMS
+// SETUP DIRECT COST ITEMS - PREFERENCE
 $lang['LABEL_PERCENTAGE'] = 'Percentage';
+// SETUP CURRENCY - PREFERENCE
+$lang['LABEL_SYMBOL'] = 'Symbol';
+$lang['LABEL_AMOUNT_RATE_BUDGET'] = 'Budget Rate';

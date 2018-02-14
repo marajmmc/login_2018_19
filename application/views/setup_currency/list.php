@@ -88,8 +88,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataFields: [
                 { name: 'id', type: 'int' },
                 { name: 'name', type: 'string' },
+                { name: 'symbol', type: 'string' },
+                { name: 'amount_rate_budget', type: 'string' },
                 { name: 'description', type: 'string' },
-                { name: 'percentage', type: 'string' },
                 { name: 'status', type: 'string' }
             ],
             id: 'id',
@@ -118,8 +119,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 [
                     { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id', hidden: <?php echo $system_preference_items['id']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', hidden: <?php echo $system_preference_items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_SYMBOL');?>', dataField: 'symbol', width:100, hidden: <?php echo $system_preference_items['symbol']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_RATE_BUDGET');?>', dataField: 'amount_rate_budget', width:100,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_rate_budget']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_DESCRIPTION'); ?>', dataField: 'description', hidden: <?php echo $system_preference_items['description']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_PERCENTAGE');?>', dataField: 'percentage', width:100,cellsalign: 'right', hidden: <?php echo $system_preference_items['percentage']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_STATUS');?>', dataField: 'status',filtertype: 'list', width:70,cellsalign: 'center', hidden: <?php echo $system_preference_items['status']?0:1;?>}
                 ]
             });
