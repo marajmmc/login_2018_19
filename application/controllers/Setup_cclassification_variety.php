@@ -309,7 +309,7 @@ class Setup_cclassification_variety extends Root_Controller
             }
 
             $this->db->select('p.name,vp.name_import');
-            $this->db->from($this->config->item('table_login_setup_variety_principals').' vp');
+            $this->db->from($this->config->item('table_login_setup_classification_variety_principals').' vp');
             $this->db->join($this->config->item('table_login_basic_setup_principal').' p','p.id=vp.principal_id');
             $this->db->where('vp.variety_id',$item_id);
             $this->db->where('vp.revision',1);
@@ -356,7 +356,7 @@ class Setup_cclassification_variety extends Root_Controller
             }
             $data['principals']=Query_helper::get_info($this->config->item('table_login_basic_setup_principal'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
 
-            $results=Query_helper::get_info($this->config->item('table_login_setup_variety_principals'),'*',array('variety_id ='.$item_id,'revision =1'));
+            $results=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_principals'),'*',array('variety_id ='.$item_id,'revision =1'));
             $data['assigned_principals']=array();
             foreach($results as $result)
             {
@@ -892,11 +892,11 @@ class Setup_cclassification_variety extends Root_Controller
         $revision_history_data=array();
         $revision_history_data['date_updated']=$time;
         $revision_history_data['user_updated']=$user->user_id;
-        Query_helper::update($this->config->item('table_login_setup_variety_principals'),$revision_history_data,array('revision=1','variety_id='.$id));
+        Query_helper::update($this->config->item('table_login_setup_classification_variety_principals'),$revision_history_data,array('revision=1','variety_id='.$id));
 
         $this->db->where('variety_id',$id);
         $this->db->set('revision', 'revision+1', FALSE);
-        $this->db->update($this->config->item('table_login_setup_variety_principals'));
+        $this->db->update($this->config->item('table_login_setup_classification_variety_principals'));
 
         $principal_ids=$this->input->post('principal_ids');
         $name_imports=$this->input->post('name_imports');
@@ -914,7 +914,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $data['user_created'] = $user->user_id;
                 $data['date_created'] = $time;
                 $data['revision'] = 1;
-                Query_helper::add($this->config->item('table_login_setup_variety_principals'),$data);
+                Query_helper::add($this->config->item('table_login_setup_classification_variety_principals'),$data);
             }
         }
 

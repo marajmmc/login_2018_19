@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Direct_cost_items extends Root_Controller
+class Setup_direct_cost_items extends Root_Controller
 {
     public $message;
     public $permissions;
@@ -9,8 +9,8 @@ class Direct_cost_items extends Root_Controller
     {
         parent::__construct();
         $this->message="";
-        $this->permissions=User_helper::get_permission('Direct_cost_items');
-        $this->controller_url='direct_cost_items';
+        $this->permissions=User_helper::get_permission('Setup_direct_cost_items');
+        $this->controller_url='setup_direct_cost_items';
     }
     public function index($action="list",$id=0)
     {

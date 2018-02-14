@@ -248,7 +248,7 @@ class Transfer extends CI_Controller
         );
         $destination_tables=array(
             'varieties'=>$this->config->item('table_login_setup_classification_varieties'),
-            'variety_principals'=>$this->config->item('table_login_setup_variety_principals')
+            'variety_principals'=>$this->config->item('table_login_setup_classification_variety_principals')
         );
         $varieties_kg_price=array();
         $results=Query_helper::get_info($source_tables['varietiy_price_kg'],'*',array());
