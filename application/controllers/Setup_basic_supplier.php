@@ -2,7 +2,7 @@
 
 class Setup_basic_supplier extends Root_Controller
 {
-    private  $message;
+    public  $message;
     public $permissions;
     public $controller_url;
     public function __construct()
@@ -35,16 +35,24 @@ class Setup_basic_supplier extends Root_Controller
         {
             $this->system_save();
         }
+        elseif($action=="set_preference")
+        {
+            $this->system_set_preference();
+        }
+        elseif($action=="save_preference")
+        {
+            System_helper::save_preference();
+        }
         else
         {
             $this->system_list($id);
         }
     }
-
     private function system_list()
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
+            $data['system_preference_items']=$this->get_preference();
             $data['title']="Suppliers List";
             $ajax['status']=true;
             $ajax['system_content'][]=array('id'=>'#system_content','html'=>$this->load->view($this->controller_url.'/list',$data,true));
@@ -63,13 +71,11 @@ class Setup_basic_supplier extends Root_Controller
         }
 
     }
-
     private function system_get_items()
     {
-        $items=Query_helper::get_info($this->config->item('table_login_basic_setup_supplier'),array('id','name','mobile_number','address','status','ordering'),array('status !="'.$this->config->item('system_status_delete').'"'));
+        $items=Query_helper::get_info($this->config->item('table_login_basic_setup_supplier'),array('id','name','mobile_number mobile_no','address','status','ordering order'),array('status !="'.$this->config->item('system_status_delete').'"'));
         $this->json_return($items);
     }
-
     private function system_add()
     {
         if(isset($this->permissions['action1']) && ($this->permissions['action1']==1))
@@ -129,7 +135,6 @@ class Setup_basic_supplier extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_save()
     {
         $id = $this->input->post("id");
@@ -222,5 +227,55 @@ class Setup_basic_supplier extends Root_Controller
             return false;
         }
         return true;
+    }
+    private function system_set_preference()
+    {
+        if(isset($this->permissions['action6']) && ($this->permissions['action6']==1))
+        {
+            $data['system_preference_items']=$this->get_preference();
+            $data['preference_method_name']='list';
+            $data['title']="Set Preference";
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference');
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function get_preference()
+    {
+        $user = User_helper::get_user();
+        $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+        $data['id']= 1;
+        $data['name']= 1;
+        $data['mobile_no']= 1;
+        $data['address']= 1;
+        $data['order']= 1;
+        $data['status']= 1;
+        if($result)
+        {
+            if($result['preferences']!=null)
+            {
+                $preferences=json_decode($result['preferences'],true);
+                foreach($data as $key=>$value)
+                {
+
+                    if(isset($preferences[$key]))
+                    {
+                        $data[$key]=$value;
+                    }
+                    else
+                    {
+                        $data[$key]=0;
+                    }
+                }
+            }
+        }
+        return $data;
     }
 }

@@ -38,6 +38,14 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
         'data-title'=>"Download"
     );
 }
+if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
+{
+    $action_buttons[]=array
+    (
+        'label'=>'Preference',
+        'href'=>site_url($CI->controller_url.'/index/set_preference')
+    );
+}
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
     'href'=>site_url($CI->controller_url.'/index/list')
@@ -56,16 +64,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     <?php
     if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
     {
-        ?>
-        <div class="col-xs-12" style="margin-bottom: 20px;">
-            <div class="col-xs-12" style="margin-bottom: 20px;">
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="mobile_number"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="address"><?php echo $CI->lang->line('LABEL_ADDRESS'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-            </div>
-        </div>
-    <?php
+        $CI->load->view('preference',array('system_preference_items'=>$system_preference_items));
     }
     ?>
     <div class="col-xs-12" id="system_jqx_container">
@@ -87,9 +86,10 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataFields: [
                 { name: 'id', type: 'int' },
                 { name: 'name', type: 'string' },
-                { name: 'mobile_number', type: 'string' },
+                { name: 'mobile_no', type: 'string' },
                 { name: 'address', type: 'string' },
-                { name: 'ordering', type: 'int' },
+                { name: 'order', type: 'int' },
+                { name: 'status', type: 'int' }
             ],
             id: 'id',
             url: url
@@ -114,10 +114,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name'},
-                    { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_number',width: '200',cellsalign: 'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_ADDRESS'); ?>', dataField: 'address',width: '200',cellsalign: 'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'150',cellsalign: 'right'}
+                    { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id',width: '50',hidden: <?php echo $system_preference_items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width: '300',hidden: <?php echo $system_preference_items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_no',width: '100',cellsalign: 'right',hidden: <?php echo $system_preference_items['mobile_no']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ADDRESS'); ?>', dataField: 'address',hidden: <?php echo $system_preference_items['address']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'order',width:'50',cellsalign: 'right',hidden: <?php echo $system_preference_items['order']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_STATUS'); ?>', dataField: 'status',width:'70',filtertype:'list',cellsalign: 'center',hidden: <?php echo $system_preference_items['status']?0:1;?>}
                 ]
             });
     });
