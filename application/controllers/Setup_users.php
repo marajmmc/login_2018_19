@@ -1472,8 +1472,6 @@ class Setup_users extends Root_Controller
             $this->db->set('revision', 'revision+1', FALSE);
             $this->db->update($this->config->item('table_login_setup_user_info'));
 
-
-
             unset($data['id']);
             unset($data['date_updated']);
             unset($data['user_updated']);
@@ -1549,12 +1547,14 @@ class Setup_users extends Root_Controller
         $data_user=$this->input->post('user');
         if(!preg_match('/^[a-z0-9][a-z0-9_]*[a-z0-9]$/',$data_user['user_name']))
         {
+            $ajax['status']=false;
             $ajax['system_message']='Username create rules violation';
             $this->json_return($ajax);
         }
         $duplicate_username_check=Query_helper::get_info($this->config->item('table_login_setup_user'),array('user_name'),array('user_name ="'.$data_user['user_name'].'"'),1);
         if($duplicate_username_check)
         {
+            $ajax['status']=false;
             $ajax['system_message']='This Username is already exists';
             $this->json_return($ajax);
         }
@@ -1563,6 +1563,7 @@ class Setup_users extends Root_Controller
             $duplicate_employee_id_check=Query_helper::get_info($this->config->item('table_login_setup_user'),array('employee_id'),array('employee_id ="'.$data_user['employee_id'].'"'),1);
             if($duplicate_employee_id_check)
             {
+                $ajax['status']=false;
                 $ajax['system_message']='This Employee ID is already exists';
                 $this->json_return($ajax);
             }
@@ -1616,6 +1617,7 @@ class Setup_users extends Root_Controller
 
         if(!preg_match('/^[a-z0-9][a-z0-9_]*[a-z0-9]$/',$this->input->post('new_username')))
         {
+            $ajax['status']=false;
             $ajax['system_message']='Username create rules violation';
             $this->json_return($ajax);
         }
@@ -1624,6 +1626,7 @@ class Setup_users extends Root_Controller
             $duplicate_username_check=Query_helper::get_info($this->config->item('table_login_setup_user'),array('user_name'),array('id!='.$id,'user_name ="'.$this->input->post('new_username').'"'),1);
             if($duplicate_username_check)
             {
+                $ajax['status']=false;
                 $ajax['system_message']='This username is already exists';
                 $this->json_return($ajax);
             }
@@ -1646,6 +1649,7 @@ class Setup_users extends Root_Controller
             $duplicate_employee_id_check=Query_helper::get_info($this->config->item('table_login_setup_user'),array('employee_id'),array('id!='.$id,'employee_id ="'.$this->input->post('new_employee_id').'"'),1);
             if($duplicate_employee_id_check)
             {
+                $ajax['status']=false;
                 $ajax['system_message']='This employee ID is already exists';
                 $this->json_return($ajax);
             }

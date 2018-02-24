@@ -40,7 +40,6 @@ class Setup_cclassification_type extends Root_Controller
         {
             $this->system_get_acres($id);
         }
-
         elseif($action=="save")
         {
             $this->system_save();
@@ -54,7 +53,6 @@ class Setup_cclassification_type extends Root_Controller
             $this->system_list();
         }
     }
-
     private function system_list()
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
@@ -92,7 +90,6 @@ class Setup_cclassification_type extends Root_Controller
 //        exit;
         $this->json_return($items);
     }
-
     private function system_add()
     {
         if(isset($this->permissions['action1']) && ($this->permissions['action1']==1))
@@ -158,8 +155,6 @@ class Setup_cclassification_type extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
-
     private function system_save()
     {
         $id = $this->input->post("id");
@@ -228,7 +223,6 @@ class Setup_cclassification_type extends Root_Controller
             }
         }
     }
-
     private function system_acres($id)
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
@@ -275,7 +269,6 @@ class Setup_cclassification_type extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_get_acres()
     {
 
@@ -309,7 +302,6 @@ class Setup_cclassification_type extends Root_Controller
             $this->json_return($items);
 
     }
-
     private function system_save_amount_acres()
     {
         $type_id = $this->input->post("id");
