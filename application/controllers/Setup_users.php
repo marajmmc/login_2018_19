@@ -1511,6 +1511,7 @@ class Setup_users extends Root_Controller
             $data_companies=$this->input->post('company');
             if(count($data_companies)==0)
             {
+                $ajax['status']=false;
                 $ajax['system_message']='At least one company needed';
                 $this->json_return($ajax);
             }
