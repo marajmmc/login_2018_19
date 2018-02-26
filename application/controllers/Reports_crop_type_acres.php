@@ -244,6 +244,7 @@ class Reports_crop_type_acres extends Root_Controller
                 if($prev_crop_name!=$result['crop_name'])
                 {
                     $prev_crop_name=$result['crop_name'];
+                    $crop_total['quantity']=number_format($crop_total['quantity'],2,'.','');
                     $items[]=$crop_total;
                     $crop_total['quantity']=0;
                 }
@@ -259,10 +260,12 @@ class Reports_crop_type_acres extends Root_Controller
             }
             $crop_total['quantity']+=$result['quantity'];
             $grand_total['quantity']+=$result['quantity'];
+            $result['quantity']=number_format($result['quantity'],2,'.','');
             $items[]=$result;
         }
-
+        $crop_total['quantity']=number_format($crop_total['quantity'],2,'.','');
         $items[]=$crop_total;
+        $grand_total['quantity']=number_format($grand_total['quantity'],2,'.','');
         $items[]=$grand_total;
         $this->json_return($items);
 
