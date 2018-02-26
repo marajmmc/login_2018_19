@@ -9,7 +9,15 @@ foreach($results as $result)
 {
     $system_types[$result['crop_id']][]=$result;
 }
+$results=Query_helper::get_info($CI->config->item('table_login_setup_classification_varieties'),array('id value','name text','crop_type_id'),array('status ="'.$CI->config->item('system_status_active').'"','whose ="ARM"'),0,0,array('ordering'));
+$system_varieties=array();
+foreach($results as $result)
+{
+    $system_varieties[$result['crop_type_id']][]=$result;
+}
+
 $system_divisions=Query_helper::get_info($CI->config->item('table_login_setup_location_divisions'),array('id value','name text'),array('status ="'.$CI->config->item('system_status_active').'"'));
+
 $results=Query_helper::get_info($CI->config->item('table_login_setup_location_zones'),array('id value','name text','division_id'),array('status ="'.$CI->config->item('system_status_active').'"'),0,0,array('ordering ASC'));
 $system_zones=array();
 foreach($results as $result)
@@ -48,13 +56,9 @@ foreach($items as $result)
     {
         $system_outlets[$result['district_id']][]=$result;
     }
-    else
-    {
-
-    }
-    $system_all_customers[]=$result;
+    $system_all_customers[$result['district_id']]=$result;
 }
-
+$system_warehouses=Query_helper::get_info($CI->config->item('table_login_basic_setup_warehouse'),array('id value','name text'),array('status ="'.$CI->config->item('system_status_active').'"'));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,12 +113,7 @@ foreach($items as $result)
 
         <!--    for jqx grid end-->
 
-        <?php
-        /*$system_divisions=array();
-        $system_zones=array();
-        $system_territories=array();
-        $system_districts=array();*/
-        ?>
+
         <script type="text/javascript">
             var base_url = "<?php echo base_url(); ?>";
             var display_date_format = "dd-M-yy";
@@ -123,16 +122,18 @@ foreach($items as $result)
             var resized_image_files=[];
             var system_crops=JSON.parse('<?php echo json_encode($system_crops);?>');
             var system_types=JSON.parse('<?php echo json_encode($system_types);?>');
+            var system_varieties=JSON.parse('<?php echo json_encode($system_varieties);?>');
             var system_divisions=JSON.parse('<?php echo json_encode($system_divisions);?>');
             var system_zones=JSON.parse('<?php echo json_encode($system_zones);?>');
             var system_territories=JSON.parse('<?php echo json_encode($system_territories);?>');
             var system_districts=JSON.parse('<?php echo json_encode($system_districts);?>');
-
-
-            //Added by saiful. Need to review..
-
+            var system_customers=JSON.parse('<?php echo json_encode($system_customers);?>');
+            var system_all_customers=JSON.parse('<?php echo json_encode($system_all_customers);?>');
             var system_outlets=JSON.parse('<?php echo json_encode($system_outlets);?>');
-
+            var system_warehouses=JSON.parse('<?php echo json_encode($system_warehouses);?>');
+            var system_report_color_grand='#AEC2DD';
+            var system_report_color_crop='#0CA2C5';
+            var system_report_color_type='#6CAB44';
         </script>
         <header class="hidden-print">
 
