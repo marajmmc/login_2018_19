@@ -127,6 +127,12 @@ foreach($items as $result)
             var system_zones=JSON.parse('<?php echo json_encode($system_zones);?>');
             var system_territories=JSON.parse('<?php echo json_encode($system_territories);?>');
             var system_districts=JSON.parse('<?php echo json_encode($system_districts);?>');
+
+
+            //Added by saiful. Need to review..
+
+            var system_outlets=JSON.parse('<?php echo json_encode($system_outlets);?>');
+
         </script>
         <header class="hidden-print">
 

@@ -28,6 +28,9 @@ $lang['ACTION_LOAD_MORE'] = 'Load More';
 $lang['ACTION_DOCUMENT'] = 'Documents';
 $lang['ACTION_ASSIGN_GROUP_ROLE'] = 'Assign Group Role';
 
+//Added by saiful
+$lang['ACTION_REPORT_VIEW'] = 'Report View';
+
 
 //****MODULE TASK//
 
@@ -192,3 +195,8 @@ $lang['LABEL_PERCENTAGE'] = 'Percentage';
 // SETUP CURRENCY - PREFERENCE
 $lang['LABEL_SYMBOL'] = 'Symbol';
 $lang['LABEL_AMOUNT_RATE_BUDGET'] = 'Budget Rate';
+
+//Outlet
+$lang['LABEL_OUTLET_NAME'] = 'Outlet';
+
+

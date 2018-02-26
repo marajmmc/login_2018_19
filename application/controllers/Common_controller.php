@@ -71,4 +71,33 @@ class Common_controller extends Root_Controller
         $this->json_return($ajax);
     }
 
+    public function get_dropdown_upazillas_by_outlet_id()
+    {
+        $outlet_id = $this->input->post('outlet_id');
+        $html_container_id='#upazilla_id';
+        if($this->input->post('html_container_id'))
+        {
+            $html_container_id=$this->input->post('html_container_id');
+        }
+        if($this->input->post('select_label'))
+        {
+            $data['select_label']=$this->input->post('select_label');
+        }
+
+        $this->db->from($this->config->item('table_login_csetup_cus_assign_upazillas').' au');
+        $this->db->select('upazilas.id value, upazilas.name text');
+        $this->db->join($this->config->item('table_login_setup_location_upazillas').' upazilas','upazilas.id = au.upazilla_id','INNER');
+        $this->db->where('au.customer_id',$outlet_id);
+        $this->db->where('au.revision',1);
+        $this->db->where('upazilas.status',$this->config->item('system_status_active'));
+        $this->db->order_by('upazilas.id','ASC');
+        $data['items']=$this->db->get()->result_array();
+        $ajax['status']=true;
+        $ajax['system_content'][]=array("id"=>$html_container_id,"html"=>$this->load->view("dropdown_with_select",$data,true));
+
+        $this->json_return($ajax);
+    }
+
+
+
 }
