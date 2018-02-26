@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Reports_crop_type_acres extends Root_Controller
+class Report_crop_type_acres extends Root_Controller
 {
     public $message;
     public $permissions;
@@ -9,8 +9,8 @@ class Reports_crop_type_acres extends Root_Controller
     {
         parent::__construct();
         $this->message='';
-        $this->permissions=User_helper::get_permission('Reports_crop_type_acres');
-        $this->controller_url='Reports_crop_type_acres';
+        $this->permissions=User_helper::get_permission('Report_crop_type_acres');
+        $this->controller_url='report_crop_type_acres';
         $this->locations=User_helper::get_locations();
         if(!($this->locations))
         {
