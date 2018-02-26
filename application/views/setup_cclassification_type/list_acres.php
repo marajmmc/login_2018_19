@@ -6,7 +6,7 @@ $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_BACK"),
     'href'=>site_url($CI->controller_url)
 );
-if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
+if((isset($CI->permissions['action7']) && ($CI->permissions['action7']==1)))
 {
     $action_buttons[]=array(
         'type'=>'button',

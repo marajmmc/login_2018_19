@@ -183,7 +183,7 @@ $CI = & get_instance();
                             <?php
                             foreach($upazillas as $upazilla)
                             {?>
-                                <option value="<?php echo $upazilla['value']?>" <?php if($upazilla['value']==$union['upazilla_id']){ echo "selected";}?>><?php echo $upazilla['text'];?></option>
+                                <option value="<?php echo $upazilla['value']?>"><?php echo $upazilla['text'];?></option>
                             <?php
                             }
                             ?>
@@ -226,7 +226,6 @@ $CI = & get_instance();
             $('#system_report_container').html('');
             $('#crop_type_id').val('');
             $('#crop_type_id_container').hide();
-            $('#upazilla_id_container').hide();
             var crop_id=$('#crop_id').val();
             if(crop_id>0)
             {
@@ -246,6 +245,7 @@ $CI = & get_instance();
             $('#territory_id').val('');
             $('#district_id').val('');
             $('#outlet_id').val('');
+            $('#upazilla_id').val('');
             var division_id=$('#division_id').val();
             $('#zone_id_container').hide();
             $('#territory_id_container').hide();
@@ -268,6 +268,7 @@ $CI = & get_instance();
             $('#territory_id').val('');
             $('#district_id').val('');
             $('#outlet_id').val('');
+            $('#upazilla_id').val('');
             var zone_id=$('#zone_id').val();
             $('#territory_id_container').hide();
             $('#district_id_container').hide();
@@ -287,6 +288,7 @@ $CI = & get_instance();
         {
             $('#district_id').val('');
             $('#outlet_id').val('');
+            $('#upazilla_id').val('');
             $('#outlet_id_container').hide();
             $('#district_id_container').hide();
             $('#upazilla_id_container').hide();
@@ -305,6 +307,7 @@ $CI = & get_instance();
         $(document).on('change','#district_id',function()
         {
             $('#outlet_id').val('');
+            $('#upazilla_id').val('');
             var district_id=$('#district_id').val();
             $('#outlet_id_container').hide();
             $('#upazilla_id_container').hide();
@@ -314,12 +317,8 @@ $CI = & get_instance();
                 {
                     $('#outlet_id_container').show();
                     $('#outlet_id').html(get_dropdown_with_select(system_outlets[district_id]));
-
-
-
                 }
                 $('#upazilla_id_container').show();
-
                 $.ajax({
                     url: base_url+"common_controller/get_dropdown_upazillas_by_districtid/",
                     type: 'POST',
@@ -341,15 +340,13 @@ $CI = & get_instance();
         $(document).off('change', '#outlet_id');
         $(document).on('change','#outlet_id',function()
         {
+            $('#upazilla_id').val('');
             $('#upazilla_id_container').hide();
 
             var outlet_id=$('#outlet_id').val();
             if(outlet_id>0)
             {
-                $('#upazilla_id').html('');
-
                 $('#upazilla_id_container').show();
-
                 $.ajax({
                     url: base_url+"common_controller/get_dropdown_upazillas_by_outlet_id/",
                     type: 'POST',

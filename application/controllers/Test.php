@@ -20,7 +20,15 @@ class Test extends CI_Controller {
 	 */
     public function index()
     {
-        echo System_helper::display_date_time(1517473991);
+        //Query_helper::update('arm_login_2018_19.test',array('user_updated'=>null),array('id =1'),false);
+        if(''==0)
+        {
+            echo 'yes';
+        }
+        else
+        {
+            echo 'no';
+        }
         //$this->user_order();
     }
 	private function user_order()

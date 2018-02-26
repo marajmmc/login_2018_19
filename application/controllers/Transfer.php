@@ -344,6 +344,7 @@ class Transfer extends CI_Controller
             $data['action4']=1;
             $data['action5']=1;
             $data['action6']=1;
+            $data['action7']=1;
             $data['revision']=1;
             $data['date_created']=$result['date_created'];
             $data['user_created']=$result['user_created'];
@@ -365,6 +366,7 @@ class Transfer extends CI_Controller
                 $data['action4']=1;
                 $data['action5']=1;
                 $data['action6']=1;
+                $data['action7']=1;
                 $data['revision']=1;
                 $data['date_created']=$result['date_created'];
                 $data['user_created']=$result['user_created'];

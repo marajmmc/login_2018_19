@@ -1,7 +1,7 @@
 <?php
 $config['offline_controllers']=array('home','sys_site_offline');
 $config['external_controllers']=array('home');//user can use them without login
-$config['system_max_actions']=7;
+$config['system_max_actions']=8;
 
 $config['system_status_active']='Active';
 $config['system_status_inactive']='In-Active';

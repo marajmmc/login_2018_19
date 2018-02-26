@@ -19,7 +19,7 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
     );
 }
 
-if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
+if(isset($CI->permissions['action7']) && ($CI->permissions['action7']==1))
 {
     $action_buttons[]=array(
         'type'=>'button',

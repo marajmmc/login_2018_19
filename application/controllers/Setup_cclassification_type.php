@@ -225,7 +225,7 @@ class Setup_cclassification_type extends Root_Controller
     }
     private function system_acres($id)
     {
-        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
+        if(isset($this->permissions['action7']) && ($this->permissions['action7']==1))
         {
             if($id>0)
             {
@@ -308,7 +308,7 @@ class Setup_cclassification_type extends Root_Controller
         $user = User_helper::get_user();
         $time=time();
         $items=$this->input->post('items');
-        if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+        if(!(isset($this->permissions['action7']) && ($this->permissions['action7']==1)))
         {
             $ajax['status']=false;
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
