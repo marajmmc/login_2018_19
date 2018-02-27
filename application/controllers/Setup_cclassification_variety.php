@@ -491,14 +491,25 @@ class Setup_cclassification_variety extends Root_Controller
         $id=$this->input->post('id');
 
         $this->db->select('ps.name,ps.id');
-        $this->db->select('p_item.masterfoil,p_item.foil,p_item.sticker');
         $this->db->from($this->config->item('table_login_setup_classification_variety_raw_config').' p_item');
+        $this->db->select('p_item.masterfoil master_foil,p_item.foil,p_item.sticker');
         $this->db->join($this->config->item('table_login_setup_classification_pack_size').' ps','ps.id=p_item.pack_size_id','INNER');
         $this->db->where('p_item.variety_id',$id);
         $this->db->where('p_item.revision',1);
         $this->db->order_by('p_item.pack_size_id','ASC');
         $results=$this->db->get()->result_array();
-        $this->json_return($results);
+        $items=array();
+        foreach($results as $result)
+        {
+            $item=array();
+            $item['id']=$result['id'];
+            $item['name']=$result['name'];
+            $item['master_foil']=number_format($result['master_foil'],3,'.','');
+            $item['foil']=number_format($result['foil'],3,'.','');
+            $item['sticker']=$result['sticker'];
+            $items[]=$item;
+        }
+        $this->json_return($items);
     }
     private function system_assign_price($id)
     {
@@ -724,7 +735,8 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->json_return($ajax);
             }
 
-            $data['title']='Change Pack Item Quantity to Pack Size ('.$data['item']['name'].') of Variety ('.$data['info']['name'].')';
+            //$data['title']='Change Pack Item Quantity to Pack Size ('.$data['item']['name'].') of Variety ('.$data['info']['name'].')';
+            $data['title']='Edit Variety: '.$data['info']['name'].', Pack size: '.$data['item']['name'].' (gm) ';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/assign_pack_item",$data,true));
             if($this->message)
@@ -787,7 +799,6 @@ class Setup_cclassification_variety extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_save()
     {
         $id = $this->input->post("id");
@@ -1208,7 +1219,37 @@ class Setup_cclassification_variety extends Root_Controller
     }
     private function check_validation_pack_item()
     {
-        return true;
+        $this->load->library('form_validation');
+        $id = $this->input->post("id");
+        if(!$id>0)
+        {
+            $this->form_validation->set_rules('item[pack_size_id]',$this->lang->line('LABEL_PACK_NAME'),'required');
+        }
+        $this->form_validation->set_rules('item[masterfoil]',$this->lang->line('LABEL_MASTERFOIL'),'required');
+        $this->form_validation->set_rules('item[foil]',$this->lang->line('LABEL_FOIL'),'required');
+        $this->form_validation->set_rules('item[sticker]',$this->lang->line('LABEL_STICKER'),'required');
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->message=validation_errors();
+            return false;
+        }
+        //
+        $item = $this->input->post("item");
+
+        if($item['masterfoil']>0 && ($item['foil']>0 || $item['sticker']>0))
+        {
+            $this->message='Invalid input. you can not use ( common foil or sticker ).';
+            return false;
+        }
+        else if(!$item['masterfoil']>0 && !($item['foil']>0 && $item['sticker']>0))
+        {
+            $this->message='Invalid input. Common foil or sticker is empty.';
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private function system_set_preference()

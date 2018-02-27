@@ -96,7 +96,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label for="masterfoil" class="control-label pull-right"><?php echo $this->lang->line('LABEL_MASTERFOIL');?></label>
+                <label for="masterfoil" class="control-label pull-right"><?php echo $this->lang->line('LABEL_MASTERFOIL');?> (gm)</label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <input type="text" name="item[masterfoil]" id="price" class="form-control float_type_positive" value="<?php echo $item['masterfoil'];?>"/>
@@ -104,7 +104,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label for="foil" class="control-label pull-right"><?php echo $this->lang->line('LABEL_FOIL');?></label>
+                <label for="foil" class="control-label pull-right"><?php echo $this->lang->line('LABEL_FOIL');?> (gm)</label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <input type="text" name="item[foil]" id="foil" class="form-control float_type_positive" value="<?php echo $item['foil'];?>"/>
@@ -112,7 +112,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label for="sticker" class="control-label pull-right"><?php echo $this->lang->line('LABEL_STICKER');?></label>
+                <label for="sticker" class="control-label pull-right"><?php echo $this->lang->line('LABEL_STICKER');?> (Pcs)</label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <input type="text" name="item[sticker]" id="sticker" class="form-control float_type_positive" value="<?php echo $item['sticker'];?>"/>

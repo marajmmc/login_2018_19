@@ -132,7 +132,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataFields: [
                 { name: 'id', type: 'int' },
                 { name: 'name', type: 'string' },
-                { name: 'masterfoil', type: 'string' },
+                { name: 'master_foil', type: 'string' },
                 { name: 'foil', type: 'string' },
                 { name: 'sticker', type: 'string' }
             ],
@@ -159,9 +159,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 autoheight: true,
                 columns: [
                     { text: '<?php echo $CI->lang->line('LABEL_PACK_NAME'); ?>', dataField: 'name',width:'25%'},
-                    { text: '<?php echo $CI->lang->line('LABEL_MASTERFOIL'); ?>', dataField: 'masterfoil',width:'25%',cellsalign:'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_FOIL'); ?>', dataField: 'foil',width:'25%',cellsalign:'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_STICKER'); ?>', dataField: 'sticker',width:'25%',cellsalign:'right'}
+                    { text: '<?php echo $CI->lang->line('LABEL_MASTERFOIL'); ?> (gm)', dataField: 'master_foil',width:'25%',cellsalign:'right'},
+                    { text: '<?php echo $CI->lang->line('LABEL_FOIL'); ?> (gm)', dataField: 'foil',width:'25%',cellsalign:'right'},
+                    { text: '<?php echo $CI->lang->line('LABEL_STICKER'); ?> (Pcs)', dataField: 'sticker',width:'25%',cellsalign:'right'}
                 ]
             });
     });

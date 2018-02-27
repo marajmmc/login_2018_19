@@ -76,7 +76,6 @@ $lang['MSG_FILE_TYPE_ERROR']='File Type Error';
 $lang['LABEL_YES'] = 'Yes';
 $lang['LABEL_NO'] = 'No';
 
-
 $lang['LABEL_YEAR'] = 'Year';
 $lang['LABEL_NAME'] = 'Name';
 $lang['LABEL_EMAIL'] = 'Email Address';
