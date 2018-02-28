@@ -141,7 +141,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         {
             var element = $(defaultHtml);
             element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
-            if(column=='quantity_acres' && <?php if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))){echo 'true';}else{echo 'false';} ?>)
+            if(column=='quantity_acres' && <?php if((isset($CI->permissions['action7']) && ($CI->permissions['action7']==1))){echo 'true';}else{echo 'false';} ?>)
             {
                 element.html('<div class="jqxgrid_input">'+value+'</div>');
             }
@@ -175,7 +175,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_UPAZILLA_NAME'); ?>', dataField: 'name',width:'200',editable:false},
                     { text: 'Quantity Acres', dataField: 'quantity_acres',cellsalign: 'right',cellsrenderer: cellsrenderer
                         <?php
-                        if((isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
+                        if((isset($CI->permissions['action7']) && ($CI->permissions['action7']==1)))
                         {
                             ?>
                         ,columntype:'custom',
