@@ -1241,7 +1241,7 @@ class Setup_cclassification_variety extends Root_Controller
             $this->message='Invalid input. you can not use ( common foil or sticker ).';
             return false;
         }
-        else if(!$item['masterfoil']>0 && !($item['foil']>0 && $item['sticker']>0))
+        else if(!($item['masterfoil']>0) && !($item['foil']>0 && $item['sticker']>0))
         {
             $this->message='Invalid input. Common foil or sticker is empty.';
             return false;
