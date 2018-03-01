@@ -8,7 +8,8 @@ class Transfer extends CI_Controller
         //$this->customers();
         //$this->variety();
         //$this->user_role_transfer();
-        $this->stock();
+        //$this->stock();
+        $this->crop_type_acres_kg();
     }
     private function insert($table_name,$data)
     {
@@ -693,5 +694,35 @@ class Transfer extends CI_Controller
             echo "Transfer Failed";
         }
 
+    }
+    private function crop_type_acres_kg()
+    {
+        $file_name=FCPATH.'images/quantity_kg_acre.csv';
+        $destination_tables=array(
+            'crop_type'=>$this->config->item('table_login_setup_classification_crop_types')
+        );
+        echo $file_name;
+        $i = 0;
+        if (($handle = fopen($file_name, "r")) !== FALSE)
+        {
+            while (($row = fgetcsv($handle, 1000, ",")) !== FALSE)
+            {
+                $i++;
+                if($i==1)
+                {
+                    continue;
+                }
+
+                $data=array();
+                $data['quantity_kg_acre']=$row[3];
+                echo '<br>'.$i.' '.$row[2].' '.$row[3].' '.Query_helper::update($destination_tables['crop_type'],$data,array("id = ".$row[2]),false);
+
+            }
+            fclose($handle);
+        }
+        else
+        {
+            echo 'error';
+        }
     }
 }

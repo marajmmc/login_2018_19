@@ -141,6 +141,7 @@ $lang['LABEL_UNION_NAME'] = 'Union';
 //crop classification
 $lang['LABEL_CROP_NAME']='Crop';
 $lang['LABEL_CROP_TYPE']='Crop Type';
+$lang['LABEL_CROP_TYPE_NAME']='Crop Type';
 $lang['LABEL_VARIETY']='Variety';
 $lang['LABEL_WHOSE']='Variety Category';
 $lang['LABEL_COMPETITOR_NAME']='Competitor';
