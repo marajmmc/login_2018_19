@@ -210,7 +210,7 @@ class Report_crop_type_acres extends Root_Controller
         $this->db->from($this->config->item('table_login_setup_classification_type_acres').' acres');
         $this->db->select('SUM(acres.quantity_acres) quantity',false);
         $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id=acres.type_id','INNER');
-        $this->db->select('crop_type.id crop_type_id, crop_type.name crop_type_name');
+        $this->db->select('crop_type.id crop_type_id, crop_type.name crop_type_name,crop_type.quantity_kg_acre');
         $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id=crop_type.crop_id','INNER');
         $this->db->select('crop.id crop_id, crop.name crop_name');
         $this->db->order_by('crop.id, crop_type.id');
@@ -232,10 +232,14 @@ class Report_crop_type_acres extends Root_Controller
         $crop_total['crop_name']='';
         $crop_total['crop_type_name']='Total Crop';
         $crop_total['quantity']=0;
+        $crop_total['quantity_kg_acre']='';
+        $crop_total['quantity_kg_acre_total']=0;
 
         $grand_total['crop_name']='Grand Total';
         $grand_total['crop_type_name']='';
         $grand_total['quantity']=0;
+        $grand_total['quantity_kg_acre']='';
+        $grand_total['quantity_kg_acre_total']=0;
         foreach($results as $result)
         {
 
@@ -245,8 +249,10 @@ class Report_crop_type_acres extends Root_Controller
                 {
                     $prev_crop_name=$result['crop_name'];
                     $crop_total['quantity']=number_format($crop_total['quantity'],2,'.','');
+                    $crop_total['quantity_kg_acre_total']=number_format($crop_total['quantity_kg_acre_total'],3,'.','');
                     $items[]=$crop_total;
                     $crop_total['quantity']=0;
+                    $crop_total['quantity_kg_acre_total']=0;
                 }
                 else
                 {
@@ -260,12 +266,19 @@ class Report_crop_type_acres extends Root_Controller
             }
             $crop_total['quantity']+=$result['quantity'];
             $grand_total['quantity']+=$result['quantity'];
+            $result['quantity_kg_acre_total']=$result['quantity']*$result['quantity_kg_acre'];
+            $crop_total['quantity_kg_acre_total']+=$result['quantity_kg_acre_total'];
+            $grand_total['quantity_kg_acre_total']+=$result['quantity_kg_acre_total'];
             $result['quantity']=number_format($result['quantity'],2,'.','');
+            $result['quantity_kg_acre']=number_format($result['quantity_kg_acre'],3,'.','');
+            $result['quantity_kg_acre_total']=number_format($result['quantity_kg_acre_total'],3,'.','');
             $items[]=$result;
         }
         $crop_total['quantity']=number_format($crop_total['quantity'],2,'.','');
+        $crop_total['quantity_kg_acre_total']=number_format($crop_total['quantity_kg_acre_total'],3,'.','');
         $items[]=$crop_total;
         $grand_total['quantity']=number_format($grand_total['quantity'],2,'.','');
+        $grand_total['quantity_kg_acre_total']=number_format($grand_total['quantity_kg_acre_total'],3,'.','');
         $items[]=$grand_total;
         $this->json_return($items);
 

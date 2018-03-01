@@ -20,16 +20,22 @@ class Test extends CI_Controller {
 	 */
     public function index()
     {
-        //Query_helper::update('arm_login_2018_19.test',array('user_updated'=>null),array('id =1'),false);
-        if(''==0)
+        $this->db->from('arm_login_2018_19.login_setup_classification_type_acres');
+        $this->db->select('type_id,COUNT(id) as num_record');
+        $this->db->group_by('type_id');
+        $results=$this->db->get()->result_array();
+        foreach($results as $result)
         {
-            echo 'yes';
+            if($result['num_record']!=498)
+            {
+                echo '<pre>';
+                print_r($result);
+                echo '</pre>';
+            }
+
         }
-        else
-        {
-            echo 'no';
-        }
-        //$this->user_order();
+
+
     }
 	private function user_order()
 	{
