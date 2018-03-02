@@ -594,27 +594,25 @@ class Setup_csetup_customer extends Root_Controller {
             $data['customer_info']['id']=$customer_id;
 
             $this->db->from($this->config->item('table_login_csetup_cus_info').' cus_info');
-            $this->db->select('cus_info.name,cus_info.type');
-            $this->db->select('u.id upazilla_id,u.name upazilla_name');
-            $this->db->join($this->config->item('table_login_setup_location_upazillas').' u','u.district_id = cus_info.district_id AND u.status ="' .$this->config->item('system_status_active').'"','INNER');
-            $this->db->join($this->config->item('table_login_csetup_cus_assign_upazillas').' cau','cau.upazilla_id=u.id AND cau.customer_id !='.$customer_id.' AND cau.revision=1','LEFT');
+            $this->db->select('cus_info.name,cus_info.type,cus_info.customer_id id');
+            $this->db->select('d.id district_id,d.territory_id territory_id');
+            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
             $this->db->where('cus_info.customer_id',$customer_id);
             $this->db->where('cus_info.revision',1);
-            $this->db->where('cau.upazilla_id',NULL);
-            $results=$this->db->get()->result_array();
-//            print_r($this->db->last_query());exit;
-            foreach($results as $result)
+            $result=$this->db->get()->row_array();
+            if(!$result)
             {
-                if($result['type']!=1)
-                {
-                    $ajax['status']=false;
-                    $ajax['system_message']='Please select a showroom to assign upazilla.';
-                    $this->json_return($ajax);
-                    die();
-                }
-                $data['customer_info']['name']=$result['name'];
-                $data['upazillas'][]=$result;
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Outlet.';
+                $this->json_return($ajax);
             }
+            else if($result['type']!=1)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Please select a showroom to assign upazilla.';
+                $this->json_return($ajax);
+            }
+            $data['customer_info']=$result;
             $data['assigned_upazillas']=array();
             $results=Query_helper::get_info($this->config->item('table_login_csetup_cus_assign_upazillas'),'*',array('customer_id ='.$customer_id,'revision=1'));
             if($results)
@@ -624,6 +622,12 @@ class Setup_csetup_customer extends Root_Controller {
                     $data['assigned_upazillas'][]=$result['upazilla_id'];
                 }
             }
+            $this->db->from($this->config->item('table_login_setup_location_upazillas').' u');
+            $this->db->select('u.id upazilla_id,u.name upazilla_name');
+            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = u.district_id','INNER');
+            $this->db->where('d.territory_id',$data['customer_info']['territory_id']);
+            $data['upazillas']=$this->db->get()->result_array();
+
             $data['title']="Assign upazillas for ".$data['customer_info']['name'];
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/assign_upazilla",$data,true));
