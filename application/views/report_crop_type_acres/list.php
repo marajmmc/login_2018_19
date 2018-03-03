@@ -121,7 +121,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                         { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
                         { text: 'Acres', dataField: 'quantity',cellsalign: 'right',width:'100',cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
                         { text: 'Seeds per Acre(kg)', dataField: 'quantity_kg_acre',cellsalign: 'right',width:'100',cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
-                        { text: 'Total Seeds(kg)', dataField: 'quantity_kg_acre_total',cellsalign: 'right',width:'200',cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer}
+                        { text: 'Total Seeds(kg)', dataField: 'quantity_kg_acre_total',cellsalign: 'right',width:'100',cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer}
                     ]
             });
     });

@@ -714,7 +714,7 @@ class Transfer extends CI_Controller
                 }
 
                 $data=array();
-                $data['quantity_kg_acre']=$row[3];
+                $data['quantity_kg_acre']=$row[3]/1000;
                 echo '<br>'.$i.' '.$row[2].' '.$row[3].' '.Query_helper::update($destination_tables['crop_type'],$data,array("id = ".$row[2]),false);
 
             }
