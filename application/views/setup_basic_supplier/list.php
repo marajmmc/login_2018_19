@@ -88,8 +88,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'name', type: 'string' },
                 { name: 'mobile_no', type: 'string' },
                 { name: 'address', type: 'string' },
-                { name: 'order', type: 'int' },
-                { name: 'status', type: 'int' }
+                { name: 'order', type: 'string' }
             ],
             id: 'id',
             url: url
@@ -118,8 +117,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width: '300',hidden: <?php echo $system_preference_items['name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_no',width: '100',cellsalign: 'right',hidden: <?php echo $system_preference_items['mobile_no']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_ADDRESS'); ?>', dataField: 'address',hidden: <?php echo $system_preference_items['address']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'order',width:'50',cellsalign: 'right',hidden: <?php echo $system_preference_items['order']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_STATUS'); ?>', dataField: 'status',width:'70',filtertype:'list',cellsalign: 'center',hidden: <?php echo $system_preference_items['status']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'order',width:'50',cellsalign: 'right',hidden: <?php echo $system_preference_items['order']?0:1;?>}
                 ]
             });
     });

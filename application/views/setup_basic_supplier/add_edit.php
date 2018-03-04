@@ -51,7 +51,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_MOBILE_NO');?><span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
-                <input type="text" name="item[mobile_number]" id="mobile_number" class="form-control text-right float_type_positive quantity" value="<?php echo $item['mobile_number'];?>"/>
+                <input type="text" name="item[mobile_number]" id="mobile_number" class="form-control" value="<?php echo $item['mobile_number'];?>"/>
             </div>
         </div>
         <div class="row show-grid">
