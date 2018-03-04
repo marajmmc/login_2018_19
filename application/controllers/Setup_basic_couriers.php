@@ -87,7 +87,7 @@ class Setup_basic_couriers extends Root_Controller
             $data['item']['name']='';
             $data['item']['description']='';
             $data['item']['status']='Active';
-            $data['item']['ordering']=0;
+            $data['item']['ordering']=99;
 
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
