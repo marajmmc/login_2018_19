@@ -56,6 +56,7 @@ $config['table_login_basic_setup_competitor'] = 'arm_login_2018_19.login_basic_s
 $config['table_login_basic_setup_principal'] = 'arm_login_2018_19.login_basic_setup_principal';
 $config['table_login_basic_setup_warehouse'] = 'arm_login_2018_19.login_basic_setup_warehouse';
 $config['table_login_basic_setup_supplier'] = 'arm_login_2018_19.login_basic_setup_supplier';
+$config['table_login_basic_setup_couriers'] = 'arm_login_2018_19.login_basic_setup_couriers';
 
 // Setup Bank
 $config['table_login_setup_bank'] = 'arm_login_2018_19.login_setup_bank';
@@ -65,3 +66,4 @@ $config['table_login_setup_bank_account_purpose'] = 'arm_login_2018_19.login_set
 // Currency & Direct Cost Item Setup
 $config['table_login_setup_currency'] = 'arm_login_2018_19.login_setup_currency';
 $config['table_login_setup_direct_cost_items'] = 'arm_login_2018_19.login_setup_direct_cost_items';
+
