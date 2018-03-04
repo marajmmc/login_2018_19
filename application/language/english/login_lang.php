@@ -29,6 +29,10 @@ $lang['ACTION_DOCUMENT'] = 'Documents';
 $lang['ACTION_ASSIGN_GROUP_ROLE'] = 'Assign Group Role';
 
 //Added by saiful
+$lang['ACTION_DISCOUNT'] = 'Discount';
+
+
+//Added by saiful
 $lang['ACTION_REPORT_VIEW'] = 'Report View';
 
 

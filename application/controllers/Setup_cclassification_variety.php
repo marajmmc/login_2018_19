@@ -76,6 +76,10 @@ class Setup_cclassification_variety extends Root_Controller
         {
             $this->system_edit_price_kg($id);
         }
+        elseif($action=='variety_pack_discount')
+        {
+            $this->system_variety_pack_discount($id,$id1);
+        }
         elseif($action=="save")
         {
             $this->system_save();
@@ -401,6 +405,7 @@ class Setup_cclassification_variety extends Root_Controller
             $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id = type.crop_id','INNER');
             $this->db->where('v.id',$item_id);
             $data['item']=$this->db->get()->row_array();
+
             if(!$data['item'])
             {
                 System_helper::invalid_try('Edit Non Exists (Variety Pricing).',$item_id);
@@ -481,7 +486,6 @@ class Setup_cclassification_variety extends Root_Controller
         $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
         $this->db->join($this->config->item('table_login_setup_classification_pack_size').' ps','ps.id=price.pack_size_id','INNER');
         $this->db->where('price.variety_id',$id);
-        $this->db->where('price.revision',1);
         $this->db->order_by('price.pack_size_id','ASC');
         $results=$this->db->get()->result_array();
         $this->json_return($results);
@@ -540,9 +544,9 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->json_return($ajax);
             }
 
-            $this->db->select('ps.id value,ps.name text');
-            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' ps');
-            $this->db->join($this->config->item('table_login_setup_classification_variety_price').' price','price.pack_size_id=ps.id AND price.variety_id='.$item_id.' AND price.revision=1','LEFT');
+            $this->db->select('pack.id value,pack.name text');
+            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' pack');
+            $this->db->join($this->config->item('table_login_setup_classification_variety_price').' price','price.pack_size_id=pack.id AND price.variety_id='.$item_id,'LEFT');
             $this->db->where('price.id IS NULL',null,false);
             $data['pack_sizes']=$this->db->get()->result_array();
 
@@ -659,13 +663,13 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->json_return($ajax);
             }
 
-            $this->db->select('ps.name');
+            $this->db->select('pack.name');
             $this->db->select('price.*');
-            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' ps');
-            $this->db->join($this->config->item('table_login_setup_classification_variety_price').' price','price.pack_size_id=ps.id','INNER');
+            $this->db->from($this->config->item('table_login_setup_classification_pack_size').' pack');
+            $this->db->join($this->config->item('table_login_setup_classification_variety_price').' price','price.pack_size_id=pack.id','INNER');
             $this->db->where('price.variety_id',$variety_id);
             $this->db->where('price.pack_size_id',$pack_size_id);
-            $this->db->where('price.revision',1);
+            //$this->db->where('price.revision',1);
             $data['item']=$this->db->get()->row_array();
             if(!$data['info'])
             {
@@ -799,6 +803,45 @@ class Setup_cclassification_variety extends Root_Controller
             $this->json_return($ajax);
         }
     }
+    private function system_variety_pack_discount($variety_id,$id)
+    {
+        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
+        {
+            if($id>0)
+            {
+                $pack_size_id=$id;
+            }
+            else
+            {
+                $pack_size_id=$this->input->post('id');
+            }
+            $data["item"] = Array
+            (
+                'id' => 0,
+                'pack_size_id' =>0
+            );
+
+            $data['outlets']=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('type =1'));
+            $data['title']="Variety Discount";
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/variety_pack_discount",$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/variety_pack_discount/'.$variety_id);
+            $this->json_return($ajax);
+
+
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+
     private function system_save()
     {
         $id = $this->input->post("id");
@@ -981,39 +1024,59 @@ class Setup_cclassification_variety extends Root_Controller
         }
         else
         {
-            $data=$this->input->post('item');
+            $item=$this->input->post('item');
 
             $this->db->trans_start();  //DB Transaction Handle START
+            $history_data=array();
             if($id>0)
             {
+                $data=array();
+                $data['price']=$item['price'];
+                $data['price_net']=$item['price_net'];
+                $data['user_updated']=$user->user_id;
+                $data['date_updated']=$time;
+                $this->db->set('revision_count', 'revision_count+1', FALSE);
+                Query_helper::update($this->config->item('table_login_setup_classification_variety_price'),$data,array('variety_id='.$item['variety_id'],'pack_size_id='.$id));
+
+                $data=array();
                 $data['pack_size_id']=$id;
+                $data['user_updated']=$user->user_id;
+                $data['date_updated']=$time;
+                $this->db->set('revision', 'revision+1', FALSE);
+                Query_helper::update($this->config->item('table_login_setup_classification_variety_price_history'),$data,array('variety_id='.$item['variety_id'],'pack_size_id='.$id));
 
-                $this->db->where('variety_id',$data['variety_id']);
-                $this->db->where('pack_size_id',$id);
-                $this->db->where('revision',1);
-                $this->db->set('user_updated',$user->user_id);
-                $this->db->set('date_updated',$time);
-                $this->db->update($this->config->item('table_login_setup_classification_variety_price'));
-
-                $this->db->where('variety_id',$data['variety_id']);
-                $this->db->where('pack_size_id',$id);
-                $this->db->set('revision','revision+1',FALSE);
-                $this->db->update($this->config->item('table_login_setup_classification_variety_price'));
+                $history_data['pack_size_id']=$id;
             }
             else
             {
-                $result=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_price'),'*',array('variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'revision=1'),1);
+                $result=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_price'),'*',array('variety_id='.$item['variety_id'],'pack_size_id='.$item['pack_size_id']),1);
                 if($result)
                 {
                     $ajax['status']=false;
                     $ajax['system_message']="Before this time someone set price to this Variety's Pack Size.";
                     $this->json_return($ajax);
                 }
+
+                $data=array();
+                $data['variety_id']=$item['variety_id'];
+                $data['pack_size_id']=$item['pack_size_id'];
+                $data['price']=$item['price'];
+                $data['price_net']=$item['price_net'];
+                $data['user_created']=$user->user_id;
+                $data['date_created']=$time;
+                $data['revision_count']=1;
+                Query_helper::add($this->config->item('table_login_setup_classification_variety_price'),$data,false);
+
+                $history_data['pack_size_id']=$item['pack_size_id'];
             }
-            $data['user_created']=$user->user_id;
-            $data['date_created']=$time;
-            $data['revision']=1;
-            Query_helper::add($this->config->item('table_login_setup_classification_variety_price'),$data,false);
+
+            $history_data['variety_id']=$item['variety_id'];
+            $history_data['price']=$item['price'];
+            $history_data['price_net']=$item['price_net'];
+            $history_data['user_created']=$user->user_id;
+            $history_data['date_created']=$time;
+            $history_data['revision']=1;
+            Query_helper::add($this->config->item('table_login_setup_classification_variety_price_history'),$history_data,false);
 
             $this->db->trans_complete();   //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)
@@ -1022,11 +1085,11 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
                 if($save_and_new==1)
                 {
-                    $this->system_assign_price($data['variety_id']);
+                    $this->system_assign_price($history_data['variety_id']);
                 }
                 else
                 {
-                    $this->system_pricing($data['variety_id']);
+                    $this->system_pricing($history_data['variety_id']);
                 }
             }
             else
@@ -1170,6 +1233,33 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->json_return($ajax);
             }
         }
+    }
+
+    public function get_farmer_type()
+    {
+        $html_container_id='#add_edit_variety_pack_discount_id';
+
+        //$variety_id = $this->input->post('variety_id');
+        //$warehouse_id = $this->input->post('warehouse_id');
+
+        $this->db->select('farmer_type.*');
+        $this->db->from($this->config->item('table_pos_setup_farmer_type').' farmer_type');
+        //$this->db->from($this->config->item('table_basic_setup_warehouse_crops').' wc');
+
+
+        //$this->db->where('stv.variety_id',$variety_id);
+        $this->db->where('farmer_type.status',$this->config->item('system_status_active'));
+
+        $data['items']=$this->db->get()->result_array();
+
+//        print_r($data['items']);
+//        exit;
+        $ajax['status']=true;
+        $ajax['system_content'][]=array("id"=>$html_container_id,"html"=>$this->load->view("add_edit_variety_pack_discount",$data,true));
+
+        print_r($ajax);
+        exit;
+        $this->json_return($ajax);
     }
     private function check_validation()
     {
