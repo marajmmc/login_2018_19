@@ -168,7 +168,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', hidden: <?php echo $items['name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',filtertype: 'list', hidden: <?php echo $items['crop_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', hidden: <?php echo $items['crop_type_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_WHOSE'); ?>', dataField: 'whose', hidden: <?php echo $items['whose']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_WHOSE'); ?>', dataField: 'whose',filtertype: 'list',hidden: <?php echo $items['whose']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?>', dataField: 'competitor_name', hidden: <?php echo $items['competitor_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_STOCK_ID'); ?>', dataField: 'stock_id', hidden: <?php echo $items['stock_id']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering']?0:1;?>},

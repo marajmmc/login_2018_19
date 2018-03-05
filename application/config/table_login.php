@@ -46,6 +46,11 @@ $config['table_login_setup_classification_pack_size'] = 'arm_login_2018_19.login
 $config['table_login_setup_classification_hybrid'] = 'arm_login_2018_19.login_setup_classification_hybrid';
 $config['table_login_setup_classification_variety_principals'] = 'arm_login_2018_19.login_setup_classification_variety_principals';
 $config['table_login_setup_classification_variety_price'] = 'arm_login_2018_19.login_setup_classification_variety_price';
+$config['table_login_setup_classification_variety_price_history'] = 'arm_login_2018_19.login_setup_classification_variety_price_history';
+
+$config['table_login_setup_classification_variety_outlet_discount'] = 'arm_login_2018_19.login_setup_classification_variety_outlet_discount';
+$config['table_login_setup_classification_variety_outlet_discount_histories'] = 'arm_login_2018_19.login_setup_classification_variety_outlet_discount_histories';
+
 $config['table_login_setup_classification_variety_raw_config'] = 'arm_login_2018_19.login_setup_classification_variety_raw_config';
 $config['table_login_setup_classification_type_acres'] = 'arm_login_2018_19.login_setup_classification_type_acres';
 

@@ -22,6 +22,15 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'data-action-link'=>site_url($CI->controller_url.'/index/edit_price/'.$item['id'])
     );
 }
+if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
+{
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>$CI->lang->line('ACTION_DISCOUNT'),
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/variety_pack_discount/'.$item['id'])
+    );
+}
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
 {
     $action_buttons[]=array(

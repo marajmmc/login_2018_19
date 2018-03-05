@@ -100,6 +100,10 @@ class Setup_cclassification_variety extends Root_Controller
         {
             $this->system_save_price_kg();
         }
+        elseif($action=="save_variety_pack_discount")
+        {
+            $this->system_save_variety_pack_discount();
+        }
         elseif($action=="set_preference")
         {
             $this->system_set_preference();
@@ -818,7 +822,8 @@ class Setup_cclassification_variety extends Root_Controller
             $data["item"] = Array
             (
                 'id' => 0,
-                'pack_size_id' =>0
+                'pack_size_id' =>$pack_size_id,
+                'variety_id' =>$variety_id
             );
 
             $data['outlets']=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('type =1'));
@@ -1235,30 +1240,183 @@ class Setup_cclassification_variety extends Root_Controller
         }
     }
 
+    private function system_save_variety_pack_discount()
+    {
+        $item=$this->input->post('item');
+        $items=$this->input->post('items');
+        $results=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_outlet_discount'),array('*'),array('outlet_id ='.$item['outlet_id'],'variety_id ='.$item['variety_id'],'pack_size_id ='.$item['pack_size_id']));
+        $old_items=array();
+        foreach($results as $result)
+        {
+            $old_items[$result['farmer_type_id']]=$result;
+        }
+
+        $id=count($old_items);
+        $user = User_helper::get_user();
+        $time=time();
+
+        /*--Start-- Permission Checking */
+        if($id>0)
+        {
+            if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+                $this->json_return($ajax);
+            }
+        }
+        else
+        {
+            if(!(isset($this->permissions['action1']) && ($this->permissions['action1']==1)))
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+                $this->json_return($ajax);
+            }
+        }
+
+        /*--End-- Permission Checking */
+
+        if(!$this->check_validation_variety_pack_discount())
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->message;
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $this->db->trans_start();  //DB Transaction Handle START
+            foreach($items as $key_outlet=>$outlet_info)
+            {
+                foreach($outlet_info as $key=>$discount_info)
+                {
+                    if(isset($old_items[$key]))
+                    {
+                        $data=array();
+                        $data['outlet_id']=$key_outlet;
+                        $data['variety_id']=$item['variety_id'];
+                        $data['pack_size_id']=$item['pack_size_id'];
+                        $data['farmer_type_id']=$key;
+                        $data['discount_percentage']=$discount_info['discount_percentage'];
+                        $data['expire_day']=$discount_info['expire_day'];
+                        if(!$discount_info['expire_day'])
+                        {
+                            $data['expire_time']=0;
+                        }
+                        else
+                        {
+                            $data['expire_time']=($time+($data['expire_day']*3600*24));
+                        }
+                        $data['user_updated']=$user->user_id;
+                        $data['date_updated']=$time;
+                        $this->db->set('revision_count', 'revision_count+1', FALSE);
+                        Query_helper::update($this->config->item('table_login_setup_classification_variety_outlet_discount'),$data,array('outlet_id='.$data['outlet_id'],'variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'farmer_type_id='.$data['farmer_type_id']));
+
+
+                        $data_history=array();
+                        $data_history['user_updated']=$user->user_id;
+                        $data_history['date_updated']=$time;
+
+
+                        $this->db->set('revision', 'revision+1', FALSE);
+                        Query_helper::update($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data_history,array('outlet_id='.$data['outlet_id'],'variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'farmer_type_id='.$data['farmer_type_id']));
+
+                        unset($data['revision_count']);
+                        $data['revision']=1;
+                        Query_helper::add($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data,false);
+                    }
+                    else
+                    {
+                        $data=array();
+                        $data['outlet_id']=$key_outlet;
+                        $data['variety_id']=$item['variety_id'];
+                        $data['pack_size_id']=$item['pack_size_id'];
+                        $data['farmer_type_id']=$key;
+                        $data['discount_percentage']=$discount_info['discount_percentage'];
+                        $data['expire_day']=$discount_info['expire_day'];
+                        if(!$discount_info['expire_day'])
+                        {
+                            $data['expire_time']=0;
+                        }
+                        else
+                        {
+                            $data['expire_time']=($time+($data['expire_day']*3600*24));
+                        }
+                        $data['revision_count']=1;
+                        $data['user_created']=$user->user_id;
+                        $data['date_created']=$time;
+                        Query_helper::add($this->config->item('table_login_setup_classification_variety_outlet_discount'),$data,false);
+                        unset($data['revision_count']);
+                        $data['revision']=1;
+                        Query_helper::add($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data,false);
+                    }
+                }
+
+            }
+
+            $this->db->trans_complete();   //DB Transaction Handle END
+            if ($this->db->trans_status() === TRUE)
+            {
+                $save_and_new=$this->input->post('system_save_new_status');
+                $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+                if($save_and_new==1)
+                {
+                    $this->system_variety_pack_discount($data['variety_id'],$item['pack_size_id']);
+                }
+                else
+                {
+                    $this->system_variety_pack_discount($data['variety_id'],$item['pack_size_id']);
+                }
+            }
+            else
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+                $this->json_return($ajax);
+            }
+        }
+    }
+
     public function get_farmer_type()
     {
         $html_container_id='#add_edit_variety_pack_discount_id';
-
-        //$variety_id = $this->input->post('variety_id');
-        //$warehouse_id = $this->input->post('warehouse_id');
+        $data['outlet_id'] = $this->input->post('outlet_id');
+        $variety_id = $this->input->post('variety_id');
+        $pack_size_id = $this->input->post('pack_size_id');
 
         $this->db->select('farmer_type.*');
         $this->db->from($this->config->item('table_pos_setup_farmer_type').' farmer_type');
-        //$this->db->from($this->config->item('table_basic_setup_warehouse_crops').' wc');
-
-
-        //$this->db->where('stv.variety_id',$variety_id);
         $this->db->where('farmer_type.status',$this->config->item('system_status_active'));
+        $result_farmer_type=$this->db->get()->result_array();
+        $results=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_outlet_discount'),array('*'),array('outlet_id ='.$data['outlet_id'],'variety_id ='.$variety_id,'pack_size_id ='.$pack_size_id));
+        $discount_info=array();
+        foreach($results as $result)
+        {
+            $discount_info[$result['farmer_type_id']]=$result;
+        }
+        $items=array();
+        foreach($result_farmer_type as $f_type)
+        {
+            if(isset($discount_info[$f_type['id']]))
+            {
+                $item['id']=$discount_info[$f_type['id']]['farmer_type_id'];
+                $item['name']=$f_type['name']; //this will be from discount info by query
+                $item['discount_percentage']=$discount_info[$f_type['id']]['discount_percentage'];
+                $item['expire_day']=$discount_info[$f_type['id']]['expire_day'];
 
-        $data['items']=$this->db->get()->result_array();
-
-//        print_r($data['items']);
-//        exit;
+            }
+            else
+            {
+                $item['id']=$f_type['id'];
+                $item['name']=$f_type['name'];
+                $item['discount_percentage']='';
+                $item['expire_day']='';
+            }
+            $items[]=$item;
+        }
+        $data['items']=$items;
         $ajax['status']=true;
-        $ajax['system_content'][]=array("id"=>$html_container_id,"html"=>$this->load->view("add_edit_variety_pack_discount",$data,true));
-
-        print_r($ajax);
-        exit;
+        $ajax['system_content'][]=array("id"=>$html_container_id,"html"=>$this->load->view($this->controller_url."/add_edit_variety_pack_discount",$data,true));
         $this->json_return($ajax);
     }
     private function check_validation()
@@ -1340,6 +1498,11 @@ class Setup_cclassification_variety extends Root_Controller
         {
             return true;
         }
+    }
+
+    private function check_validation_variety_pack_discount()
+    {
+        return true;
     }
 
     private function system_set_preference()
