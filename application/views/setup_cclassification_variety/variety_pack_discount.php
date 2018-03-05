@@ -60,33 +60,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 
         <div style="display: none" class="row show-grid" id="variety_pack_discount_container">
             <div id="add_edit_variety_pack_discount_id" class="col-sm-10 col-sm-offset-1">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th style="min-width: 150px;">Farmer Type</th>
-                        <th style="min-width: 150px;">Discount Percentage</th>
-                        <th style="min-width: 150px;">Number Of Days</th>
-                    </tr>
-                    </thead>
-                    <tbody>
 
-                    <tr>
-                        <td>
-                            <label>Farmer Type 1</label>
-                        </td>
-
-                        <td class="text-right">
-                            <input type="text" id="" class="form-control text-right float_type_positive discount_percentage" name="items[][discount_percentage]">
-                        </td>
-
-
-                        <td class="text-right">
-                            <input type="text" id="" class="form-control text-right float_type_positive number_of_days" name="items[][number_of_days]">
-                        </td>
-                    </tr>
-                    </tbody>
-
-                </table>
             </div>
         </div>
 
