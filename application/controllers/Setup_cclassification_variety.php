@@ -56,6 +56,10 @@ class Setup_cclassification_variety extends Root_Controller
         {
             $this->system_get_pack_items();
         }
+        elseif($action=='get_variety_discount_items')
+        {
+            $this->system_get_variety_discount_items();
+        }
         elseif($action=='assign_price')
         {
             $this->system_assign_price($id);
@@ -76,9 +80,13 @@ class Setup_cclassification_variety extends Root_Controller
         {
             $this->system_edit_price_kg($id);
         }
+//        elseif($action=='variety_pack_discount')
+//        {
+//            $this->system_variety_pack_discount($id,$id1);
+//        }
         elseif($action=='variety_pack_discount')
         {
-            $this->system_variety_pack_discount($id,$id1);
+            $this->system_variety_pack_discount($id);
         }
         elseif($action=="save")
         {
@@ -519,6 +527,34 @@ class Setup_cclassification_variety extends Root_Controller
         }
         $this->json_return($items);
     }
+
+    private function system_get_variety_discount_items()
+    {
+        $id=$this->input->post('id');
+
+        $this->db->select('price.pack_size_id');
+        $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
+
+        $this->db->select('pack.name pack_size_name');
+        $this->db->join($this->config->item('table_login_setup_classification_pack_size').' pack','pack.id=price.pack_size_id','INNER');
+
+        $this->db->where('price.variety_id',$id);
+
+        $results=$this->db->get()->result_array();
+        $items=array();
+        $item['id']=0;
+//        foreach($results as $result)
+//        {
+//            $item=array();
+//            $item['id']=$result['id'];
+//            $item['name']=$result['name'];
+//            $item['master_foil']=number_format($result['master_foil'],3,'.','');
+//            $item['foil']=number_format($result['foil'],3,'.','');
+//            $item['sticker']=$result['sticker'];
+//            $items[]=$item;
+//        }
+        $this->json_return($items);
+    }
     private function system_assign_price($id)
     {
         if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
@@ -807,33 +843,28 @@ class Setup_cclassification_variety extends Root_Controller
             $this->json_return($ajax);
         }
     }
-    private function system_variety_pack_discount($variety_id,$id)
+
+    private function system_variety_pack_discount($id)
     {
-        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
+        if(isset($this->permissions['action7']) && ($this->permissions['action7']==1))
         {
             if($id>0)
             {
-                $pack_size_id=$id;
+                $data['item_id']=$id;
             }
             else
             {
-                $pack_size_id=$this->input->post('id');
+                $data['item_id']=$this->input->post('id');
             }
-            $data["item"] = Array
-            (
-                'pack_size_id' =>$pack_size_id,
-                'variety_id' =>$variety_id
-            );
 
-            $data['outlets']=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('type =1'));
             $data['title']="Variety Discount";
             $ajax['status']=true;
-            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/variety_pack_discount",$data,true));
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/variety_discount_list",$data,true));
             if($this->message)
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url.'/index/variety_pack_discount/'.$variety_id.'/'.$pack_size_id);
+            $ajax['system_page_url']=site_url($this->controller_url);
             $this->json_return($ajax);
         }
         else
@@ -843,6 +874,44 @@ class Setup_cclassification_variety extends Root_Controller
             $this->json_return($ajax);
         }
     }
+
+
+//    private function system_variety_pack_discount($variety_id,$id)
+//    {
+//        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
+//        {
+//            if($id>0)
+//            {
+//                $pack_size_id=$id;
+//            }
+//            else
+//            {
+//                $pack_size_id=$this->input->post('id');
+//            }
+//            $data["item"] = Array
+//            (
+//                'pack_size_id' =>$pack_size_id,
+//                'variety_id' =>$variety_id
+//            );
+//
+//            $data['outlets']=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('type =1'));
+//            $data['title']="Variety Discount";
+//            $ajax['status']=true;
+//            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/variety_pack_discount",$data,true));
+//            if($this->message)
+//            {
+//                $ajax['system_message']=$this->message;
+//            }
+//            $ajax['system_page_url']=site_url($this->controller_url.'/index/variety_pack_discount/'.$variety_id.'/'.$pack_size_id);
+//            $this->json_return($ajax);
+//        }
+//        else
+//        {
+//            $ajax['status']=false;
+//            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+//            $this->json_return($ajax);
+//        }
+//    }
 
     private function system_save()
     {
