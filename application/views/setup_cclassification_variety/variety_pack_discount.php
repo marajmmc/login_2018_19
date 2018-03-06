@@ -4,7 +4,7 @@ $CI=& get_instance();
 $action_buttons=array();
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_BACK"),
-    //'href'=>site_url($CI->controller_url.'/index/pricing/'.$info['id'])
+    'href'=>site_url($CI->controller_url.'/index/pricing/'.$item['variety_id'])
 );
 $action_buttons[]=array(
     'type'=>'button',

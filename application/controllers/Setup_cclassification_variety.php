@@ -821,7 +821,6 @@ class Setup_cclassification_variety extends Root_Controller
             }
             $data["item"] = Array
             (
-                'id' => 0,
                 'pack_size_id' =>$pack_size_id,
                 'variety_id' =>$variety_id
             );
@@ -834,10 +833,8 @@ class Setup_cclassification_variety extends Root_Controller
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url.'/index/variety_pack_discount/'.$variety_id);
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/variety_pack_discount/'.$variety_id.'/'.$pack_size_id);
             $this->json_return($ajax);
-
-
         }
         else
         {
@@ -1277,6 +1274,24 @@ class Setup_cclassification_variety extends Root_Controller
 
         /*--End-- Permission Checking */
 
+        //checking incomplete entry
+
+        foreach($items as $outlet_info)
+        {
+            foreach($outlet_info as $discount_info)
+            {
+                if($discount_info['discount_percentage']>0 || $discount_info['expire_day']>0)
+                {
+                    if(!($discount_info['discount_percentage']>0) || !($discount_info['expire_day']>0))
+                    {
+                        $ajax['status']=false;
+                        $ajax['system_message']='Unfinished Discount Entry.';
+                        $this->json_return($ajax);
+                    }
+                }
+            }
+        }
+
         if(!$this->check_validation_variety_pack_discount())
         {
             $ajax['status']=false;
@@ -1286,52 +1301,62 @@ class Setup_cclassification_variety extends Root_Controller
         else
         {
             $this->db->trans_start();  //DB Transaction Handle START
-            foreach($items as $key_outlet=>$outlet_info)
+            foreach($items as $outlet_id=>$outlet_info)
             {
-                foreach($outlet_info as $key=>$discount_info)
+                foreach($outlet_info as $farmer_type_id=>$discount_info)
                 {
-                    if(isset($old_items[$key]))
+                    if(isset($old_items[$farmer_type_id]))
                     {
-                        $data=array();
-                        $data['outlet_id']=$key_outlet;
-                        $data['variety_id']=$item['variety_id'];
-                        $data['pack_size_id']=$item['pack_size_id'];
-                        $data['farmer_type_id']=$key;
-                        $data['discount_percentage']=$discount_info['discount_percentage'];
-                        $data['expire_day']=$discount_info['expire_day'];
-                        if(!$discount_info['expire_day'])
+                        if(($old_items[$farmer_type_id]['discount_percentage']!=$discount_info['discount_percentage']) || ($old_items[$farmer_type_id]['expire_day']!=$discount_info['expire_day']))
                         {
-                            $data['expire_time']=0;
+                            $data=array();
+                            $data['outlet_id']=$outlet_id;
+                            $data['variety_id']=$item['variety_id'];
+                            $data['pack_size_id']=$item['pack_size_id'];
+                            $data['farmer_type_id']=$farmer_type_id;
+                            $data['discount_percentage']=$discount_info['discount_percentage'];
+                            $data['expire_day']=$discount_info['expire_day'];
+                            if(!$discount_info['expire_day'])
+                            {
+                                $data['expire_time']=0;
+                            }
+                            else
+                            {
+                                if($discount_info['expire_day']==$old_items[$farmer_type_id]['expire_day'])
+                                {
+                                    $data['expire_time']=$old_items[$farmer_type_id]['expire_time'];
+                                }
+                                else
+                                {
+                                    $data['expire_time']=$time+$discount_info['expire_day']*3600*24;
+                                }
+                            }
+                            $data['user_updated']=$user->user_id;
+                            $data['date_updated']=$time;
+                            $this->db->set('revision_count', 'revision_count+1', FALSE);
+                            Query_helper::update($this->config->item('table_login_setup_classification_variety_outlet_discount'),$data,array('outlet_id='.$data['outlet_id'],'variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'farmer_type_id='.$data['farmer_type_id']));
+
+
+                            $data_history=array();
+                            $data_history['user_updated']=$user->user_id;
+                            $data_history['date_updated']=$time;
+
+
+                            $this->db->set('revision', 'revision+1', FALSE);
+                            Query_helper::update($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data_history,array('outlet_id='.$data['outlet_id'],'variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'farmer_type_id='.$data['farmer_type_id']));
+
+                            unset($data['revision_count']);
+                            $data['revision']=1;
+                            Query_helper::add($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data,false);
                         }
-                        else
-                        {
-                            $data['expire_time']=($time+($data['expire_day']*3600*24));
-                        }
-                        $data['user_updated']=$user->user_id;
-                        $data['date_updated']=$time;
-                        $this->db->set('revision_count', 'revision_count+1', FALSE);
-                        Query_helper::update($this->config->item('table_login_setup_classification_variety_outlet_discount'),$data,array('outlet_id='.$data['outlet_id'],'variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'farmer_type_id='.$data['farmer_type_id']));
-
-
-                        $data_history=array();
-                        $data_history['user_updated']=$user->user_id;
-                        $data_history['date_updated']=$time;
-
-
-                        $this->db->set('revision', 'revision+1', FALSE);
-                        Query_helper::update($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data_history,array('outlet_id='.$data['outlet_id'],'variety_id='.$data['variety_id'],'pack_size_id='.$data['pack_size_id'],'farmer_type_id='.$data['farmer_type_id']));
-
-                        unset($data['revision_count']);
-                        $data['revision']=1;
-                        Query_helper::add($this->config->item('table_login_setup_classification_variety_outlet_discount_histories'),$data,false);
                     }
                     else
                     {
                         $data=array();
-                        $data['outlet_id']=$key_outlet;
+                        $data['outlet_id']=$outlet_id;
                         $data['variety_id']=$item['variety_id'];
                         $data['pack_size_id']=$item['pack_size_id'];
-                        $data['farmer_type_id']=$key;
+                        $data['farmer_type_id']=$farmer_type_id;
                         $data['discount_percentage']=$discount_info['discount_percentage'];
                         $data['expire_day']=$discount_info['expire_day'];
                         if(!$discount_info['expire_day'])
@@ -1361,11 +1386,11 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
                 if($save_and_new==1)
                 {
-                    $this->system_variety_pack_discount($data['variety_id'],$item['pack_size_id']);
+                    $this->system_variety_pack_discount($item['variety_id'],$item['pack_size_id']);
                 }
                 else
                 {
-                    $this->system_variety_pack_discount($data['variety_id'],$item['pack_size_id']);
+                    $this->system_variety_pack_discount($item['variety_id'],$item['pack_size_id']);
                 }
             }
             else
@@ -1379,6 +1404,7 @@ class Setup_cclassification_variety extends Root_Controller
 
     public function get_farmer_type()
     {
+        $time=time();
         $html_container_id='#add_edit_variety_pack_discount_id';
         $data['outlet_id'] = $this->input->post('outlet_id');
         $variety_id = $this->input->post('variety_id');
@@ -1387,7 +1413,8 @@ class Setup_cclassification_variety extends Root_Controller
         $this->db->select('farmer_type.*');
         $this->db->from($this->config->item('table_pos_setup_farmer_type').' farmer_type');
         $this->db->where('farmer_type.status',$this->config->item('system_status_active'));
-        $result_farmer_type=$this->db->get()->result_array();
+        $results_farmer_type=$this->db->get()->result_array();
+
         $results=Query_helper::get_info($this->config->item('table_login_setup_classification_variety_outlet_discount'),array('*'),array('outlet_id ='.$data['outlet_id'],'variety_id ='.$variety_id,'pack_size_id ='.$pack_size_id));
         $discount_info=array();
         foreach($results as $result)
@@ -1395,15 +1422,22 @@ class Setup_cclassification_variety extends Root_Controller
             $discount_info[$result['farmer_type_id']]=$result;
         }
         $items=array();
-        foreach($result_farmer_type as $f_type)
+        foreach($results_farmer_type as $f_type)
         {
             if(isset($discount_info[$f_type['id']]))
             {
                 $item['id']=$discount_info[$f_type['id']]['farmer_type_id'];
-                $item['name']=$f_type['name']; //this will be from discount info by query
+                $item['name']=$f_type['name'];
                 $item['discount_percentage']=$discount_info[$f_type['id']]['discount_percentage'];
-                $item['expire_day']=$discount_info[$f_type['id']]['expire_day'];
 
+                if($discount_info[$f_type['id']]['expire_time']<$time)
+                {
+                    $item['expire_day']=0;
+                }
+                else
+                {
+                    $item['expire_day']=ceil(($discount_info[$f_type['id']]['expire_time']-$time)/86400);
+                }
             }
             else
             {
@@ -1481,7 +1515,6 @@ class Setup_cclassification_variety extends Root_Controller
             $this->message=validation_errors();
             return false;
         }
-        //
         $item = $this->input->post("item");
 
         if($item['masterfoil']>0 && ($item['foil']>0 || $item['sticker']>0))
