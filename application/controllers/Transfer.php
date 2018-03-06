@@ -9,7 +9,7 @@ class Transfer extends CI_Controller
         //$this->variety();
         //$this->user_role_transfer();
         //$this->stock();
-        $this->crop_type_acres_kg();
+        //$this->crop_type_acres_kg();
     }
     private function insert($table_name,$data)
     {
@@ -245,12 +245,17 @@ class Transfer extends CI_Controller
     {
         $source_tables=array(
             'varieties'=>'arm_ems.ems_varieties',
-            'varietiy_price_kg'=>'arm_ems.ems_variety_price_kg'
+            'varietiy_price_kg'=>'arm_ems.ems_variety_price_kg',
+            'variety_price'=>'arm_ems.ems_variety_price'
+
         );
         $destination_tables=array(
             'varieties'=>$this->config->item('table_login_setup_classification_varieties'),
-            'variety_principals'=>$this->config->item('table_login_setup_classification_variety_principals')
+            'variety_principals'=>$this->config->item('table_login_setup_classification_variety_principals'),
+            'variety_price'=>$this->config->item('table_login_setup_classification_variety_price'),
+            'variety_price_history'=>$this->config->item('table_login_setup_classification_variety_price_history')
         );
+        $variety_prices=Query_helper::get_info($source_tables['variety_price'],'*',array());
         $varieties_kg_price=array();
         $results=Query_helper::get_info($source_tables['varietiy_price_kg'],'*',array());
         foreach($results as $result)
@@ -280,31 +285,34 @@ class Transfer extends CI_Controller
                 $result['price_kg']=$varieties_kg_price[$result['id']];
                 $result['revision_price_kg']=1;
             }
+            Query_helper::add($destination_tables['varieties'],$result,false);
+            if($principal_id>0)
+            {
+                $data=array();
+                $data['variety_id']=$result['id'];
+                $data['principal_id']=$principal_id;
+                $data['name_import']=$name_import;
+                $data['date_created']=$result['date_created'];
+                $data['user_created']=$result['user_created'];
+                Query_helper::add($destination_tables['variety_principals'],$data,false);
+            }
 
-            if(!($this->insert($destination_tables['varieties'],$result)))
-            {
-                $this->db->trans_complete();
-                echo 'Failed';
-                exit();
-            }
-            else
-            {
-                if($principal_id>0)
-                {
-                    $data=array();
-                    $data['variety_id']=$result['id'];
-                    $data['principal_id']=$principal_id;
-                    $data['name_import']=$name_import;
-                    $data['date_created']=$result['date_created'];
-                    $data['user_created']=$result['user_created'];
-                    if(!($this->insert($destination_tables['variety_principals'],$data)))
-                    {
-                        $this->db->trans_complete();
-                        echo 'Failed';
-                        exit();
-                    }
-                }
-            }
+        }
+        foreach($variety_prices as $price)
+        {
+            $data=array();
+            $data['variety_id']=$price['variety_id'];
+            $data['pack_size_id']=$price['pack_size_id'];
+            $data['price']=$price['price']?$price['price']:0;
+            $data['price_net']=$price['price_net']?$price['price_net']:0;
+            $data['revision_count']=1;
+            $data['date_created']=$price['date_created'];
+            $data['user_created']=$price['user_created'];
+            Query_helper::add($destination_tables['variety_price'],$data,false);
+            unset($data['revision_count']);
+            $data['revision']=1;
+            Query_helper::add($destination_tables['variety_price_history'],$data,false);
+
         }
         $this->db->trans_complete();   //DB Transaction Handle END
         if ($this->db->trans_status() === TRUE)
