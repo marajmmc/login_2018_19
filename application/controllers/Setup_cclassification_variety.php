@@ -1401,14 +1401,7 @@ class Setup_cclassification_variety extends Root_Controller
                         $data['farmer_type_id']=$farmer_type_id;
                         $data['discount_percentage']=$discount_info['discount_percentage'];
                         $data['expire_day']=$discount_info['expire_day'];
-                        if(!$discount_info['expire_day'])
-                        {
-                            $data['expire_time']=0;
-                        }
-                        else
-                        {
-                            $data['expire_time']=($time+($data['expire_day']*3600*24));
-                        }
+                        $data['expire_time']=($time+($data['expire_day']*3600*24));
                         $data['revision_count']=1;
                         $data['user_created']=$user->user_id;
                         $data['date_created']=$time;
@@ -1443,15 +1436,14 @@ class Setup_cclassification_variety extends Root_Controller
             }
         }
     }
-    public function get_farmer_type()
+    public function get_variety_discount_farmer_type()
     {
         $time=time();
-        $html_container_id='#add_edit_variety_pack_discount_id';
         $data['outlet_id'] = $this->input->post('outlet_id');
         $variety_id = $this->input->post('variety_id');
         $pack_size_id = $this->input->post('pack_size_id');
 
-        if($data['outlet_id']!=0)
+        if($data['outlet_id']>0)
         {
             $valid_outlet=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$data['outlet_id'],'type =1'),1);
             if(!$valid_outlet)
@@ -1503,7 +1495,7 @@ class Setup_cclassification_variety extends Root_Controller
         }
         $data['items']=$items;
         $ajax['status']=true;
-        $ajax['system_content'][]=array("id"=>$html_container_id,"html"=>$this->load->view($this->controller_url."/variety_discount_farmer_type",$data,true));
+        $ajax['system_content'][]=array("id"=>'#add_edit_variety_pack_discount_id',"html"=>$this->load->view($this->controller_url."/variety_discount_farmer_type",$data,true));
         $this->json_return($ajax);
     }
     private function check_validation()

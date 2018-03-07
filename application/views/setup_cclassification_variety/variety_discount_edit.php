@@ -78,10 +78,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
         </div>
 
-        <div style="display: none" class="row show-grid" id="variety_pack_discount_container">
-            <div id="add_edit_variety_pack_discount_id" class="col-sm-10 col-sm-offset-1">
+        <div style="display: none" id="add_edit_variety_pack_discount_id" class="row show-grid col-sm-10 col-sm-offset-1">
 
-            </div>
         </div>
     </div>
     <div class="clearfix"></div>
@@ -94,17 +92,17 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         $(document).off('change','#outlet_id');
         $(document).on("change","#outlet_id",function()
         {
-            $("#add_edit_variety_pack_discount_id").val('');
-            $('#variety_pack_discount_container').hide();
+            $("#add_edit_variety_pack_discount_id").html('');
+            $('#add_edit_variety_pack_discount_id').hide();
 
             var outlet_id=$('#outlet_id').val();
             var variety_id='<?php echo $item['variety_id'];?>';
             var pack_size_id='<?php echo $item['pack_size_id'];?>';
             if(outlet_id>=0)
             {
-                $('#variety_pack_discount_container').show();
+                $('#add_edit_variety_pack_discount_id').show();
                 $.ajax({
-                    url:"<?php echo site_url($CI->controller_url.'/get_farmer_type/');?>",
+                    url:"<?php echo site_url($CI->controller_url.'/get_variety_discount_farmer_type/');?>",
                     type: 'POST',
                     datatype: "JSON",
                     data:{outlet_id:outlet_id,variety_id:variety_id,pack_size_id:pack_size_id},
