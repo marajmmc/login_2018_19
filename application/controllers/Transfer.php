@@ -6,7 +6,7 @@ class Transfer extends CI_Controller
     {
         //$this->users();
         //$this->customers();
-        //$this->variety();
+        $this->variety();
         //$this->user_role_transfer();
         //$this->stock();
         //$this->crop_type_acres_kg();
@@ -30,7 +30,6 @@ class Transfer extends CI_Controller
             'setup_user'=>'arm_login.setup_user',
             'setup_user_info'=>'arm_login.setup_user_info',
             'setup_user_area'=>'arm_ems.ems_system_assigned_area',
-            'setup_users_other_sites'=>'arm_login.setup_users_other_sites',
             'setup_users_company'=>'arm_login.login_setup_users_company'
         );
         $destination_tables=array(
@@ -68,18 +67,11 @@ class Transfer extends CI_Controller
 
         foreach($users as $user)
         {
-            if($user['id']==1)
-            {
-                $user['password']=md5("Arm!@#$");
-            }
-
-            if(!($this->insert($destination_tables['setup_user'],$user)))
-            {
-                $this->db->trans_complete();
-                echo 'Failed';
-                exit();
-            }
-            else
+//            if($user['id']==1)
+//            {
+//                $user['password']=md5("Arm!@#$");
+//            }
+            Query_helper::add($destination_tables['setup_user'],$user,false);
             {
                 $data_user_info=array();
                 if(isset($user_infos[$user['id']]))
@@ -98,24 +90,14 @@ class Transfer extends CI_Controller
                     $data_user_info['user_id']=$user['id'];
                     $data_user_info['revision']=1;
                 }
+                Query_helper::add($destination_tables['setup_user_info'],$data_user_info,false);
 
-                if(!($this->insert($destination_tables['setup_user_info'],$data_user_info)))
-                {
-                    $this->db->trans_complete();
-                    echo 'Failed';
-                    exit();
-                }
                 //user area
                 if(isset($user_areas[$user['id']]))
                 {
                     $data_user_area=$user_areas[$user['id']];
                     unset($data_user_area['id']);
-                    if(!($this->insert($destination_tables['setup_user_area'],$data_user_area)))
-                    {
-                        $this->db->trans_complete();
-                        echo 'Failed';
-                        exit();
-                    }
+                    Query_helper::add($destination_tables['setup_user_area'],$data_user_area,false);
                 }
                 if(isset($user_companies[$user['id']]))
                 {
@@ -124,12 +106,7 @@ class Transfer extends CI_Controller
                     foreach($data_user_companies_array  as $data_user_companies)
                     {
                         unset($data_user_companies['id']);
-                        if(!($this->insert($destination_tables['setup_users_company'],$data_user_companies)))
-                        {
-                            $this->db->trans_complete();
-                            echo 'Failed';
-                            exit();
-                        }
+                        Query_helper::add($destination_tables['setup_users_company'],$data_user_companies,false);
                     }
                 }
             }
@@ -280,44 +257,43 @@ class Transfer extends CI_Controller
                 $result['hybrid']=2;
             }
 
-            if(isset($varieties_kg_price[$result['id']]))
+            if(isset($varieties_kg_price[$result['id']])&&($varieties_kg_price[$result['id']]>0))
             {
                 $result['price_kg']=$varieties_kg_price[$result['id']];
                 $result['revision_price_kg']=1;
             }
-
-            if(!($this->insert($destination_tables['varieties'],$result)))
-            {
-                $this->db->trans_complete();
-                echo 'Failed';
-                exit();
-            }
             else
             {
-                if($principal_id>0)
-                {
-                    $data=array();
-                    $data['variety_id']=$result['id'];
-                    $data['principal_id']=$principal_id;
-                    $data['name_import']=$name_import;
-                    $data['date_created']=$result['date_created'];
-                    $data['user_created']=$result['user_created'];
-                    if(!($this->insert($destination_tables['variety_principals'],$data)))
-                    {
-                        $this->db->trans_complete();
-                        echo 'Failed';
-                        exit();
-                    }
-                }
+                $result['price_kg']=0;
+                $result['revision_price_kg']=0;
             }
+            Query_helper::add($destination_tables['varieties'],$result,false);
+            if($principal_id>0)
+            {
+                $data=array();
+                $data['variety_id']=$result['id'];
+                $data['principal_id']=$principal_id;
+                $data['name_import']=$name_import;
+                $data['date_created']=$result['date_created'];
+                $data['user_created']=$result['user_created'];
+                Query_helper::add($destination_tables['variety_principals'],$data,false);
+            }
+
         }
         foreach($variety_prices as $price)
         {
             $data=array();
             $data['variety_id']=$price['variety_id'];
             $data['pack_size_id']=$price['pack_size_id'];
-            $data['price']=$price['price'];
-            $data['price_net']=$price['price'];
+            $data['price']=$price['price']?$price['price']:0;
+            $data['price_net']=$price['price_net']?$price['price_net']:0;
+            $data['revision_count']=1;
+            $data['date_created']=$price['date_created'];
+            $data['user_created']=$price['user_created'];
+            Query_helper::add($destination_tables['variety_price'],$data,false);
+            unset($data['revision_count']);
+            $data['revision']=1;
+            Query_helper::add($destination_tables['variety_price_history'],$data,false);
 
         }
         $this->db->trans_complete();   //DB Transaction Handle END
