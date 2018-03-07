@@ -49,7 +49,6 @@ class Sys_other_sites extends Root_Controller
             $this->system_list($id);
         }
     }
-
     private function system_list()
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
@@ -74,11 +73,9 @@ class Sys_other_sites extends Root_Controller
     }
     private function system_get_items()
     {
-        $items=Query_helper::get_info($this->config->item('table_login_system_other_sites'),array('id','short_name','site_url','status','ordering'),array('status !="'.$this->config->item('system_status_delete').'"'));
+        $items=Query_helper::get_info($this->config->item('table_login_system_other_sites'),array('id','short_name','full_name','site_url','status','ordering'),array('status !="'.$this->config->item('system_status_delete').'"'),'','',array('ordering'));
         $this->json_return($items);
-
     }
-
     private function system_add()
     {
         if(isset($this->permissions['action1'])&&($this->permissions['action1']==1))
@@ -205,7 +202,6 @@ class Sys_other_sites extends Root_Controller
         }
 
     }
-
     private function system_save()
     {
         $id = $this->input->post("id");

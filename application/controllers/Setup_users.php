@@ -1069,7 +1069,7 @@ class Setup_users extends Root_Controller
             }
             $data['user_info']=Query_helper::get_info($this->config->item('table_login_setup_user_info'),'*',array('user_id ='.$user_id,'revision =1'),1);
             $data['title']="Assign Sites for ".$data['user_info']['name'];
-            $data['sites']=Query_helper::get_info($this->config->item('table_login_system_other_sites'),'*',array('status ="'.$this->config->item('system_status_active').'"'));
+            $data['sites']=Query_helper::get_info($this->config->item('table_login_system_other_sites'),'*',array('status ="'.$this->config->item('system_status_active').'"'),'','',array('ordering'));
             $results=Query_helper::get_info($this->config->item('table_login_setup_users_other_sites'),'*',array('user_id ='.$user_id,'revision =1'));
             $data['assigned_sites']=array();
             foreach($results as $result)

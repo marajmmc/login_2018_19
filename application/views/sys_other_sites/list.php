@@ -87,6 +87,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataFields: [
                 { name: 'id', type: 'int' },
                 { name: 'short_name', type: 'string' },
+                { name: 'full_name', type: 'string' },
                 { name: 'site_url', type: 'string' },
                 { name: 'ordering', type: 'int' },
                 { name: 'status', type: 'string' }
@@ -114,10 +115,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?>', dataField: 'short_name'},
+                    { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id', width: '40'},
+                    { text: '<?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?>', dataField: 'short_name', width: '80'},
+                    { text: '<?php echo $CI->lang->line('LABEL_FULL_NAME'); ?>', dataField: 'full_name', width: '250'},
                     { text: '<?php echo $CI->lang->line('LABEL_SITE_URL'); ?>', dataField: 'site_url'},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'150',cellsalign: 'right'},
-                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right'}
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'40',cellsalign: 'right'},
+                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'80',cellsalign: 'right'}
                 ]
             });
     });
