@@ -104,13 +104,13 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div class="col-sm-4 col-xs-8">
             <label class="control-label">
                 <?php
-                if($item['price_kg']==null)
+                if($item['revision_price_kg']>0)
                 {
-                    echo 'Not Assigned';
+                    echo $item['price_kg'];
                 }
                 else
                 {
-                    echo $item['price_kg'];
+                    echo 'Not Assigned';
                 }
                 ?>
             </label>
@@ -155,6 +155,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'price_net', type: 'string' }
             ],
             id: 'id',
+            type: 'POST',
             url: url,
             data:{id:<?php echo $item['id']; ?>}
         };
