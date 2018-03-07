@@ -30,7 +30,6 @@ class Transfer extends CI_Controller
             'setup_user'=>'arm_login.setup_user',
             'setup_user_info'=>'arm_login.setup_user_info',
             'setup_user_area'=>'arm_ems.ems_system_assigned_area',
-            'setup_users_other_sites'=>'arm_login.setup_users_other_sites',
             'setup_users_company'=>'arm_login.login_setup_users_company'
         );
         $destination_tables=array(
@@ -68,18 +67,11 @@ class Transfer extends CI_Controller
 
         foreach($users as $user)
         {
-            if($user['id']==1)
-            {
-                $user['password']=md5("Arm!@#$");
-            }
-
-            if(!($this->insert($destination_tables['setup_user'],$user)))
-            {
-                $this->db->trans_complete();
-                echo 'Failed';
-                exit();
-            }
-            else
+//            if($user['id']==1)
+//            {
+//                $user['password']=md5("Arm!@#$");
+//            }
+            Query_helper::add($destination_tables['setup_user'],$user,false);
             {
                 $data_user_info=array();
                 if(isset($user_infos[$user['id']]))
@@ -98,24 +90,14 @@ class Transfer extends CI_Controller
                     $data_user_info['user_id']=$user['id'];
                     $data_user_info['revision']=1;
                 }
+                Query_helper::add($destination_tables['setup_user_info'],$data_user_info,false);
 
-                if(!($this->insert($destination_tables['setup_user_info'],$data_user_info)))
-                {
-                    $this->db->trans_complete();
-                    echo 'Failed';
-                    exit();
-                }
                 //user area
                 if(isset($user_areas[$user['id']]))
                 {
                     $data_user_area=$user_areas[$user['id']];
                     unset($data_user_area['id']);
-                    if(!($this->insert($destination_tables['setup_user_area'],$data_user_area)))
-                    {
-                        $this->db->trans_complete();
-                        echo 'Failed';
-                        exit();
-                    }
+                    Query_helper::add($destination_tables['setup_user_area'],$data_user_area,false);
                 }
                 if(isset($user_companies[$user['id']]))
                 {
@@ -124,12 +106,7 @@ class Transfer extends CI_Controller
                     foreach($data_user_companies_array  as $data_user_companies)
                     {
                         unset($data_user_companies['id']);
-                        if(!($this->insert($destination_tables['setup_users_company'],$data_user_companies)))
-                        {
-                            $this->db->trans_complete();
-                            echo 'Failed';
-                            exit();
-                        }
+                        Query_helper::add($destination_tables['setup_users_company'],$data_user_companies,false);
                     }
                 }
             }
