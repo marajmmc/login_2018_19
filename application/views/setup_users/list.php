@@ -123,24 +123,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     <?php
     if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
     {
-        ?>
-        <div class="col-xs-12" style="margin-bottom: 20px;">
-            <div class="col-xs-12" style="margin-bottom: 20px;">
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['employee_id']){echo 'checked';}?> value="employee_id"><?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['user_name']){echo 'checked';}?> value="user_name"><?php echo $CI->lang->line('LABEL_USERNAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['email']){echo 'checked';}?> value="email"><?php echo $CI->lang->line('LABEL_EMAIL'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['designation_name']){echo 'checked';}?> value="designation_name"><?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['department_name']){echo 'checked';}?> value="department_name"><?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['mobile_no']){echo 'checked';}?> value="mobile_no"><?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['blood_group']){echo 'checked';}?> value="blood_group"><?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['group_name']){echo 'checked';}?> value="group_name"><?php echo $CI->lang->line('LABEL_USER_GROUP'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column" <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
-            </div>
-        </div>
-    <?php
+        $CI->load->view('preference',array('system_preference_items'=>$system_preference_items));
     }
     ?>
     <div class="col-xs-12" id="system_jqx_container">
@@ -162,15 +145,16 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataFields: [
                 { name: 'id', type: 'int' },
                 { name: 'employee_id', type: 'string' },
-                { name: 'user_name', type: 'string' },
+                { name: 'username', type: 'string' },
                 { name: 'name', type: 'string' },
-                { name: 'email', type: 'string' },
+                { name: 'user_group', type: 'string' },
+                { name: 'user_area', type: 'string' },
+                { name: 'other_sites', type: 'string' },
                 { name: 'designation_name', type: 'string' },
                 { name: 'department_name', type: 'string' },
                 { name: 'mobile_no', type: 'string' },
+                { name: 'email', type: 'string' },
                 { name: 'blood_group', type: 'string' },
-                { name: 'group_name', type: 'string' },
-                { name: 'ordering', type: 'int' },
                 { name: 'status', type: 'string' }
             ],
             id: 'id',
@@ -196,18 +180,19 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',width:'50',cellsAlign:'right', hidden: <?php echo $items['id']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?>', dataField: 'employee_id',width:'100', hidden: <?php echo $items['employee_id']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_USERNAME'); ?>', dataField: 'user_name',width:'150', hidden: <?php echo $items['user_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'300', hidden: <?php echo $items['name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_EMAIL'); ?>', dataField: 'email',width:'200', hidden: <?php echo $items['email']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?>', dataField: 'designation_name',width:'200', hidden: <?php echo $items['designation_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?>', dataField: 'department_name',width:'200', hidden: <?php echo $items['department_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_no', hidden: <?php echo $items['mobile_no']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?>', dataField: 'blood_group',filtertype: 'list', hidden: <?php echo $items['blood_group']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_USER_GROUP'); ?>', dataField: 'group_name',filtertype: 'list', hidden: <?php echo $items['group_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $items['status']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',pinned:true,width:'40',cellsAlign:'right', hidden: <?php echo $system_preference_items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_EMPLOYEE_ID'); ?>', dataField: 'employee_id',pinned:true,width:'40', hidden: <?php echo $system_preference_items['employee_id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_USERNAME'); ?>', dataField: 'username',pinned:true,width:'100', hidden: <?php echo $system_preference_items['username']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'150', hidden: <?php echo $system_preference_items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_USER_GROUP'); ?>', dataField: 'user_group',filtertype: 'list',width:'100', hidden: <?php echo $system_preference_items['user_group']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_USER_AREA'); ?>', dataField: 'user_area',width:'150', hidden: <?php echo $system_preference_items['user_area']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_OTHER_SITES'); ?>', dataField: 'other_sites',width:'150', hidden: <?php echo $system_preference_items['other_sites']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?>', dataField: 'designation_name',filtertype: 'list',width:'150', hidden: <?php echo $system_preference_items['designation_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?>', dataField: 'department_name',filtertype: 'list',width:'150', hidden: <?php echo $system_preference_items['department_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_no',width:'120', hidden: <?php echo $system_preference_items['mobile_no']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_EMAIL'); ?>', dataField: 'email',width:'200', hidden: <?php echo $system_preference_items['email']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?>', dataField: 'blood_group',filtertype: 'list',width:'40', hidden: <?php echo $system_preference_items['blood_group']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'70',cellsalign: 'right', hidden: <?php echo $system_preference_items['status']?0:1;?>}
 
                 ]
             });

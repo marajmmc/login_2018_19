@@ -121,38 +121,7 @@ class Setup_users extends Root_Controller
     {
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
-            $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['items']['id']= 1;
-            $data['items']['employee_id']= 1;
-            $data['items']['user_name']= 1;
-            $data['items']['name']= 1;
-            $data['items']['email']= 1;
-            $data['items']['designation_name']= 1;
-            $data['items']['department_name']= 1;
-            $data['items']['mobile_no']= 1;
-            $data['items']['blood_group']= 1;
-            $data['items']['group_name']= 1;
-            $data['items']['ordering']= 1;
-            $data['items']['status']= 1;
-            if($result)
-            {
-                if($result['preferences']!=null)
-                {
-                    $data['preferences']=json_decode($result['preferences'],true);
-                    foreach($data['items'] as $key=>$value)
-                    {
-                        if(isset($data['preferences'][$key]))
-                        {
-                            $data['items'][$key]=$value;
-                        }
-                        else
-                        {
-                            $data['items'][$key]=0;
-                        }
-                    }
-                }
-            }
+            $data['system_preference_items']=$this->get_preference();
 
             $data['title']='List of Users';
             $ajax['status']=true;
@@ -174,11 +143,74 @@ class Setup_users extends Root_Controller
     private function system_get_items()
     {
         $user = User_helper::get_user();
+        $this->db->from($this->config->item('table_login_setup_users_other_sites').' users_other_sites');
+        $this->db->select('users_other_sites.user_id');
+        $this->db->join($this->config->item('table_login_system_other_sites').' other_sites','other_sites.id=users_other_sites.site_id','INNER');
+        $this->db->select('other_sites.short_name');
+        $this->db->where('users_other_sites.revision',1);
+        $results=$this->db->get()->result_array();
+        $users_other_site=array();
+        foreach($results as $result)
+        {
+            if(isset($users_other_site[$result['user_id']]['sites']))
+            {
+                $users_other_site[$result['user_id']]['sites'].=', '.$result['short_name'];
+            }
+            else
+            {
+                $users_other_site[$result['user_id']]['sites']=$result['short_name'];;
+            }
+        }
+
+        $this->db->from($this->config->item('table_login_setup_user_area').' user_area');
+        $this->db->select('user_area.*');
+        $this->db->join($this->config->item('table_login_setup_location_divisions').' divisions','divisions.id=user_area.division_id','LEFT');
+        $this->db->select('divisions.name division_name');
+        $this->db->join($this->config->item('table_login_setup_location_zones').' zones','zones.id=user_area.zone_id','LEFT');
+        $this->db->select('zones.name zone_name');
+        $this->db->join($this->config->item('table_login_setup_location_territories').' territories','territories.id=user_area.territory_id','LEFT');
+        $this->db->select('territories.name territory_name');
+        $this->db->join($this->config->item('table_login_setup_location_districts').' districts','districts.id=user_area.district_id','LEFT');
+        $this->db->select('districts.name district_name');
+        $this->db->join($this->config->item('table_login_setup_location_upazillas').' upazillas','upazillas.id=user_area.upazilla_id','LEFT');
+        $this->db->select('upazillas.name upazilla_name');
+        $this->db->join($this->config->item('table_login_setup_location_unions').' unions','unions.id=user_area.union_id','LEFT');
+        $this->db->select('unions.name union_name');
+        $this->db->where('user_area.revision',1);
+        $results=$this->db->get()->result_array();
+        $users_areas=array();
+        foreach($results as $result)
+        {
+            if($result['division_id']>0)
+            {
+                $users_areas[$result['user_id']]='Division - '.$result['division_name'];
+                if($result['zone_id']>0)
+                {
+                    $users_areas[$result['user_id']]='Zone - '.$result['zone_name'];
+                    if($result['territory_id']>0)
+                    {
+                        $users_areas[$result['user_id']]='Territory - '.$result['territory_name'];
+                        if($result['district_id']>0)
+                        {
+                            $users_areas[$result['user_id']]='Territory - '.$result['district_name'];
+                            if($result['upazilla_id']>0)
+                            {
+                                $users_areas[$result['user_id']]='Upazilla - '.$result['upazilla_name'];
+                                if($result['union_id']>0)
+                                {
+                                    $users_areas[$result['user_id']]='Union - '.$result['union_name'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         $this->db->from($this->config->item('table_login_setup_user').' user');
-        $this->db->select('user.id,user.employee_id,user.user_name,user.status');
+        $this->db->select('user.id,user.employee_id,user.user_name username,user.status');
         $this->db->select('user_info.name,user_info.email,user_info.ordering,user_info.blood_group,user_info.mobile_no');
-        $this->db->select('ug.name group_name');
+        $this->db->select('ug.name user_group');
         $this->db->select('designation.name designation_name');
         $this->db->select('department.name department_name');
         $this->db->join($this->config->item('table_login_setup_user_info').' user_info','user.id = user_info.user_id','INNER');
@@ -195,13 +227,31 @@ class Setup_users extends Root_Controller
         $items=$this->db->get()->result_array();
         foreach($items as &$item)
         {
-            if($item['group_name']==null)
+            if($item['user_group']==null)
             {
-                $item['group_name']='Not Assigned';
+                $item['user_group']='--';
             }
             if($item['blood_group']=='')
             {
-                $item['blood_group']='Not Assigned';
+                $item['blood_group']='--';
+            }
+
+            if(isset($users_other_site[$item['id']]['sites']))
+            {
+                $item['other_sites']=$users_other_site[$item['id']]['sites'];
+            }
+            else
+            {
+                $item['other_sites']="N/A";
+            }
+
+            if(isset($users_areas[$item['id']]))
+            {
+                $item['user_area']=$users_areas[$item['id']];
+            }
+            else
+            {
+                $item['user_area']="N/A";
             }
         }
 
@@ -279,7 +329,7 @@ class Setup_users extends Root_Controller
             $data['designations']=Query_helper::get_info($this->config->item('table_login_setup_designation'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
             $data['departments']=Query_helper::get_info($this->config->item('table_login_setup_department'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
             $data['user_types']=Query_helper::get_info($this->config->item('table_login_setup_user_type'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
-            $data['employee_classes']=Query_helper::get_info($this->config->item('table_login_setup_employee_class'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
+
             if($user->user_group==1)
             {
                 $data['user_groups']=Query_helper::get_info($this->config->item('table_system_user_group'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
@@ -878,7 +928,6 @@ class Setup_users extends Root_Controller
             $this->db->select('designation.name designation_name');
             $this->db->select('department.name department_name');
             $this->db->select('u_type.name type_name');
-            $this->db->select('e_class.name employee_class_name');
             $this->db->select('u_group.name group_name');
             $this->db->from($this->config->item('table_login_setup_user').' user');
             $this->db->join($this->config->item('table_login_setup_user_info').' user_info','user_info.user_id=user.id');
@@ -886,7 +935,6 @@ class Setup_users extends Root_Controller
             $this->db->join($this->config->item('table_login_setup_department').' department','department.id=user_info.department_id','left');
             $this->db->join($this->config->item('table_login_setup_designation').' designation','designation.id=user_info.designation','left');
             $this->db->join($this->config->item('table_login_setup_user_type').' u_type','u_type.id=user_info.user_type_id','left');
-            $this->db->join($this->config->item('table_login_setup_employee_class').' e_class','e_class.id=user_info.employee_class_id','left');
             $this->db->join($this->config->item('table_system_user_group').' u_group','u_group.id=user_info.user_group','left');
             $this->db->where('user.id',$user_id);
             //$this->db->where('user_info.revision',1);
@@ -1729,42 +1777,10 @@ class Setup_users extends Root_Controller
     {
         if(isset($this->permissions['action6']) && ($this->permissions['action6']==1))
         {
-            $user = User_helper::get_user();
-            $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
-            $data['items']['id']= 1;
-            $data['items']['employee_id']= 1;
-            $data['items']['user_name']= 1;
-            $data['items']['name']= 1;
-            $data['items']['email']= 1;
-            $data['items']['designation_name']= 1;
-            $data['items']['department_name']= 1;
-            $data['items']['mobile_no']= 1;
-            $data['items']['blood_group']= 1;
-            $data['items']['group_name']= 1;
-            $data['items']['ordering']= 1;
-            $data['items']['status']= 1;
-            if($result)
-            {
-                if($result['preferences']!=null)
-                {
-                    $data['preferences']=json_decode($result['preferences'],true);
-                    foreach($data['items'] as $key=>$value)
-                    {
-                        if(isset($data['preferences'][$key]))
-                        {
-                            $data['items'][$key]=$value;
-                        }
-                        else
-                        {
-                            $data['items'][$key]=0;
-                        }
-                    }
-                }
-            }
-
+            $data['system_preference_items']=$this->get_preference();
             $data['title']="Set Preference";
             $ajax['status']=true;
-            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/preference",$data,true));
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
             $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference');
             $this->json_return($ajax);
         }
@@ -1774,5 +1790,43 @@ class Setup_users extends Root_Controller
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
         }
+    }
+    private function get_preference()
+    {
+        $user = User_helper::get_user();
+        $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+        $data['id']= 1;
+        $data['employee_id']= 1;
+        $data['username']= 1;
+        $data['name']= 1;
+        $data['user_group']= 1;
+        $data['user_area']= 1;
+        $data['other_sites']= 1;
+        $data['designation_name']= 1;
+        $data['department_name']= 1;
+        $data['mobile_no']= 1;
+        $data['email']= 1;
+        $data['blood_group']= 1;
+        $data['status']= 1;
+        if($result)
+        {
+            if($result['preferences']!=null)
+            {
+                $preferences=json_decode($result['preferences'],true);
+                foreach($data as $key=>$value)
+                {
+
+                    if(isset($preferences[$key]))
+                    {
+                        $data[$key]=$value;
+                    }
+                    else
+                    {
+                        $data[$key]=0;
+                    }
+                }
+            }
+        }
+        return $data;
     }
 }

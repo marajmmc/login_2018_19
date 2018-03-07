@@ -1,5 +1,4 @@
 <?php
-
 //login
 $lang['MSG_USERNAME_PASSWORD_INVALID'] = 'Username and Password did not match or Invalid';
 $lang['MSG_LOGIN_SUCCESS'] = 'Successfully Logged In';
@@ -31,13 +30,11 @@ $lang['ACTION_ASSIGN_GROUP_ROLE'] = 'Assign Group Role';
 //Added by saiful
 $lang['ACTION_DISCOUNT'] = 'Discount';
 
-
 //Added by saiful
 $lang['ACTION_REPORT_VIEW'] = 'Report View';
 
 
 //****MODULE TASK//
-
 $lang['LABEL_PARENT'] = 'Parent';
 $lang['LABEL_CONTROLLER_NAME'] = 'Controller';
 $lang['LABEL_ACTION0'] = 'View';
@@ -132,6 +129,7 @@ $lang['LABEL_OLD_PASSWORD'] = 'Old Password';
 $lang['LABEL_RE_PASSWORD'] = 'Re-type Password';
 $lang['MSG_NO_FILE_UPLOADED'] = 'No file uploaded';
 $lang['LABEL_OTHER_SITES'] = 'Other Sites';
+$lang['LABEL_USER_AREA'] = 'Location';
 
 //location setup
 //Create zone
