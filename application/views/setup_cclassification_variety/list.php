@@ -36,7 +36,7 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'type'=>'button',
         'label'=>$CI->lang->line('ACTION_DISCOUNT'),
         'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/variety_pack_discount')
+        'data-action-link'=>site_url($CI->controller_url.'/index/variety_discount_list')
     );
     $action_buttons[]=array
     (
@@ -101,23 +101,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     <?php
     if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
     {
-        ?>
-        <div class="col-xs-12" style="margin-bottom: 20px;">
-            <div class="col-xs-12" style="margin-bottom: 20px;">
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['crop_name']){echo 'checked';}?> value="crop_name"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['crop_type_name']){echo 'checked';}?> value="crop_type_name"><?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['whose']){echo 'checked';}?> value="whose"><?php echo $CI->lang->line('LABEL_WHOSE'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['competitor_name']){echo 'checked';}?> value="competitor_name"><?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['stock_id']){echo 'checked';}?> value="stock_id"><?php echo $CI->lang->line('LABEL_STOCK_ID'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['ordering']){echo 'checked';}?> value="ordering"><?php echo $CI->lang->line('LABEL_ORDER'); ?></label>
-                <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['status']){echo 'checked';}?> value="status"><?php echo $CI->lang->line('STATUS'); ?></label>
-
-
-            </div>
-        </div>
-    <?php
+        $CI->load->view('preference',array('system_preference_items'=>$system_preference_items));
     }
     ?>
     <div class="col-xs-12" id="system_jqx_container">
@@ -144,7 +128,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'whose', type: 'string' },
                 { name: 'competitor_name', type: 'string' },
                 { name: 'stock_id', type: 'string' },
-                { name: 'ordering', type: 'int' },
+                { name: 'order', type: 'int' },
                 { name: 'status', type: 'string' }
             ],
             id: 'id',
@@ -170,15 +154,15 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',width:'40',cellsalign: 'right', hidden: <?php echo $items['id']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', hidden: <?php echo $items['name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',filtertype: 'list', hidden: <?php echo $items['crop_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', hidden: <?php echo $items['crop_type_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_WHOSE'); ?>', dataField: 'whose',filtertype: 'list',hidden: <?php echo $items['whose']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?>', dataField: 'competitor_name', hidden: <?php echo $items['competitor_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_STOCK_ID'); ?>', dataField: 'stock_id', hidden: <?php echo $items['stock_id']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'ordering',width:'100',cellsalign: 'right', hidden: <?php echo $items['ordering']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $items['status']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',pinned:true,width:'40',cellsalign: 'right', hidden: <?php echo $system_preference_items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',pinned:true,width:'130', hidden: <?php echo $system_preference_items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',width:'110',filtertype: 'list', hidden: <?php echo $system_preference_items['crop_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', width:'100',hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_WHOSE'); ?>', dataField: 'whose',width:'130',filtertype: 'list',hidden: <?php echo $system_preference_items['whose']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_COMPETITOR_NAME'); ?>', dataField: 'competitor_name', filtertype: 'list', hidden: <?php echo $system_preference_items['competitor_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_STOCK_ID'); ?>', dataField: 'stock_id', width:'130',hidden: <?php echo $system_preference_items['stock_id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ORDER'); ?>', dataField: 'order',width:'100',cellsalign: 'right', hidden: <?php echo $system_preference_items['order']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $system_preference_items['status']?0:1;?>}
                 ]
             });
     });
