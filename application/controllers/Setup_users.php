@@ -148,6 +148,8 @@ class Setup_users extends Root_Controller
         $this->db->join($this->config->item('table_login_system_other_sites').' other_sites','other_sites.id=users_other_sites.site_id','INNER');
         $this->db->select('other_sites.short_name');
         $this->db->where('users_other_sites.revision',1);
+        $this->db->order_by('other_sites.ordering','ASC');
+        $this->db->order_by('other_sites.id','ASC');
         $results=$this->db->get()->result_array();
         $users_other_site=array();
         foreach($results as $result)
@@ -181,7 +183,11 @@ class Setup_users extends Root_Controller
         $users_areas=array();
         foreach($results as $result)
         {
-            if($result['division_id']>0)
+            if($result['division_id']==0)
+            {
+                $users_areas[$result['user_id']]='All Area';
+            }
+            else if($result['division_id']>0)
             {
                 $users_areas[$result['user_id']]='Division - '.$result['division_name'];
                 if($result['zone_id']>0)
@@ -251,7 +257,7 @@ class Setup_users extends Root_Controller
             }
             else
             {
-                $item['user_area']="N/A";
+                $item['user_area']="Not Assigned";
             }
         }
 

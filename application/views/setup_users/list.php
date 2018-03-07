@@ -158,6 +158,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'status', type: 'string' }
             ],
             id: 'id',
+            type: 'POST',
             url: url
         };
 
@@ -185,7 +186,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_USERNAME'); ?>', dataField: 'username',pinned:true,width:'100', hidden: <?php echo $system_preference_items['username']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'150', hidden: <?php echo $system_preference_items['name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_USER_GROUP'); ?>', dataField: 'user_group',filtertype: 'list',width:'100', hidden: <?php echo $system_preference_items['user_group']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_USER_AREA'); ?>', dataField: 'user_area',width:'150', hidden: <?php echo $system_preference_items['user_area']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_USER_AREA'); ?>', dataField: 'user_area',filtertype: 'list',width:'150', hidden: <?php echo $system_preference_items['user_area']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_OTHER_SITES'); ?>', dataField: 'other_sites',width:'150', hidden: <?php echo $system_preference_items['other_sites']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_DESIGNATION_NAME'); ?>', dataField: 'designation_name',filtertype: 'list',width:'150', hidden: <?php echo $system_preference_items['designation_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_DEPARTMENT_NAME'); ?>', dataField: 'department_name',filtertype: 'list',width:'150', hidden: <?php echo $system_preference_items['department_name']?0:1;?>},
