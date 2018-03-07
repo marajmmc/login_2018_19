@@ -1284,13 +1284,16 @@ class Setup_cclassification_variety extends Root_Controller
             $ajax['system_message']='The Outlet field is required';
             $this->json_return($ajax);
         }
-        $valid_outlet=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$item['outlet_id'],'type =1'),1);
-        if(!$valid_outlet)
+        if($item['outlet_id']!=0)
         {
-            System_helper::invalid_try('Save Outlet Non Exists',$item['outlet_id']);
-            $ajax['status']=false;
-            $ajax['system_message']='Invalid Try.';
-            $this->json_return($ajax);
+            $valid_outlet=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$item['outlet_id'],'type =1'),1);
+            if(!$valid_outlet)
+            {
+                System_helper::invalid_try('Save Outlet Non Exists',$item['outlet_id']);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Try.';
+                $this->json_return($ajax);
+            }
         }
         $old_items=array();
         foreach($results as $result)
@@ -1448,13 +1451,16 @@ class Setup_cclassification_variety extends Root_Controller
         $variety_id = $this->input->post('variety_id');
         $pack_size_id = $this->input->post('pack_size_id');
 
-        $valid_outlet=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$data['outlet_id'],'type =1'),1);
-        if(!$valid_outlet)
+        if($data['outlet_id']!=0)
         {
-            System_helper::invalid_try('Save Outlet Non Exists',$data['outlet_id']);
-            $ajax['status']=false;
-            $ajax['system_message']='Invalid Try.';
-            $this->json_return($ajax);
+            $valid_outlet=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$data['outlet_id'],'type =1'),1);
+            if(!$valid_outlet)
+            {
+                System_helper::invalid_try('Save Outlet Non Exists',$data['outlet_id']);
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Try.';
+                $this->json_return($ajax);
+            }
         }
 
         $this->db->select('farmer_type.*');
