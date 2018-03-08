@@ -12,7 +12,7 @@ if(isset($CI->permissions['action7']) && ($CI->permissions['action7']==1))
         'type'=>'button',
         'label'=>'Set Discount',
         'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/variety_discount_edit/'.$variety_id)
+        'data-action-link'=>site_url($CI->controller_url.'/index/discount_edit/')
     );
 }
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
@@ -36,7 +36,7 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
 }
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
-    'href'=>site_url($CI->controller_url.'/index/variety_discount_list/'.$variety_id)
+    'href'=>site_url($CI->controller_url.'/index/discount_list/'.$variety_id)
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 ?>
@@ -59,7 +59,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     {
         system_preset({controller:'<?php echo $CI->router->class; ?>'});
 
-        var url = "<?php echo site_url($CI->controller_url.'/index/get_variety_discount_items');?>";
+        var url = "<?php echo site_url($CI->controller_url.'/index/get_discount_items');?>";
 
         // prepare the data
         var source =
@@ -67,10 +67,19 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataType: "json",
             type:'POST',
             dataFields: [
-                { name: 'id', type: 'int' },
-                { name: 'name', type: 'string' },
+                { name: 'pack_size', type: 'string' },
+                { name: 'outlet_name', type: 'string' },
+                <?php
+                foreach($farmer_types as $farmer_type)
+                {
+                ?>
+                { name: 'discount_<?php echo $farmer_type['value'];?>', type: 'string' },
+                <?php
+                }
+                ?>
+                { name: 'id', type: 'int' }
             ],
-            id: 'id',
+            type: 'POST',
             url: url,
             data:{variety_id:<?php echo $variety_id; ?>}
         };
@@ -94,7 +103,16 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('LABEL_PACK_NAME'); ?>', dataField: 'name',width:'100%'}
+                    { text: '<?php echo $CI->lang->line('LABEL_PACK_NAME'); ?>', dataField: 'pack_size',width:'100'},
+                    { text: '<?php echo $CI->lang->line('LABEL_OUTLET_NAME'); ?>', dataField: 'outlet_name',width:'300',filtertype: 'list'},
+                    <?php
+                    foreach($farmer_types as $farmer_type)
+                    {
+                    ?>
+                    { text: '<?php echo $farmer_type['text']; ?>', dataField: 'discount_<?php echo $farmer_type['value'];?>',width:'100',cellsalign: 'right'},
+                    <?php
+                        }
+                        ?>
                 ]
             });
     });

@@ -232,7 +232,7 @@ class Transfer extends CI_Controller
             'variety_price'=>$this->config->item('table_login_setup_classification_variety_price'),
             'variety_price_history'=>$this->config->item('table_login_setup_classification_variety_price_history')
         );
-        $variety_prices=Query_helper::get_info($source_tables['variety_price'],'*',array());
+        $variety_prices=Query_helper::get_info($source_tables['variety_price'],'*',array('revision =1'));
         $varieties_kg_price=array();
         $results=Query_helper::get_info($source_tables['varietiy_price_kg'],'*',array());
         foreach($results as $result)

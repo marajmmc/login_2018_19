@@ -32,18 +32,22 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/pricing')
     );
-    $action_buttons[]=array(
-        'type'=>'button',
-        'label'=>$CI->lang->line('ACTION_DISCOUNT'),
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/variety_discount_list')
-    );
+
     $action_buttons[]=array
     (
         'type'=>'button',
         'label'=>'Packing Setup',
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/packing_setup')
+    );
+}
+if(isset($CI->permissions['action7']) && ($CI->permissions['action7']==1))
+{
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>$CI->lang->line('ACTION_DISCOUNT'),
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/discount_list')
     );
 }
 if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
