@@ -71,3 +71,5 @@ $config['table_login_setup_bank_account_purpose'] = 'arm_login_2018_19.login_set
 $config['table_login_setup_currency'] = 'arm_login_2018_19.login_setup_currency';
 $config['table_login_setup_direct_cost_items'] = 'arm_login_2018_19.login_setup_direct_cost_items';
 
+// System configuration items
+$config['table_login_setup_system_configures'] = 'arm_login_2018_19.login_setup_system_configures';

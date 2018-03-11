@@ -117,7 +117,6 @@ class Setup_cclassification_variety extends Root_Controller
         {
             $this->system_save_discount();
         }
-
         elseif($action=="set_preference")
         {
             $this->system_set_preference();
@@ -803,8 +802,8 @@ class Setup_cclassification_variety extends Root_Controller
                 $data['variety_id']=$this->input->post('id');
             }
 
-            $variety_name=Query_helper::get_info($this->config->item('table_login_setup_classification_varieties'),array('name'),array('id='.$data['variety_id']),1);
-            if(!$variety_name)
+            $item=Query_helper::get_info($this->config->item('table_login_setup_classification_varieties'),array('name'),array('id='.$data['variety_id']),1);
+            if(!$item)
             {
                 System_helper::invalid_try('List Variety Discount Non Exists',$data['variety_id']);
                 $ajax['status']=false;
@@ -812,7 +811,8 @@ class Setup_cclassification_variety extends Root_Controller
                 $this->json_return($ajax);
             }
             $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status="'.$this->config->item('system_status_active').'"'));
-            $data['title']="Variety Discount (".$variety_name['name'].')';
+
+            $data['title']="Variety Discount (".$item['name'].')';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/discount_list",$data,true));
             if($this->message)
@@ -876,8 +876,6 @@ class Setup_cclassification_variety extends Root_Controller
                     }
                 }
             }
-
-
         }
         $this->json_return($items);
 
@@ -926,6 +924,12 @@ class Setup_cclassification_variety extends Root_Controller
             $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=price.variety_id','INNER');
             $this->db->where('price.id',$price_id);
             $data['item']=$this->db->get()->row_array();
+            if(!$data['item'])
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid pack size.';
+                $this->json_return($ajax);
+            }
 
             $data['outlets']=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('type =1'));
             $data['title']="Variety Pack Discount";

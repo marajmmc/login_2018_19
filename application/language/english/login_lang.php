@@ -202,5 +202,9 @@ $lang['LABEL_AMOUNT_RATE_BUDGET'] = 'Budget Rate';
 //Outlet
 $lang['LABEL_OUTLET_NAME'] = 'Outlet';
 
+// system configuration setup
+$lang['LABEL_PURPOSE'] = 'Purpose';
+$lang['LABEL_CONFIG_VALUE'] = 'Config Value';
+
 
 
