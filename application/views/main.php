@@ -38,10 +38,11 @@ foreach($results as $result)
 }
 
 $this->db->from($this->config->item('table_login_csetup_customer').' lsc');
-$this->db->join($this->config->item('table_login_csetup_cus_info').' lsci','lsci.customer_id = lsc.id','LEFT');
+$this->db->join($this->config->item('table_login_csetup_cus_info').' lsci','lsci.customer_id = lsc.id','INNER');
 $this->db->select('lsc.id');
 $this->db->select('lsci.type, lsci.district_id, lsci.customer_id value, lsci.name text');
 $this->db->where('lsc.status',$CI->config->item('system_status_active'));
+$this->db->where('lsci.revision',1);
 $items=$this->db->get()->result_array();
 $system_customers=array();
 $system_outlets=array();
