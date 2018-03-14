@@ -160,7 +160,7 @@ class Setup_users extends Root_Controller
             }
             else
             {
-                $users_other_site[$result['user_id']]['sites']=$result['short_name'];;
+                $users_other_site[$result['user_id']]['sites']=$result['short_name'];
             }
         }
 
@@ -198,7 +198,7 @@ class Setup_users extends Root_Controller
                         $users_areas[$result['user_id']]='Territory - '.$result['territory_name'];
                         if($result['district_id']>0)
                         {
-                            $users_areas[$result['user_id']]='Territory - '.$result['district_name'];
+                            $users_areas[$result['user_id']]='District - '.$result['district_name'];
                             if($result['upazilla_id']>0)
                             {
                                 $users_areas[$result['user_id']]='Upazilla - '.$result['upazilla_name'];
