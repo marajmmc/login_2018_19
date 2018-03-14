@@ -66,6 +66,7 @@ $config['table_login_basic_setup_couriers'] = 'arm_login_2018_19.login_basic_set
 $config['table_login_setup_bank'] = 'arm_login_2018_19.login_setup_bank';
 $config['table_login_setup_bank_account'] = 'arm_login_2018_19.login_setup_bank_account';
 $config['table_login_setup_bank_account_purpose'] = 'arm_login_2018_19.login_setup_bank_account_purpose';
+$config['table_login_setup_payment_way'] = 'arm_login_2018_19.login_setup_payment_way';
 
 // Currency & Direct Cost Item Setup
 $config['table_login_setup_currency'] = 'arm_login_2018_19.login_setup_currency';
