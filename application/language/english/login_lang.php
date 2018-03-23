@@ -52,6 +52,7 @@ $lang['MSG_ROLE_ASSIGN_SUCCESS'] = 'Role Assign Successful.';
 //*****//
 
 //common
+$lang['LABEL_BARCODE'] = 'Barcode';
 $lang['YOU_DONT_HAVE_ACCESS'] = 'You cannot access this page';
 $lang['ACTIVE'] = 'Active';
 $lang['INACTIVE'] = 'In-active';
@@ -144,6 +145,7 @@ $lang['LABEL_UNION_NAME'] = 'Union';
 $lang['LABEL_CROP_NAME']='Crop';
 $lang['LABEL_CROP_TYPE']='Crop Type';
 $lang['LABEL_CROP_TYPE_NAME']='Crop Type';
+$lang['LABEL_VARIETY_NAME']='Variety';
 $lang['LABEL_VARIETY']='Variety';
 $lang['LABEL_WHOSE']='Variety Category';
 $lang['LABEL_COMPETITOR_NAME']='Competitor';
@@ -153,6 +155,7 @@ $lang['LABEL_HYBRID']='Hybrid';
 $lang['LABEL_DATE_RELEASE']='Release Date';
 $lang['LABEL_TRIAL_COMPLETED']='Number of Trials Completed';
 $lang['LABEL_PACK_NAME'] = 'Pack Size(gm)';
+$lang['LABEL_PACK_SIZE'] = 'Pack Size(gm)';
 $lang['LABEL_PRICE'] = 'Price';
 $lang['LABEL_PRICE_TRADE'] = 'Trade Price';
 $lang['LABEL_PRICE_NET'] = 'Net Price';
