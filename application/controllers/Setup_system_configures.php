@@ -75,11 +75,6 @@ class Setup_system_configures extends Root_Controller
         $this->db->where('system_configures.status !=',$this->config->item('system_status_delete'));
         $this->db->order_by('system_configures.purpose','ASC');
         $items=$this->db->get()->result_array();
-        $system_purpose_config=$this->config->item('system_purpose_config');
-        /*foreach($items as &$item)
-        {
-            $item['purpose']=$system_purpose_config[$item['purpose']];
-        }*/
         $this->json_return($items);
     }
     private function system_add()
@@ -130,8 +125,8 @@ class Setup_system_configures extends Root_Controller
                 $ajax['system_message']='Invalid Try.';
                 $this->json_return($ajax);
             }
-            $system_purpose_config=$this->config->item('system_purpose_config');
-            $data['title']="Edit System Configuration :: ". $system_purpose_config[$data['item']['purpose']];
+
+            $data['title']="Edit System Configuration :: ". $this->config->item('system_purpose_').$data['item']['purpose'];
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
             if($this->message)

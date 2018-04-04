@@ -117,8 +117,7 @@ class Barcode_variety extends Root_Controller
             $this->db->select('pack.name pack_size');
             $this->db->where('price.id',$item_id);
             $data['item']=$this->db->get()->row_array();
-            $system_purpose_config=$this->config->item('system_purpose_config');
-            $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="'.$system_purpose_config['pos_barcode_expire_date'].'"', 'status ="'.$this->config->item('system_status_active').'"'),1);
+            $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="'.$this->config->item('system_purpose_pos_barcode_expire_date').'"', 'status ="'.$this->config->item('system_status_active').'"'),1);
             if(!$result)
             {
                 $ajax['status']=false;

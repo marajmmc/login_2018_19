@@ -114,36 +114,26 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-offset-4 col-xs-8 text-center">
-                <?php
-                $system_bank_account_purpose=$this->config->item('system_bank_account_purpose');
-                ?>
                 <table class="table table-responsive table-bordered" style="width: 50%">
                     <thead>
                     <tr>
-                        <th colspan="<?php echo count($system_bank_account_purpose);?>" class="text-center"><?php echo $this->lang->line('LABEL_ACCOUNT_PURPOSE')?></th>
+                        <th colspan="2" class="text-center"><?php echo $this->lang->line('LABEL_ACCOUNT_PURPOSE')?></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <?php
-                        $purpose=array();
-                        foreach($items as $row)
-                        {
-                            $purpose[$row['purpose']]=$row['purpose'];
-                        }
-
-                        foreach($system_bank_account_purpose as $key=>$value)
-                        {
-                            ?>
-                            <td>
-                                <label for="purpose_<?php echo $key?>">
-                                    <input type="checkbox" name="items[purpose][]" id="purpose_<?php echo $key?>" class="" value="<?php echo $key;?>" <?php if(isset($purpose[$key])){echo "checked='checked'";}?> />
-                                    <?php echo $value;?>
-                                </label>
-                            </td>
-                        <?php
-                        }
-                        ?>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="items[purpose][]" id="purpose_lc" class="" value="<?php echo $this->config->item('system_bank_account_purpose_lc');?>" <?php if(isset($bank_account_purpose[$this->config->item('system_bank_account_purpose_lc')])){echo "checked='checked'";}?> />
+                                LC
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="items[purpose][]" id="purpose_sale_receive" class="" value="<?php echo $this->config->item('system_bank_account_purpose_sale_receive');?>" <?php if(isset($bank_account_purpose[$this->config->item('system_bank_account_purpose_sale_receive')])){echo "checked='checked'";}?> />
+                                Sale Receive
+                            </label>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

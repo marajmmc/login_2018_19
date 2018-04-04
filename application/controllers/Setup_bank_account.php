@@ -163,7 +163,13 @@ class Setup_bank_account extends Root_Controller
                 $this->json_return($ajax);
             }
 
-            $data['items']=Query_helper::get_info($this->config->item('table_login_setup_bank_account_purpose'),array('*'),array('bank_account_id ='.$item_id,'revision = 1'),0);
+            $results=Query_helper::get_info($this->config->item('table_login_setup_bank_account_purpose'),array('*'),array('bank_account_id ='.$item_id,'revision = 1'),0);
+            $bank_account_purpose=array();
+            foreach($results as $result)
+            {
+                $bank_account_purpose[$result['purpose']]=$result['purpose'];
+            }
+            $data['bank_account_purpose']=$bank_account_purpose;
             $data['banks']=Query_helper::get_info($this->config->item('table_login_setup_bank'),array('id value','name text'),array('status !="'.$this->config->item('system_status_delete').'"'),0,0,array('ordering'));
 
             $data['title']="Edit Bank Account :: ".$data['item']['branch_name']. " ( " .$data['item']['account_number']." )";

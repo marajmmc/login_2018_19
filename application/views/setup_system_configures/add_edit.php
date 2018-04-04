@@ -31,7 +31,7 @@ $action_buttons[]=array(
     'data-form'=>'#save_form'
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
-$system_purpose_config=$CI->config->item('system_purpose_config');
+//$system_purpose_config=$CI->config->item('system_purpose_config');
 ?>
 <form id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save');?>" method="post">
     <input type="hidden" id="id" name="id" value="<?php echo $item['id']?>" />
@@ -50,15 +50,9 @@ $system_purpose_config=$CI->config->item('system_purpose_config');
             <div class="col-sm-4 col-xs-8">
                 <select id="status" name="item[purpose]" class="form-control">
                     <option value="">Select</option>
-                    <?php
-                    $system_purpose_configs=$this->config->item('system_purpose_config');
-                    foreach($system_purpose_configs as $system_purpose_config)
-                    {
-                        ?>
-                        <option value="<?php echo $system_purpose_config;?>" <?php if($item['purpose']==$system_purpose_config){echo "selected='selected'";}?>><?php echo $system_purpose_config;?></option>
-                    <?php
-                    }
-                    ?>
+                    <option value="<?php echo $this->config->item('system_purpose_sms_date_expire');?>" <?php if($item['purpose']==$this->config->item('system_purpose_sms_date_expire')){echo "selected='selected'";}?>><?php echo $this->config->item('system_purpose_sms_date_expire');?></option>
+                    <option value="<?php echo $this->config->item('system_purpose_sms_quantity_order_max');?>" <?php if($item['purpose']==$this->config->item('system_purpose_sms_quantity_order_max')){echo "selected='selected'";}?>><?php echo $this->config->item('system_purpose_sms_quantity_order_max');?></option>
+                    <option value="<?php echo $this->config->item('system_purpose_pos_barcode_expire_date');?>" <?php if($item['purpose']==$this->config->item('system_purpose_pos_barcode_expire_date')){echo "selected='selected'";}?>><?php echo $this->config->item('system_purpose_pos_barcode_expire_date');?></option>
                 </select>
             </div>
         </div>
