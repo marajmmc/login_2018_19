@@ -25,8 +25,8 @@ $config['system_customer_type_customer_id']=2;
 
 /*Bank & Account Config*/
 // purpose
-$config['system_bank_account_purpose_lc']='Lc';
-$config['system_bank_account_purpose_sale_receive']='Sale Receive';
+$config['system_bank_account_purpose_lc']='lc';
+$config['system_bank_account_purpose_sale_receive']='sale_receive';
 //System Configuration
 $config['system_purpose_sms_date_expire']='sms_date_expire';
 $config['system_purpose_sms_quantity_order_max']='sms_quantity_order_max';
