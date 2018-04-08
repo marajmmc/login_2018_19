@@ -45,20 +45,26 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_PURPOSE');?><span style="color:#FF0000">*</span></label>
+                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_PURPOSE');?><span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <select id="status" name="item[purpose]" class="form-control">
                     <option value="">Select</option>
-                    <option value="<?php echo $this->config->item('system_purpose_sms_date_expire');?>" <?php if($item['purpose']==$this->config->item('system_purpose_sms_date_expire')){echo "selected='selected'";}?>><?php echo $this->config->item('system_purpose_sms_date_expire');?></option>
-                    <option value="<?php echo $this->config->item('system_purpose_sms_quantity_order_max');?>" <?php if($item['purpose']==$this->config->item('system_purpose_sms_quantity_order_max')){echo "selected='selected'";}?>><?php echo $this->config->item('system_purpose_sms_quantity_order_max');?></option>
-                    <option value="<?php echo $this->config->item('system_purpose_pos_barcode_expire_date');?>" <?php if($item['purpose']==$this->config->item('system_purpose_pos_barcode_expire_date')){echo "selected='selected'";}?>><?php echo $this->config->item('system_purpose_pos_barcode_expire_date');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_sms_date_expire');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_sms_date_expire')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_sms_date_expire');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_sms_quantity_order_max');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_sms_quantity_order_max')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_sms_quantity_order_max');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_pos_barcode_expire_date');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_pos_barcode_expire_date')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_pos_barcode_expire_date');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_login_menu_odd_color');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_login_menu_odd_color')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_login_menu_odd_color');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_login_menu_even_color');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_login_menu_even_color')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_login_menu_even_color');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_sms_menu_odd_color');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_sms_menu_odd_color')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_sms_menu_odd_color');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_sms_menu_even_color');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_sms_menu_even_color')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_sms_menu_even_color');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_pos_menu_odd_color');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_pos_menu_odd_color')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_pos_menu_odd_color');?></option>
+                    <option value="<?php echo $CI->config->item('system_purpose_pos_menu_even_color');?>" <?php if($item['purpose']==$CI->config->item('system_purpose_pos_menu_even_color')){echo "selected='selected'";}?>><?php echo $CI->config->item('system_purpose_pos_menu_even_color');?></option>
                 </select>
             </div>
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DESCRIPTION');?> <span style="color:#FF0000">*</span></label>
+                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_DESCRIPTION');?> <span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <textarea name="item[description]" id="description" class="form-control" ><?php echo $item['description'];?></textarea>
@@ -66,7 +72,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_CONFIG_VALUE');?> <span style="color:#FF0000">*</span></label>
+                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_CONFIG_VALUE');?> <span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <textarea name="item[config_value]" id="config_value" class="form-control" ><?php echo $item['config_value'];?></textarea>

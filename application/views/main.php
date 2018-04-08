@@ -60,6 +60,18 @@ foreach($items as $result)
     $system_all_customers[$result['district_id']]=$result;
 }
 $system_warehouses=Query_helper::get_info($CI->config->item('table_login_basic_setup_warehouse'),array('id value','name text'),array('status ="'.$CI->config->item('system_status_active').'"'));
+$menu_odd_color='#fee3b4';
+$result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('config_value'),array('purpose ="' .$CI->config->item('system_purpose_login_menu_odd_color').'"','status ="'.$CI->config->item('system_status_active').'"'),1);
+if($result)
+{
+    $menu_odd_color=$result['config_value'];
+}
+$menu_even_color='#e0dff6';
+$result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('config_value'),array('purpose ="' .$CI->config->item('system_purpose_login_menu_even_color').'"','status ="'.$CI->config->item('system_status_active').'"'),1);
+if($result)
+{
+    $menu_even_color=$result['config_value'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,6 +85,14 @@ $system_warehouses=Query_helper::get_info($CI->config->item('table_login_basic_s
         <link rel="stylesheet" href="<?php echo base_url('css/jquery-ui/jquery-ui.theme.css'); ?>">
 
         <link rel="stylesheet" href="<?php echo base_url('css/jqx/jqx.base.css'); ?>">
+        <style>
+            .navbar-nav > li {
+                background-color: <?php echo $menu_odd_color ?>;
+            }
+            .navbar-nav > li:nth-child(even){
+                background-color: <?php echo $menu_even_color ?>;
+            }
+        </style>
 
     </head>
     <body>

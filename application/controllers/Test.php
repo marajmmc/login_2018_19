@@ -20,20 +20,22 @@ class Test extends CI_Controller {
 	 */
     public function index()
     {
-        $this->db->from('arm_login_2018_19.login_setup_classification_type_acres');
-        $this->db->select('type_id,COUNT(id) as num_record');
-        $this->db->group_by('type_id');
+        $this->db->from('arm_sms_2018_19.sms_stock_summary_variety');
+        $this->db->group_by('variety_id');
+        $this->db->group_by('pack_size_id');
         $results=$this->db->get()->result_array();
+
         foreach($results as $result)
         {
-            if($result['num_record']!=498)
-            {
-                echo '<pre>';
-                print_r($result);
-                echo '</pre>';
-            }
+            $data=array();
+            $data['outlet_id']=258;
+            $data['variety_id']=$result['variety_id'];
+            $data['pack_size_id']=$result['pack_size_id'];
+            $data['current_stock']=$result['current_stock'];
+            Query_helper::add('arm_beeztola_2018_19.pos_stock_summary_variety',$data,false);
 
         }
+        echo 'finished';
 
 
     }
