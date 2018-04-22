@@ -74,6 +74,7 @@ class Setup_csetup_customer extends Root_Controller {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
 
+            $data['items']['id']= 1;
             $data['items']['name']= 1;
             $data['items']['name_short']= 1;
             $data['items']['type_name']= 1;
@@ -125,15 +126,17 @@ class Setup_csetup_customer extends Root_Controller {
     {
         $this->db->from($this->config->item('table_login_csetup_customer').' cus');
         $this->db->select('cus.id,cus.status');
+        $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = cus.id','INNER');
         $this->db->select('cus_info.name,cus_info.name_short,cus_info.customer_code,cus_info.phone,cus_info.ordering,cus_info.type');
+
+        $this->db->join($this->config->item('table_login_csetup_cus_type').' cus_type','cus_type.id = cus_info.type','INNER');
         $this->db->select('cus_type.name type_name');
         $this->db->select('d.name district_name');
         $this->db->select('t.name territory_name');
         $this->db->select('zone.name zone_name');
         $this->db->select('division.name division_name');
         $this->db->select('cus_incharge.name incharge_name');
-        $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = cus.id','INNER');
-        $this->db->join($this->config->item('table_login_csetup_cus_type').' cus_type','cus_type.id = cus_info.type','INNER');
+
         $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
         $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
         $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
@@ -151,10 +154,10 @@ class Setup_csetup_customer extends Root_Controller {
         $items=$this->db->get()->result_array();
         foreach($items as &$item)
         {
-            if(strlen($item['incharge_name'])<1)
+            /*if(strlen($item['incharge_name'])<1)
             {
                 $item['incharge_name']='Not assigned';
-            }
+            }*/
         }
         $this->json_return($items);
     }
@@ -809,6 +812,7 @@ class Setup_csetup_customer extends Root_Controller {
         {
             $user = User_helper::get_user();
             $result=Query_helper::get_info($this->config->item('table_system_user_preference'),'*',array('user_id ='.$user->user_id,'controller ="' .$this->controller_url.'"','method ="list"'),1);
+            $data['items']['id']= 1;
             $data['items']['name']= 1;
             $data['items']['name_short']= 1;
             $data['items']['type_name']= 1;

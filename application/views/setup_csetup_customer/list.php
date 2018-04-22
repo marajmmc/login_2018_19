@@ -85,6 +85,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     ?>
     <div class="col-xs-12" style="margin-bottom: 20px;">
         <div class="col-xs-12" style="margin-bottom: 20px;">
+            <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['id']){echo 'checked';}?> value="id"><?php echo $CI->lang->line('LABEL_ID'); ?></label>
             <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name']){echo 'checked';}?> value="name"><?php echo $CI->lang->line('LABEL_NAME'); ?></label>
             <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['name_short']){echo 'checked';}?> value="name_short"><?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?></label>
             <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  <?php if($items['type_name']){echo 'checked';}?> value="type"><?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?></label>
@@ -144,6 +145,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         $("#system_jqx_container").jqxGrid(
             {
                 width: '100%',
+                height:'350px',
                 source: dataAdapter,
                 pageable: true,
                 filterable: true,
@@ -156,9 +158,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 enablebrowserselection: true,
                 columnsreorder: true,
                 altrows: true,
-                autoheight: true,
                 columns:
                 [
+                    { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id',width:'50', hidden: <?php echo $items['id']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'300', hidden: <?php echo $items['name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_SHORT_NAME'); ?>', dataField: 'name_short',width:'100', hidden: <?php echo $items['name_short']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_CUSTOMER_TYPE'); ?>', dataField: 'type_name',width:'100',filtertype: 'list', hidden: <?php echo $items['type_name']?0:1;?>},
