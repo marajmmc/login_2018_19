@@ -5,9 +5,9 @@ class Transfer extends CI_Controller
     public function index()
     {
         //$this->users();
-        $this->customers();
+        //$this->customers();
         //$this->variety();
-        //$this->user_role_transfer();
+        $this->user_role_transfer();
         //$this->stock();
         //$this->crop_type_acres_kg();
     }
