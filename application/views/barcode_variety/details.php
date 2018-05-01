@@ -90,40 +90,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right">Line 1</label>
             </div>
             <div class="col-xs-4">
-                <input type="text" name="items[line1][text]" class="form-control" value="MRP Tk: <?php echo $item['price'].' (Wt: '.$item['pack_size'].'g)'; ?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
-            </div>
-            <div class="col-xs-2">
-                <select name="items[line1][show]" class="form-control">
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                </select>
-            </div>
-            <div class="col-xs-2">
-                <label class="control-label">Show</label>
-            </div>
-        </div>
-        <div style="" class="row show-grid">
-            <div class="col-xs-4">
-                <label class="control-label pull-right">Line 2</label>
-            </div>
-            <div class="col-xs-4">
-                <input type="text" name="items[line2][text]" class="form-control" value="Exp. Date: <?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
-            </div>
-            <div class="col-xs-2">
-                <select name="items[line2][show]" class="form-control">
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                </select>
-            </div>
-            <div class="col-xs-2">
-                <label class="control-label">Show</label>
-            </div>
-        </div>
-        <div style="" class="row show-grid">
-            <div class="col-xs-4">
-                <label class="control-label pull-right">Line 3</label>
-            </div>
-            <div class="col-xs-4">
                 <select name="items[line3][text]" class="form-control">
                     <?php
                     foreach($outlets as $row)
@@ -144,6 +110,41 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label">Show</label>
             </div>
         </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 2</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="text" name="items[line1][text]" class="form-control" value="MRP Tk: <?php echo $item['price'].' (Wt: '.$item['pack_size'].'g)'; ?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line1][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 3</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="text" name="items[line2][text]" class="form-control" value="Exp. Date: <?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line2][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
+
     </div>
 
     <div class="clearfix"></div>
