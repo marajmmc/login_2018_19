@@ -20,7 +20,7 @@ $config['table_login_setup_users_other_sites'] = 'arm_login_2018_19.login_setup_
 //// user info update related table
 $config['table_login_setup_user_area'] = 'arm_login_2018_19.login_setup_user_area';
 $config['table_login_setup_users_company'] = 'arm_login_2018_19.login_setup_users_company';
-$config['table_login_setup_employee_class'] = 'arm_login_2018_19.login_setup_employee_class';
+//$config['table_login_setup_employee_class'] = 'arm_login_2018_19.login_setup_employee_class';
 
 //// location setup info
 $config['table_login_setup_location_divisions'] = 'arm_login_2018_19.login_setup_location_divisions';
