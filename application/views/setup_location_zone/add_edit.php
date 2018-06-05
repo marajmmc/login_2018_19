@@ -71,6 +71,18 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <input type="text" name="zone[ordering]" id="ordering" class="form-control" value="<?php echo $zone['ordering'] ?>" >
             </div>
         </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label for="status" class="control-label pull-right"><?php echo $CI->lang->line('LABEL_STATUS');?><span style="color:#FF0000">*</span></label>
+            </div>
+            <div class="col-sm-4 col-xs-8">
+                <select id="status" name="zone[status]" class="form-control">
+                    <!--<option value=""></option>-->
+                    <option value="<?php echo $CI->config->item('system_status_active'); ?>" <?php if ($zone['status'] == $CI->config->item('system_status_active')) { echo "selected='selected'"; } ?> ><?php echo $CI->lang->line('ACTIVE') ?></option>
+                    <option value="<?php echo $CI->config->item('system_status_inactive'); ?>" <?php if ($zone['status'] == $CI->config->item('system_status_inactive')) { echo "selected='selected'"; } ?> ><?php echo $CI->lang->line('INACTIVE') ?></option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <div class="clearfix"></div>
