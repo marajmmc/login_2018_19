@@ -94,7 +94,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     <?php
                     foreach($outlets as $row)
                     {?>
-                        <option value="<?php echo $row['text']?>"><?php echo $row['text'];?></option>
+                        <option value="<?php echo $row['text'].$row['value']?>"><?php echo $row['text'];?></option>
                     <?php
                     }
                     ?>

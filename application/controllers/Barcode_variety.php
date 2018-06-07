@@ -127,11 +127,12 @@ class Barcode_variety extends Root_Controller
             $data['item']['date_expire']=$result['config_value'];
             $this->db->from($this->config->item('table_login_csetup_customer').' customer');
             $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = customer.id','INNER');
-            $this->db->select('customer.id');
+            $this->db->select('customer.id value');
             $this->db->select('cus_info.name_short text');
             $this->db->where('customer.status',$this->config->item('system_status_active'));
             $this->db->where('cus_info.revision',1);
             $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
+            $this->db->order_by('cus_info.ordering','ASC');
             $this->db->order_by('customer.id','ASC');
             $data['outlets']=$this->db->get()->result_array();
 

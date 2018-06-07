@@ -23,4 +23,8 @@ class Barcode_helper
         $result=$CI->db->get()->row_array();
         return Barcode_helper::get_barcode_variety($result['crop_id'],$result['variety_id'],$result['pack_size_id']);
     }
+    public static function get_barcode_outlet_for_sticker($outlet_id)
+    {
+        return str_pad($outlet_id,3,0,STR_PAD_LEFT).date('M-d');
+    }
 }
