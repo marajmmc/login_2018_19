@@ -111,6 +111,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 autoheight: true,
                 autorowheight: true,
                 columnsreorder: true,
+                enablebrowserselection:true,
                 columns:
                 [
                     { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id', hidden: <?php echo $system_preference_items['id']?0:1;?>},
