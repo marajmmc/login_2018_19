@@ -157,6 +157,12 @@ class Barcode_variety extends Root_Controller
     {
         $data['id']=$this->input->post('id');
         $data['items']=$this->input->post('items');
+        $data['padding_top']=18;
+        $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('config_value'),array('purpose ="' .$this->config->item('system_purpose_login_barcode_padding_top').'"','status ="'.$this->config->item('system_status_active').'"'),1);
+        if($result)
+        {
+            $data['padding_top']=$result['config_value'];
+        }
         $ajax['status']=true;
         $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/barcode",$data,true));
         $this->json_return($ajax);

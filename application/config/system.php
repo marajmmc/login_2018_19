@@ -37,3 +37,4 @@ $config['system_purpose_sms_menu_odd_color']='sms_menu_odd_color';
 $config['system_purpose_sms_menu_even_color']='sms_menu_even_color';
 $config['system_purpose_pos_menu_odd_color']='pos_menu_odd_color';
 $config['system_purpose_pos_menu_even_color']='pos_menu_even_color';
+$config['system_purpose_login_barcode_padding_top']='login_barcode_padding_top';

@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 $CI=& get_instance();
 ?>
-<div style="width: 320px;font-size: 10px;text-align: center; font-weight: bold;line-height: 10px;margin-left:-40px;padding-top: 18px; ">
+<div style="width: 320px;font-size: 10px;text-align: center; font-weight: bold;line-height: 10px;margin-left:-40px;padding-top: <?php echo $padding_top; ?>px; ">
     <div style="width: 150px;float: left;">
 
         <?php
