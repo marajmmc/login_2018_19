@@ -14,6 +14,25 @@ $action_buttons[]=array(
     'href'=>site_url($CI->controller_url.'/index/list')
 
 );
+if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
+{
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>$CI->lang->line("ACTION_PRINT"),
+        'class'=>'button_action_download',
+        'data-title'=>"Print",
+        'data-print'=>true
+    );
+}
+if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
+{
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>$CI->lang->line("ACTION_DOWNLOAD"),
+        'class'=>'button_action_download',
+        'data-title'=>"Download"
+    );
+}
 if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
 {
     $action_buttons[]=array
@@ -59,6 +78,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'crop_name', type: 'string' },
                 { name: 'crop_type_name', type: 'string' },
                 { name: 'price', type: 'string' },
+                { name: 'price_net', type: 'string' },
                 { name: 'barcode', type: 'string' }
             ],
             id: 'id',
@@ -90,6 +110,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',width:'110',filtertype: 'list', hidden: <?php echo $system_preference_items['crop_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', width:'100',hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_PRICE'); ?>', dataField: 'price', width:'100',cellsalign: 'right',hidden: <?php echo $system_preference_items['price']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_NET'); ?>', dataField: 'price_net', width:'100',cellsalign: 'right',hidden: <?php echo $system_preference_items['price_net']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_BARCODE'); ?>', dataField: 'barcode', width:'100',cellsalign: 'right',hidden: <?php echo $system_preference_items['barcode']?0:1;?>}
                 ]
             });
