@@ -143,11 +143,6 @@ class Setup_csetup_customer extends Root_Controller {
         $this->db->join($this->config->item('table_login_setup_location_divisions').' division','division.id = zone.division_id','INNER');
         $this->db->join($this->config->item('table_login_csetup_incharge').' cus_incharge','cus_incharge.id = cus_info.incharge','LEFT');
         $this->db->order_by('cus_info.type','ASC');
-        $this->db->order_by('cus_info.customer_code','ASC');
-        $this->db->order_by('division.ordering','ASC');
-        $this->db->order_by('zone.ordering','ASC');
-        $this->db->order_by('t.ordering','ASC');
-        $this->db->order_by('d.ordering','ASC');
         $this->db->order_by('cus_info.ordering','ASC');
         $this->db->where('cus_info.revision',1);
         $this->db->where('cus.status !=',$this->config->item('system_status_delete'));

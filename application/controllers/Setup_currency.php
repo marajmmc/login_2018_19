@@ -73,7 +73,7 @@ class Setup_currency extends Root_Controller
     {
         $this->db->from($this->config->item('table_login_setup_currency').' currency');
         $this->db->where('currency.status !=',$this->config->item('system_status_delete'));
-        $this->db->order_by('currency.id','DESC');
+        $this->db->order_by('currency.ordering','ASC');
         $items=$this->db->get()->result_array();
         $this->json_return($items);
     }

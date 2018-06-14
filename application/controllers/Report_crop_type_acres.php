@@ -213,7 +213,10 @@ class Report_crop_type_acres extends Root_Controller
         $this->db->select('crop_type.id crop_type_id, crop_type.name crop_type_name,crop_type.quantity_kg_acre');
         $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id=crop_type.crop_id','INNER');
         $this->db->select('crop.id crop_id, crop.name crop_name');
-        $this->db->order_by('crop.id, crop_type.id');
+        $this->db->order_by('crop.ordering');
+        $this->db->order_by('crop.id');
+        $this->db->order_by('crop_type.ordering');
+        $this->db->order_by('crop_type.id');
         if($crop_id>0)
         {
             $this->db->where('crop.id',$crop_id);

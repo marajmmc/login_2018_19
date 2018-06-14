@@ -73,7 +73,7 @@ class Setup_direct_cost_items extends Root_Controller
     {
         $this->db->from($this->config->item('table_login_setup_direct_cost_items').' direct_cost_items');
         $this->db->where('direct_cost_items.status !=',$this->config->item('system_status_delete'));
-        $this->db->order_by('direct_cost_items.id','DESC');
+        $this->db->order_by('direct_cost_items.ordering','ASC');
         $items=$this->db->get()->result_array();
         $this->json_return($items);
     }

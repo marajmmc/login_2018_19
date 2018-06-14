@@ -320,7 +320,7 @@ $CI = & get_instance();
                 }
                 $('#upazilla_id_container').show();
                 $.ajax({
-                    url: base_url+"common_controller/get_dropdown_upazillas_by_districtid/",
+                    url: '<?php echo site_url("common_controller/get_dropdown_upazillas_by_districtid/");?>',
                     type: 'POST',
                     datatype: "JSON",
                     data:{district_id:district_id},
@@ -348,7 +348,7 @@ $CI = & get_instance();
             {
                 $('#upazilla_id_container').show();
                 $.ajax({
-                    url: base_url+"common_controller/get_dropdown_upazillas_by_outlet_id/",
+                    url: '<?php echo site_url("common_controller/get_dropdown_upazillas_by_outlet_id/");?>',
                     type: 'POST',
                     datatype: "JSON",
                     data:{outlet_id:outlet_id},

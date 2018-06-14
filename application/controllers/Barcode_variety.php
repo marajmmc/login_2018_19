@@ -82,8 +82,11 @@ class Barcode_variety extends Root_Controller
         $this->db->select('pack.name pack_size');
 
         $this->db->order_by('crop.ordering ASC');
+        $this->db->order_by('crop.id ASC');
         $this->db->order_by('crop_type.ordering ASC');
+        $this->db->order_by('crop_type.id ASC');
         $this->db->order_by('v.ordering ASC');
+        $this->db->order_by('v.id ASC');
         $items=$this->db->get()->result_array();
         foreach($items as &$item)
         {

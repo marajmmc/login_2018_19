@@ -68,6 +68,7 @@ class Setup_cclassification_crop extends Root_Controller
         $this->db->from($this->config->item('table_login_setup_classification_crops'));
         $this->db->select('id,name,status,ordering');
         $this->db->order_by('ordering','ASC');
+        $this->db->order_by('id','ASC');
         $this->db->where('status !=',$this->config->item('system_status_delete'));
         $items=$this->db->get()->result_array();
 
