@@ -28,6 +28,7 @@ $lang['MSG_ROLE_ASSIGN_SUCCESS'] = 'Role Assign Successful.';
 $lang['ACTION_LOAD_MORE'] = 'Load More';
 $lang['ACTION_DOCUMENT'] = 'Documents';
 $lang['ACTION_ASSIGN_GROUP_ROLE'] = 'Assign Group Role';
+$lang['ACTION_REPORT'] = 'View Report';
 
 //Added by saiful
 $lang['ACTION_DISCOUNT'] = 'Discount';
@@ -81,6 +82,7 @@ $lang['LABEL_YES'] = 'Yes';
 $lang['LABEL_NO'] = 'No';
 
 $lang['LABEL_YEAR'] = 'Year';
+$lang['LABEL_FISCAL_YEAR'] = 'Fiscal Year';
 $lang['LABEL_NAME'] = 'Name';
 $lang['LABEL_EMAIL'] = 'Email Address';
 $lang['LABEL_ORDER'] = 'Ordering';
@@ -187,6 +189,8 @@ $lang['LABEL_CUSTOMER_TYPE'] = 'Outlet Type';
 $lang['LABEL_PICTURE'] = 'Picture';
 $lang['LABEL_MAP_ADDRESS'] = 'Google Map Link';
 $lang['LABEL_INCHARGE'] = 'In-charge';
+$lang['LABEL_OUTLET_NAME'] = 'Showroom';
+$lang['LABEL_OUTLET'] = 'Showroom';
 
 /*Preference button lang config :: added by maraj*/
 $lang['LABEL_STATUS'] = 'Status';
