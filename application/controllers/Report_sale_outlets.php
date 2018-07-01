@@ -760,8 +760,11 @@ class Report_sale_outlets extends Root_Controller
         {
             $this->db->where('details.pack_size_id',$pack_size_id);
         }
+        $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');
+        $this->db->order_by('crop_type.ordering','ASC');
         $this->db->order_by('crop_type.id','ASC');
+        $this->db->order_by('v.ordering','ASC');
         $this->db->order_by('v.id','ASC');
         $this->db->where_in('sale.outlet_id',$outlet_ids);
         $this->db->group_by('details.variety_id');
@@ -1085,8 +1088,11 @@ class Report_sale_outlets extends Root_Controller
         {
             $this->db->where('details.pack_size_id',$pack_size_id);
         }
+        $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');
+        $this->db->order_by('crop_type.ordering','ASC');
         $this->db->order_by('crop_type.id','ASC');
+        $this->db->order_by('v.ordering','ASC');
         $this->db->order_by('v.id','ASC');
         $this->db->where_in('sale.outlet_id',$outlet_ids);
         $this->db->group_by('details.variety_id');
