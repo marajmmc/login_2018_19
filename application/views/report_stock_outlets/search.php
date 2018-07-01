@@ -330,7 +330,7 @@ $CI = & get_instance();
             $('#territory_id_container').hide();
             $('#district_id_container').hide();
             $('#outlet_id_container').hide();
-            $("#items_container").html('');
+            $("#system_report_container").html('');
             if(division_id>0)
             {
                 if(system_zones[division_id]!==undefined)
@@ -351,7 +351,7 @@ $CI = & get_instance();
             $('#territory_id_container').hide();
             $('#district_id_container').hide();
             $('#outlet_id_container').hide();
-            $("#items_container").html('');
+            $("#system_report_container").html('');
             if(zone_id>0)
             {
                 if(system_territories[zone_id]!==undefined)
@@ -368,7 +368,7 @@ $CI = & get_instance();
             $('#outlet_id').val('');
             $('#outlet_id_container').hide();
             $('#district_id_container').hide();
-            $("#items_container").html('');
+            $("#system_report_container").html('');
             var territory_id=$('#territory_id').val();
             if(territory_id>0)
             {
@@ -385,7 +385,7 @@ $CI = & get_instance();
         {
             $('#outlet_id').val('');
             $('#upazilla_id').val('');
-            $("#items_container").html('');
+            $("#system_report_container").html('');
             var district_id=$('#district_id').val();
             $('#outlet_id_container').hide();
             if(district_id>0)
@@ -396,6 +396,12 @@ $CI = & get_instance();
                     $('#outlet_id').html(get_dropdown_with_select(system_outlets[district_id]));
                 }
             }
+        });
+        $(document).off("change", "#outlet_id");
+        $(document).on('change','#outlet_id',function()
+        {
+            $("#system_report_container").html('');
+
         });
         $(document).off("change", "#fiscal_year_id");
         $(document).on("change","#fiscal_year_id",function()
