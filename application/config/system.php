@@ -42,11 +42,13 @@ $config['system_bank_account_purpose_sale_receive']='sale_receive';
 //System Configuration
 $config['system_purpose_sms_date_expire']='sms_date_expire';
 $config['system_purpose_sms_quantity_order_max']='sms_quantity_order_max';
-$config['system_purpose_pos_barcode_expire_date']='pos_barcode_expire_date';
+$config['system_purpose_login_barcode_padding_top']='login_barcode_padding_top';
+$config['system_purpose_login_barcode_expire_date']='login_barcode_expire_date';
+$config['system_purpose_login_barcode_ger_pur']='login_barcode_ger_pur';
 $config['system_purpose_login_menu_odd_color']='login_menu_odd_color';
 $config['system_purpose_login_menu_even_color']='login_menu_even_color';
 $config['system_purpose_sms_menu_odd_color']='sms_menu_odd_color';
 $config['system_purpose_sms_menu_even_color']='sms_menu_even_color';
 $config['system_purpose_pos_menu_odd_color']='pos_menu_odd_color';
 $config['system_purpose_pos_menu_even_color']='pos_menu_even_color';
-$config['system_purpose_login_barcode_padding_top']='login_barcode_padding_top';
+

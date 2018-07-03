@@ -144,6 +144,23 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label">Show</label>
             </div>
         </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 4</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="text" name="items[line4][text]" class="form-control" value="<?php echo $item['ger_pur'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line4][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
 
     </div>
 
