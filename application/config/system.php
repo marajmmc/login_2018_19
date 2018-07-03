@@ -43,6 +43,7 @@ $config['system_bank_account_purpose_sale_receive']='sale_receive';
 $config['system_purpose_sms_date_expire']='sms_date_expire';
 $config['system_purpose_sms_quantity_order_max']='sms_quantity_order_max';
 $config['system_purpose_login_barcode_padding_top']='login_barcode_padding_top';
+$config['system_purpose_login_barcode_margin_left']='login_barcode_margin_left';
 $config['system_purpose_login_barcode_expire_date']='login_barcode_expire_date';
 $config['system_purpose_login_barcode_ger_pur']='login_barcode_ger_pur';
 $config['system_purpose_login_menu_odd_color']='login_menu_odd_color';

@@ -132,7 +132,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right">Line 3</label>
             </div>
             <div class="col-xs-4">
-                <input type="text" name="items[line2][text]" class="form-control" value="Exp. Date: <?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+                <input type="text" name="items[line2][text]" class="form-control" value="<?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
             </div>
             <div class="col-xs-2">
                 <select name="items[line2][show]" class="form-control">
