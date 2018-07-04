@@ -45,6 +45,7 @@ $config['system_purpose_sms_quantity_order_max']='sms_quantity_order_max';
 $config['system_purpose_login_barcode_padding_top']='login_barcode_padding_top';
 $config['system_purpose_login_barcode_margin_left']='login_barcode_margin_left';
 $config['system_purpose_login_barcode_expire_date']='login_barcode_expire_date';
+$config['system_purpose_login_barcode_lot_number']='login_barcode_lot_number';
 $config['system_purpose_login_barcode_ger_pur']='login_barcode_ger_pur';
 $config['system_purpose_login_menu_odd_color']='login_menu_odd_color';
 $config['system_purpose_login_menu_even_color']='login_menu_even_color';

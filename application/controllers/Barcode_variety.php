@@ -129,6 +129,13 @@ class Barcode_variety extends Root_Controller
             }
             $data['item']['date_expire']=$result['config_value'];
 
+            $data['item']['lot_number']='';
+            $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="'.$this->config->item('system_purpose_login_barcode_lot_number').'"', 'status ="'.$this->config->item('system_status_active').'"'),1);
+            if($result)
+            {
+                $data['item']['lot_number']=$result['config_value'];
+            }
+
             $data['item']['ger_pur']='';
             $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="'.$this->config->item('system_purpose_login_barcode_ger_pur').'"', 'status ="'.$this->config->item('system_status_active').'"'),1);
             if($result)

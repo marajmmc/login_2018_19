@@ -13,11 +13,11 @@ $CI=& get_instance();
             {
             ?>
                 <?php
-                if($key=='line3')
+                if($key=='line1')
                 {
                     ?>
                     <div><?php echo substr($line['text'],0,-3);?></div>
-                    <img src="<?php echo site_url('barcode/index/outlet_for_sticker/'.substr($line['text'],-3).'/150/15');  ?>">
+
                     <?php
                 }
                 else
@@ -32,7 +32,7 @@ $CI=& get_instance();
             }
         }
         ?>
-        <img src="<?php echo site_url('barcode/index/variety_by_price_id/'.($id).'/150/15');  ?>">
+        <img src="<?php echo site_url('barcode/index/variety_by_price_id/'.($id).'/150/20');  ?>">
     </div>
     <div style="width: 150px;float: left;margin-left: 20px;">
         <?php
@@ -44,11 +44,11 @@ $CI=& get_instance();
                 ?>
 
                 <?php
-                if($key=='line3')
+                if($key=='line1')
                 {
                     ?>
                     <div><?php echo substr($line['text'],0,-3);?></div>
-                    <img src="<?php echo site_url('barcode/index/outlet_for_sticker/'.substr($line['text'],-3).'/150/15');  ?>">
+
                 <?php
                 }
                 else
@@ -63,6 +63,6 @@ $CI=& get_instance();
             }
         }
         ?>
-        <img src="<?php echo site_url('barcode/index/variety_by_price_id/'.($id).'/150/15');  ?>">
+        <img src="<?php echo site_url('barcode/index/variety_by_price_id/'.($id).'/150/20');  ?>">
     </div>
 </div>
