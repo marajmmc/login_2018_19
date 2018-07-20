@@ -511,6 +511,10 @@ class Report_stock_outlets extends Root_Controller
         $data['in_wo_kg']= 1;
         $data['out_ow_pkt']= 1;
         $data['out_ow_kg']= 1;
+        $data['in_oo_pkt']=1;
+        $data['in_oo_kg']=1;
+        $data['out_oo_pkt']=1;
+        $data['out_oo_kg']=1;
         $data['out_sale_pkt']= 1;
         $data['out_sale_kg']= 1;
         $data['current_stock_pkt']= 1;
@@ -682,10 +686,43 @@ class Report_stock_outlets extends Root_Controller
         {
             $stock_in[$result['variety_id']][$result['pack_size_id']]['in_wo_opening']=$result['in_wo_opening'];
             $stock_in[$result['variety_id']][$result['pack_size_id']]['in_wo']=$result['in_wo'];
-            //initialize in oo if includes
+            $stock_in[$result['variety_id']][$result['pack_size_id']]['in_oo_opening']=0;
+            $stock_in[$result['variety_id']][$result['pack_size_id']]['in_oo']=0;
         }
-        //write oo code
-        //if not in $stock_in array initialize in_wo as 0
+        //from outlets in_oo
+        $this->db->from($this->config->item('table_sms_transfer_oo_details').' details');
+        $this->db->select('details.variety_id,details.pack_size_id');
+
+        $this->db->select('SUM(CASE WHEN oo.date_receive<'.$date_start.' then details.quantity_receive ELSE 0 END) in_oo_opening',false);
+
+        $this->db->select('SUM(CASE WHEN oo.date_receive>='.$date_start.' and oo.date_receive<='.$date_end.' then details.quantity_receive ELSE 0 END) in_oo',false);
+
+
+
+        $this->db->join($this->config->item('table_sms_transfer_oo').' oo','oo.id=details.transfer_oo_id','INNER');
+        $this->db->where('oo.status !=',$this->config->item('system_status_delete'));
+        $this->db->where('details.status !=',$this->config->item('system_status_delete'));
+        $this->db->where('oo.status_receive',$this->config->item('system_status_received'));
+        $this->db->where_in('details.variety_id',$variety_ids);
+        $this->db->where_in('oo.outlet_id_destination',$outlet_ids);
+        if($pack_size_id>0)
+        {
+            $this->db->where('details.pack_size_id',$pack_size_id);
+        }
+        $this->db->group_by('details.variety_id');
+        $this->db->group_by('details.pack_size_id');
+        $results=$this->db->get()->result_array();
+        foreach($results as $result)
+        {
+
+            if(!(isset($stock_in[$result['variety_id']][$result['pack_size_id']])))
+            {
+                $stock_in[$result['variety_id']][$result['pack_size_id']]['in_wo_opening']=0;
+                $stock_in[$result['variety_id']][$result['pack_size_id']]['in_wo']=0;
+            }
+            $stock_in[$result['variety_id']][$result['pack_size_id']]['in_oo_opening']=$result['in_oo_opening'];
+            $stock_in[$result['variety_id']][$result['pack_size_id']]['in_oo']=$result['in_oo'];
+        }
         //return hq ow
         $this->db->from($this->config->item('table_sms_transfer_ow_details').' details');
         $this->db->select('details.variety_id,details.pack_size_id');
@@ -714,7 +751,35 @@ class Report_stock_outlets extends Root_Controller
         {
             $out_ow[$result['variety_id']][$result['pack_size_id']]['out_ow_opening']=$result['out_ow_opening'];
             $out_ow[$result['variety_id']][$result['pack_size_id']]['out_ow']=$result['out_ow'];
-            //initialize in oo if includes
+        }
+        //to outlets out_oo
+        $this->db->from($this->config->item('table_sms_transfer_oo_details').' details');
+        $this->db->select('details.variety_id,details.pack_size_id');
+
+        $this->db->select('SUM(CASE WHEN oo.date_delivery<'.$date_start.' then details.quantity_approve ELSE 0 END) out_oo_opening',false);
+
+        $this->db->select('SUM(CASE WHEN oo.date_delivery>='.$date_start.' and oo.date_delivery<='.$date_end.' then details.quantity_approve ELSE 0 END) out_oo',false);
+
+
+
+        $this->db->join($this->config->item('table_sms_transfer_oo').' oo','oo.id=details.transfer_oo_id','INNER');
+        $this->db->where('oo.status !=',$this->config->item('system_status_delete'));
+        $this->db->where('details.status !=',$this->config->item('system_status_delete'));
+        $this->db->where('oo.status_delivery',$this->config->item('system_status_delivered'));
+        $this->db->where_in('details.variety_id',$variety_ids);
+        $this->db->where_in('oo.outlet_id_source',$outlet_ids);
+        if($pack_size_id>0)
+        {
+            $this->db->where('details.pack_size_id',$pack_size_id);
+        }
+        $this->db->group_by('details.variety_id');
+        $this->db->group_by('details.pack_size_id');
+        $results=$this->db->get()->result_array();
+        $out_oo=array();
+        foreach($results as $result)
+        {
+            $out_oo[$result['variety_id']][$result['pack_size_id']]['out_oo_opening']=$result['out_oo_opening'];
+            $out_oo[$result['variety_id']][$result['pack_size_id']]['out_oo']=$result['out_oo'];
         }
         //sales
         $this->db->from($this->config->item('table_pos_sale_details').' details');
@@ -793,15 +858,20 @@ class Report_stock_outlets extends Root_Controller
                         $prev_type_name=$variety['crop_type_name'];
                         $first_row=false;
                     }
-                    $info['opening_stock_pkt']=$stock_in[$variety['variety_id']][$pack_size_id]['in_wo_opening'];
+                    $info['opening_stock_pkt']=$stock_in[$variety['variety_id']][$pack_size_id]['in_wo_opening']+$stock_in[$variety['variety_id']][$pack_size_id]['in_oo_opening'];
                     $info['in_wo_pkt']=$stock_in[$variety['variety_id']][$pack_size_id]['in_wo'];
+                    $info['in_oo_pkt']=$stock_in[$variety['variety_id']][$pack_size_id]['in_oo'];
 
                     if(isset($out_ow[$variety['variety_id']][$pack_size_id]))
                     {
                         $info['opening_stock_pkt']-=$out_ow[$variety['variety_id']][$pack_size_id]['out_ow_opening'];
                         $info['out_ow_pkt']+=$out_ow[$variety['variety_id']][$pack_size_id]['out_ow'];
                     }
-
+                    if(isset($out_oo[$variety['variety_id']][$pack_size_id]))
+                    {
+                        $info['opening_stock_pkt']-=$out_oo[$variety['variety_id']][$pack_size_id]['out_oo_opening'];
+                        $info['out_oo_pkt']+=$out_oo[$variety['variety_id']][$pack_size_id]['out_oo'];
+                    }
 
                     if(isset($sales[$variety['variety_id']][$pack_size_id]))
                     {
@@ -812,10 +882,12 @@ class Report_stock_outlets extends Root_Controller
                     $info['opening_stock_kg']=$info['opening_stock_pkt']*$pack_sizes[$pack_size_id]/1000;
                     $info['in_wo_kg']=$info['in_wo_pkt']*$pack_sizes[$pack_size_id]/1000;
                     $info['out_ow_kg']=$info['out_ow_pkt']*$pack_sizes[$pack_size_id]/1000;
+                    $info['in_oo_kg']=$info['in_oo_pkt']*$pack_sizes[$pack_size_id]/1000;
+                    $info['out_oo_kg']=$info['out_oo_pkt']*$pack_sizes[$pack_size_id]/1000;
                     $info['out_sale_kg']=$info['out_sale_pkt']*$pack_sizes[$pack_size_id]/1000;
 
-                    $info['current_stock_pkt']=$info['opening_stock_pkt']+$info['in_wo_pkt']-$info['out_ow_pkt']-$info['out_sale_pkt'];
-                    $info['current_stock_kg']=$info['opening_stock_kg']+$info['in_wo_kg']-$info['out_ow_kg']-$info['out_sale_kg'];
+                    $info['current_stock_pkt']=$info['opening_stock_pkt']+$info['in_wo_pkt']+$info['in_oo_pkt']-$info['out_ow_pkt']-$info['out_oo_pkt']-$info['out_sale_pkt'];
+                    $info['current_stock_kg']=$info['opening_stock_kg']+$info['in_wo_kg']+$info['in_oo_kg']-$info['out_ow_kg']-$info['out_oo_kg']-$info['out_sale_kg'];
                     foreach($info as $key=>$r)
                     {
                         if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
