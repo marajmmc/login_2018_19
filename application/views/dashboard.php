@@ -2,6 +2,17 @@
 $user=User_helper::get_user();
 $CI = & get_instance();
 $sites=User_helper::get_accessed_sites();
+$designation_name='Designation not set';
+if(!empty($user->designation))
+{
+    $result=Query_helper::get_info($CI->config->item('table_login_setup_designation'),array('id','name','status','ordering'),array('status !="'.$this->config->item('system_status_delete').'"','id ='.$user->designation),1);
+    if($result)
+    {
+        $designation_name=$result['name'];
+    }
+}
+
+//!empty($user->designation)?$user->designation:'Designation not set'
 
 ?>
 <div class="row widget">
@@ -43,7 +54,7 @@ $sites=User_helper::get_accessed_sites();
                     <ul class="container details">
                         <li><p><span class="glyphicon glyphicon-earphone one" style="width:50px;"></span><?php echo !empty($user->mobile_no)?$user->mobile_no:'Mobile number not set'?></p></li>
                         <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span><?php echo !empty($user->email)?$user->email:'Email not set'?></p></li>
-                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span><?php echo !empty($user->designation)?$user->designation:'Designation not set'?></p></li>
+                        <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span><?php echo $designation_name;?></p></li>
                         <li>
                             <p class="btn-group btn-group-lg">
                                 <a href="<?php echo base_url()?>profile_info/index/details/<?php echo $user->id;?>" class="btn btn-primary">
