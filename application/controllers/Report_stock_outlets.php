@@ -333,6 +333,7 @@ class Report_stock_outlets extends Root_Controller
         {
             $this->db->where('stock_summary_variety.pack_size_id',$pack_size_id);
         }
+        $this->db->where_in('stock_summary_variety.variety_id',$variety_ids);
         $this->db->group_by(array($location_type));
         $this->db->group_by('stock_summary_variety.variety_id');
         $this->db->group_by('stock_summary_variety.pack_size_id');
