@@ -21,3 +21,23 @@ $lang['LABEL_CURRENT_STOCK_KG']='CS(kg)';
 $lang['LABEL_CURRENT_STOCK_KG_CAL']='CS(kg) Sum';
 $lang['LABEL_AMOUNT_PRICE_UNIT']="Unit Price";
 $lang['LABEL_AMOUNT_PRICE_TOTAL']="Total Price";
+
+$lang['LABEL_STOCK_HQ_PKT']="Hq(pkt)";
+$lang['LABEL_STOCK_HQ_KG']="Hq(kg)";
+$lang['LABEL_AMOUNT_HQ']="Hq(price)";
+$lang['LABEL_STOCK_OUTLET_PKT']="SR(pkt)";
+$lang['LABEL_STOCK_OUTLET_KG']="SR(kg)";
+$lang['LABEL_AMOUNT_OUTLET']="SR(price)";
+
+$lang['LABEL_STOCK_TO_PKT']="TO(pkt)";
+$lang['LABEL_STOCK_TO_KG']="TO(kg)";
+$lang['LABEL_AMOUNT_TO']="TO(price)";
+$lang['LABEL_STOCK_TR_PKT']="TR(pkt)";
+$lang['LABEL_STOCK_TR_KG']="TR(kg)";
+$lang['LABEL_AMOUNT_TR']="TR(price)";
+$lang['LABEL_STOCK_TS_PKT']="TS(pkt)";
+$lang['LABEL_STOCK_TS_KG']="TS(kg)";
+$lang['LABEL_AMOUNT_TS']="TS(price)";
+$lang['LABEL_STOCK_TOTAL_PKT']="Total(pkt)";
+$lang['LABEL_STOCK_TOTAL_KG']="Total(kg)";
+$lang['LABEL_AMOUNT_TOTAL']="Total(price)";

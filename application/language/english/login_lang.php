@@ -34,7 +34,7 @@ $lang['ACTION_REPORT'] = 'View Report';
 $lang['ACTION_DISCOUNT'] = 'Discount';
 
 //Added by saiful
-$lang['ACTION_REPORT_VIEW'] = 'Report View';
+$lang['ACTION_REPORT_VIEW'] = 'View Report';
 
 
 //****MODULE TASK//
