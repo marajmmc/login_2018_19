@@ -794,6 +794,7 @@ class Report_stock_outlets extends Root_Controller
 
         $this->db->join($this->config->item('table_pos_sale').' sale','sale.id=details.sale_id','INNER');
         $this->db->where('sale.status !=',$this->config->item('system_status_delete'));
+        $this->db->where_in('details.variety_id',$variety_ids);
         $this->db->where_in('sale.outlet_id',$outlet_ids);
         if($pack_size_id>0)
         {
