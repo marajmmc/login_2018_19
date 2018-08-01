@@ -167,6 +167,7 @@ $lang['LABEL_PRICE_KG'] = 'Price KG';
 $lang['LABEL_MASTERFOIL'] = 'MasterFoil';
 $lang['LABEL_FOIL'] = 'Foil';
 $lang['LABEL_STICKER'] = 'Sticker';
+$lang['LABEL_PACKET_ALL'] = 'Packets';
 
 
 //Basic Setup
