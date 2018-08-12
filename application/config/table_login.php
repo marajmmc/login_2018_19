@@ -77,3 +77,6 @@ $config['table_login_setup_system_configures'] = 'arm_login_2018_19.login_setup_
 
 // Outlet Expanse item
 $config['table_login_setup_expense_item_outlet'] = 'arm_login_2018_19.login_setup_expense_item_outlet';
+
+// IOU items
+$config['table_login_setup_iou_items'] = 'arm_login_2018_19.login_setup_iou_items';
