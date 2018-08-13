@@ -29,6 +29,7 @@ $lang['ACTION_LOAD_MORE'] = 'Load More';
 $lang['ACTION_DOCUMENT'] = 'Documents';
 $lang['ACTION_ASSIGN_GROUP_ROLE'] = 'Assign Group Role';
 $lang['ACTION_REPORT'] = 'View Report';
+$lang['LABEL_BUTTON_DETAILS'] = 'Details';
 
 //Added by saiful
 $lang['ACTION_DISCOUNT'] = 'Discount';
@@ -168,7 +169,9 @@ $lang['LABEL_MASTERFOIL'] = 'MasterFoil';
 $lang['LABEL_FOIL'] = 'Foil';
 $lang['LABEL_STICKER'] = 'Sticker';
 $lang['LABEL_PACKET_ALL'] = 'Packets';
-
+$lang['LABEL_PACK_SIZE_NAME'] = 'Pack Size(gm)';
+$lang['LABEL_PRICE_PER_PACK'] = 'Price/pack';
+$lang['LABEL_WEIGHT_KG'] = 'Weight(kg)';
 
 //Basic Setup
 $lang['LABEL_DATE_START'] = 'Starting Date';
@@ -211,7 +214,13 @@ $lang['LABEL_AMOUNT_RATE_BUDGET'] = 'Budget Rate';
 
 //Outlet
 $lang['LABEL_OUTLET_NAME'] = 'Outlet';
-
+$lang['LABEL_DATE_SALE'] = 'Sale Date';
+$lang['LABEL_INVOICE_NO'] = 'Invoice No';
+$lang['LABEL_CUSTOMER_NAME'] = 'Customer';
+$lang['LABEL_AMOUNT_DISCOUNT'] = 'Discount';
+$lang['LABEL_AMOUNT_ACTUAL'] = 'Actual Amount';
+$lang['LABEL_DISCOUNT'] = 'Discount';
+$lang['LABEL_CODE_SCAN_TYPE'] = 'Scan By';
 // system configuration setup
 $lang['LABEL_PURPOSE'] = 'Purpose';
 $lang['LABEL_CONFIG_VALUE'] = 'Config Value';

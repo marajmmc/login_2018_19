@@ -27,4 +27,8 @@ class Barcode_helper
     {
         return str_pad($outlet_id,3,0,STR_PAD_LEFT).date('M-d');
     }
+    public static function get_barcode_sales($id)
+    {
+        return 'I-'.str_pad($id,7,0,STR_PAD_LEFT);
+    }
 }
