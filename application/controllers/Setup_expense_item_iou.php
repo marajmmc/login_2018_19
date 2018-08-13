@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Setup_tour_item_iou extends Root_Controller
+class Setup_expense_item_iou extends Root_Controller
 {
     private $message;
     public $permissions;
