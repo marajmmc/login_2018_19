@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Setup_iou_items extends Root_Controller
+class Setup_tour_item_iou extends Root_Controller
 {
     private $message;
     public $permissions;
@@ -10,8 +10,8 @@ class Setup_iou_items extends Root_Controller
     {
         parent::__construct();
         $this->message = "";
-        $this->permissions = User_helper::get_permission('Setup_iou_items');
-        $this->controller_url = 'setup_iou_items';
+        $this->permissions = User_helper::get_permission(get_class());
+        $this->controller_url = strtolower(get_class());
     }
 
     public function index($action = "list", $id = 0)
@@ -67,7 +67,7 @@ class Setup_iou_items extends Root_Controller
 
     private function system_get_items()
     {
-        $items = Query_helper::get_info($this->config->item('table_login_setup_iou_items'), array('id', 'name', 'status', 'ordering'), array('status !="' . $this->config->item('system_status_delete') . '"'), 0, 0, array('ordering ASC'));
+        $items = Query_helper::get_info($this->config->item('table_login_setup_tour_item_iou'), array('id', 'name', 'status', 'ordering'), array('status !="' . $this->config->item('system_status_delete') . '"'), 0, 0, array('ordering ASC'));
         $this->json_return($items);
     }
 
@@ -112,7 +112,7 @@ class Setup_iou_items extends Root_Controller
             {
                 $type_id = $id;
             }
-            $data['iou_item'] = Query_helper::get_info($this->config->item('table_login_setup_iou_items'), '*', array('id =' . $type_id), 1);
+            $data['iou_item'] = Query_helper::get_info($this->config->item('table_login_setup_tour_item_iou'), '*', array('id =' . $type_id), 1);
             $data['title'] = 'Edit IOU Item :: ' . $data['iou_item']['name'];
             $ajax['status'] = true;
             $ajax['system_content'][] = array('id' => '#system_content', 'html' => $this->load->view($this->controller_url . '/add_edit', $data, true));
@@ -170,13 +170,13 @@ class Setup_iou_items extends Root_Controller
             {
                 $data['user_updated'] = $user->user_id;
                 $data['date_updated'] = $time;
-                Query_helper::update($this->config->item('table_login_setup_iou_items'), $data, array("id = " . $id));
+                Query_helper::update($this->config->item('table_login_setup_tour_item_iou'), $data, array("id = " . $id));
             }
             else
             {
                 $data['user_created'] = $user->user_id;
                 $data['date_created'] = $time;
-                Query_helper::add($this->config->item('table_login_setup_iou_items'), $data);
+                Query_helper::add($this->config->item('table_login_setup_tour_item_iou'), $data);
             }
             $this->db->trans_complete(); //DB Transaction Handle END
             if ($this->db->trans_status() === TRUE)
