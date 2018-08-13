@@ -10,8 +10,8 @@ class Setup_expense_item_iou extends Root_Controller
     {
         parent::__construct();
         $this->message = "";
-        $this->permissions = User_helper::get_permission(get_class());
-        $this->controller_url = strtolower(get_class());
+        $this->permissions = User_helper::get_permission(get_class($this));
+        $this->controller_url = strtolower(get_class($this));
     }
 
     public function index($action = "list", $id = 0)
