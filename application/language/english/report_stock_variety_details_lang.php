@@ -41,3 +41,6 @@ $lang['LABEL_AMOUNT_TS']="TS(price)";
 $lang['LABEL_STOCK_TOTAL_PKT']="Total(pkt)";
 $lang['LABEL_STOCK_TOTAL_KG']="Total(kg)";
 $lang['LABEL_AMOUNT_TOTAL']="Total(price)";
+$lang['LABEL_STOCK_PKT']="pkt";
+$lang['LABEL_STOCK_KG']="kg";
+$lang['LABEL_AMOUNT']="Amount";

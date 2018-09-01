@@ -18,8 +18,9 @@ $CI = & get_instance();
                         </div>
                         <div class="col-xs-6">
                             <select id="report_name" name="report[report_name]" class="form-control">
-                                <option value=stock_current>Current Stock</option>
-                                <option value="stock_details">Stock Details</option>
+                                <option value=stock_current>Current Stock area</option>
+                                <option value="stock_details">Stock Details area total</option>
+                                <option value="stock_current_outlets">Current Stock Showrooms</option>
                             </select>
                         </div>
                     </div>
@@ -280,9 +281,9 @@ $CI = & get_instance();
 
     jQuery(document).ready(function()
     {
+        system_off_events();
         $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "2015:+0"});
         $("#crop_id").html(get_dropdown_with_select(system_crops));
-        $(document).off("change", "#crop_id");
         $(document).on("change","#crop_id",function()
         {
             $('#system_report_container').html('');
@@ -301,7 +302,6 @@ $CI = & get_instance();
                 }
             }
         });
-        $(document).off("change", "#crop_type_id");
         $(document).on("change","#crop_type_id",function()
         {
             $('#system_report_container').html('');
@@ -317,8 +317,7 @@ $CI = & get_instance();
                 }
             }
         });
-        $(document).off("change", "#variety_id");
-        $(document).off("change", "#division_id");
+
         $(document).on('change','#division_id',function()
         {
             $('#zone_id').val('');
@@ -341,7 +340,6 @@ $CI = & get_instance();
             }
 
         });
-        $(document).off("change", "#zone_id");
         $(document).on('change','#zone_id',function()
         {
             $('#territory_id').val('');
@@ -361,7 +359,6 @@ $CI = & get_instance();
                 }
             }
         });
-        $(document).off("change", "#territory_id");
         $(document).on('change','#territory_id',function()
         {
             $('#district_id').val('');
@@ -380,7 +377,6 @@ $CI = & get_instance();
 
             }
         });
-        $(document).off("change", "#district_id");
         $(document).on('change','#district_id',function()
         {
             $('#outlet_id').val('');
@@ -397,13 +393,11 @@ $CI = & get_instance();
                 }
             }
         });
-        $(document).off("change", "#outlet_id");
         $(document).on('change','#outlet_id',function()
         {
             $("#system_report_container").html('');
 
         });
-        $(document).off("change", "#fiscal_year_id");
         $(document).on("change","#fiscal_year_id",function()
         {
 
@@ -421,7 +415,7 @@ $CI = & get_instance();
         {
             $("#system_report_container").html("");
             var report_name=$('#report_name').val();
-            if(report_name=='stock_current')
+            if((report_name=='stock_current')||(report_name=='stock_current_outlets'))
             {
                 $('#container_fiscal_year').hide();
             }
