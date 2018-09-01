@@ -265,6 +265,7 @@ class Report_stock_outlets extends Root_Controller
         $crop_type_id=$this->input->post('crop_type_id');
         $variety_id=$this->input->post('variety_id');
         $pack_size_id=$this->input->post('pack_size_id');
+        $status_variety=$this->input->post('status_variety');
         if($outlet_id>0)
         {
             $areas=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$outlet_id,'revision =1'));
@@ -313,6 +314,10 @@ class Report_stock_outlets extends Root_Controller
                     $this->db->where('v.id',$variety_id);
                 }
             }
+        }
+        if(($status_variety==$this->config->item('system_status_active'))||($status_variety==$this->config->item('system_status_inactive')))
+        {
+            $this->db->where('v.status',$status_variety);
         }
         $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');
@@ -629,6 +634,7 @@ class Report_stock_outlets extends Root_Controller
         $pack_size_id=$this->input->post('pack_size_id');
         $date_end=$this->input->post('date_end');
         $date_start=$this->input->post('date_start');
+        $status_variety=$this->input->post('status_variety');
 
         $this->db->from($this->config->item('table_login_setup_classification_varieties').' v');
         $this->db->select('v.id variety_id,v.name variety_name');
@@ -647,6 +653,10 @@ class Report_stock_outlets extends Root_Controller
                     $this->db->where('v.id',$variety_id);
                 }
             }
+        }
+        if(($status_variety==$this->config->item('system_status_active'))||($status_variety==$this->config->item('system_status_inactive')))
+        {
+            $this->db->where('v.status',$status_variety);
         }
         $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');
@@ -1073,6 +1083,7 @@ class Report_stock_outlets extends Root_Controller
         $crop_type_id=$this->input->post('crop_type_id');
         $variety_id=$this->input->post('variety_id');
         $pack_size_id=$this->input->post('pack_size_id');
+        $status_variety=$this->input->post('status_variety');
         //get outlet ids
         $this->db->from($this->config->item('table_login_csetup_cus_info').' outlet_info');
         $this->db->select('outlet_info.customer_id value,outlet_info.name text');
@@ -1127,6 +1138,10 @@ class Report_stock_outlets extends Root_Controller
                     $this->db->where('v.id',$variety_id);
                 }
             }
+        }
+        if(($status_variety==$this->config->item('system_status_active'))||($status_variety==$this->config->item('system_status_inactive')))
+        {
+            $this->db->where('v.status',$status_variety);
         }
         $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');

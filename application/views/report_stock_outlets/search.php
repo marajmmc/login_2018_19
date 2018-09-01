@@ -18,9 +18,9 @@ $CI = & get_instance();
                         </div>
                         <div class="col-xs-6">
                             <select id="report_name" name="report[report_name]" class="form-control">
-                                <option value=stock_current>Current Stock area</option>
-                                <option value="stock_details">Stock Details area total</option>
-                                <option value="stock_current_outlets">Current Stock Showrooms</option>
+                                <option value=stock_current>Current Stock Area wise</option>
+                                <option value="stock_details">Stock Details Area Total</option>
+                                <option value="stock_current_outlets">Current Stock Showroom wise</option>
                             </select>
                         </div>
                     </div>
@@ -88,6 +88,18 @@ $CI = & get_instance();
                         <div class="col-xs-6">
                             <select id="variety_id" name="report[variety_id]" class="form-control">
                                 <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="" class="row show-grid">
+                        <div class="col-xs-6">
+                            <label for="status" class="control-label pull-right"><?php echo $CI->lang->line('LABEL_STATUS');?><span style="color:#FF0000">*</span></label>
+                        </div>
+                        <div class="col-xs-6">
+                            <select id="status" name="report[status_variety]" class="form-control">
+                                <option value="<?php echo $CI->config->item('system_status_active'); ?>"><?php echo $CI->lang->line('ACTIVE') ?></option>
+                                <option value="<?php echo $CI->config->item('system_status_inactive'); ?>"><?php echo $CI->lang->line('INACTIVE') ?></option>
+                                <option value=""><?php echo $CI->lang->line('ALL') ?></option>
                             </select>
                         </div>
                     </div>
