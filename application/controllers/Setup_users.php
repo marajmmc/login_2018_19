@@ -143,6 +143,7 @@ class Setup_users extends Root_Controller
     private function system_get_items()
     {
         $user = User_helper::get_user();
+        //assigned sites
         $this->db->from($this->config->item('table_login_setup_users_other_sites').' users_other_sites');
         $this->db->select('users_other_sites.user_id');
         $this->db->join($this->config->item('table_login_system_other_sites').' other_sites','other_sites.id=users_other_sites.site_id','INNER');
@@ -163,7 +164,28 @@ class Setup_users extends Root_Controller
                 $users_other_site[$result['user_id']]['sites']=$result['short_name'];
             }
         }
-
+        //assigned company
+        $this->db->from($this->config->item('table_login_setup_users_company').' users_company');
+        $this->db->select('users_company.user_id');
+        $this->db->join($this->config->item('table_login_setup_company').' company','company.id=users_company.company_id','INNER');
+        $this->db->select('company.short_name');
+        $this->db->where('users_company.revision',1);
+        $this->db->order_by('company.ordering','ASC');
+        $this->db->order_by('company.id','ASC');
+        $results=$this->db->get()->result_array();
+        $users_company=array();
+        foreach($results as $result)
+        {
+            if(isset($users_company[$result['user_id']]['companies']))
+            {
+                $users_company[$result['user_id']]['companies'].=', '.$result['short_name'];
+            }
+            else
+            {
+                $users_company[$result['user_id']]['companies']=$result['short_name'];
+            }
+        }
+        //assigned area
         $this->db->from($this->config->item('table_login_setup_user_area').' user_area');
         $this->db->select('user_area.*');
         $this->db->join($this->config->item('table_login_setup_location_divisions').' divisions','divisions.id=user_area.division_id','LEFT');
@@ -249,6 +271,14 @@ class Setup_users extends Root_Controller
             else
             {
                 $item['other_sites']="N/A";
+            }
+            if(isset($users_company[$item['id']]['companies']))
+            {
+                $item['company_name']=$users_company[$item['id']]['companies'];
+            }
+            else
+            {
+                $item['company_name']="N/A";
             }
 
             if(isset($users_areas[$item['id']]))
@@ -1807,6 +1837,7 @@ class Setup_users extends Root_Controller
         $data['name']= 1;
         $data['user_group']= 1;
         $data['user_area']= 1;
+        $data['company_name']= 1;
         $data['other_sites']= 1;
         $data['designation_name']= 1;
         $data['department_name']= 1;
