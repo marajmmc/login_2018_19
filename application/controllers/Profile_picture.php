@@ -75,11 +75,11 @@ class Profile_picture extends Root_Controller
             $time=time();
             $user_id=$user->user_id;
 
-            $dir=(FCPATH).'images/profiles/'.$user_id;
-            if(!is_dir($dir))
-            {
-                mkdir($dir, 0777);
-            }
+//            $dir=(FCPATH).'images/profiles/'.$user_id;
+//            if(!is_dir($dir))
+//            {
+//                mkdir($dir, 0777);
+//            }
             $uploaded_image = System_helper::upload_file("images/profiles/".$user_id);
             if(array_key_exists('image_profile',$uploaded_image))
             {

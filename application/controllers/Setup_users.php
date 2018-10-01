@@ -504,11 +504,11 @@ class Setup_users extends Root_Controller
         }
         else
         {
-            $dir=(FCPATH).'images/profiles/'.$id;
-            if(!is_dir($dir))
-            {
-                mkdir($dir, 0777);
-            }
+//            $dir=(FCPATH).'images/profiles/'.$id;
+//            if(!is_dir($dir))
+//            {
+//                mkdir($dir, 0777);
+//            }
             $uploaded_image = System_helper::upload_file('images/profiles/'.$id);
             if(array_key_exists('image_profile',$uploaded_image))
             {

@@ -3,6 +3,9 @@ $config['offline_controllers']=array('home','sys_site_offline');
 $config['external_controllers']=array('home');//user can use them without login
 $config['system_max_actions']=8;
 
+$config['system_site_root_folder']='login_2018_19';
+$config['system_upload_image_auth_key']='ems_2018_19';
+$config['system_upload_api_url']='http://180.234.223.205/api_file_server/upload';
 
 $config['system_status_yes']='Yes';
 $config['system_status_no']='No';
@@ -19,7 +22,7 @@ $config['system_status_delivered']='Delivered';
 $config['system_status_received']='Received';
 $config['system_status_rejected']='Rejected';
 
-$config['system_base_url_profile_picture']='http://50.116.76.180/login/';
+$config['system_base_url_profile_picture']='http://180.234.223.205/login_2018_19/';
 //$config['system_base_url_profile_picture']='http://127.0.0.1/login_2018_19/';
 $config['system_base_url_customer_profile_picture']='http://180.234.223.205/login_2018_19/';
 $config['system_base_url_customer_document']='http://180.234.223.205/login_2018_19/';

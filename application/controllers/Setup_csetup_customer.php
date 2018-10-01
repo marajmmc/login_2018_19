@@ -371,11 +371,11 @@ class Setup_csetup_customer extends Root_Controller {
                 $data_customer_info['revision']=1;
                 $data_customer_info['user_created'] = $user->user_id;
                 $data_customer_info['date_created'] = $time;
-                $dir=(FCPATH).'images/customer_profiles/'.$id;
-                if(!is_dir($dir))
-                {
-                    mkdir($dir, 0777);
-                }
+//                $dir=(FCPATH).'images/customer_profiles/'.$id;
+//                if(!is_dir($dir))
+//                {
+//                    mkdir($dir, 0777);
+//                }
                 $uploaded_image = System_helper::upload_file('images/customer_profiles/'.$id);
                 if(array_key_exists('image_profile',$uploaded_image))
                 {
@@ -409,11 +409,11 @@ class Setup_csetup_customer extends Root_Controller {
                     $data_customer_info['user_created'] = $user->user_id;
                     $data_customer_info['date_created'] = $time;
 
-                    $dir=(FCPATH).'images/customer_profiles/'.$customer_id;
-                    if(!is_dir($dir))
-                    {
-                        mkdir($dir, 0777);
-                    }
+//                    $dir=(FCPATH).'images/customer_profiles/'.$customer_id;
+//                    if(!is_dir($dir))
+//                    {
+//                        mkdir($dir, 0777);
+//                    }
                     $uploaded_image = System_helper::upload_file('images/customer_profiles/'.$customer_id);
                     if(array_key_exists('image_profile',$uploaded_image))
                     {
@@ -672,11 +672,11 @@ class Setup_csetup_customer extends Root_Controller {
             die();
         }*/
         $file_folder='images/customer_documents/'.$id;
-        $dir=(FCPATH).$file_folder;
-        if(!is_dir($dir))
-        {
-            mkdir($dir, 0777);
-        }
+//        $dir=(FCPATH).$file_folder;
+//        if(!is_dir($dir))
+//        {
+//            mkdir($dir, 0777);
+//        }
         $types='gif|jpg|png|jpeg|doc|docx|pdf|xls|xlsx|ppt|pptx|txt';
         $uploaded_files = System_helper::upload_file($file_folder,$types);
         foreach($uploaded_files as $file)
