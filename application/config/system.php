@@ -23,9 +23,7 @@ $config['system_status_received']='Received';
 $config['system_status_rejected']='Rejected';
 
 $config['system_base_url_profile_picture']='http://180.234.223.205/login_2018_19/';
-//$config['system_base_url_profile_picture']='http://127.0.0.1/login_2018_19/';
-$config['system_base_url_customer_profile_picture']='http://180.234.223.205/login_2018_19/';
-$config['system_base_url_customer_document']='http://180.234.223.205/login_2018_19/';
+$config['system_base_url_picture']='http://180.234.223.205/login_2018_19/';
 
 $config['USER_TYPE_EMPLOYEE']=1;
 

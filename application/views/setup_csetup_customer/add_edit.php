@@ -212,7 +212,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             ?>
             <input type="hidden" name="customer_info[image_name]" value="<?php echo $customer_info['image_name']; ?>">
             <input type="hidden" name="customer_info[image_location]" value="<?php echo $customer_info['image_location']; ?>">
-            <img style="max-width: 250px;" src="<?php echo $CI->config->item('system_base_url_customer_profile_picture').$customer_info['image_location']; ?>">
+            <img style="max-width: 250px;" src="<?php echo $CI->config->item('system_base_url_picture').$customer_info['image_location']; ?>">
             <?php
         }
         ?>
