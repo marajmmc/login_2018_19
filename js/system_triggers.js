@@ -62,6 +62,8 @@ function system_off_events()
     $(document).off('input', '#items_container .quantity_approve');
     $(document).off('input', '#items_container .quantity_request');
 
+    $(document).off('click', '#button_action_save_jqx');
+
     /*SMS */
     /*$(document).off('input','#quantity_convert');
     $(document).off('input','#quantity_packet_actual');
