@@ -199,12 +199,12 @@ class Report_sale_outlet_dealers extends Root_Controller
         $variety_id=$this->input->post('variety_id');
         $pack_size_id=$this->input->post('pack_size_id');
         $dealers=$this->get_dealers($outlet_id);
-        /*$dealer_ids=array();
+        $dealer_ids=array();
         $dealer_ids[0]=0;
         foreach($dealers as $dealer)
         {
             $dealer_ids[$dealer['farmer_id']]=$dealer['farmer_id'];
-        }*/
+        }
         $this->db->from($this->config->item('table_pos_sale_details').' details');
         $this->db->select('details.variety_id,details.pack_size_id,details.pack_size');
 
@@ -292,16 +292,19 @@ class Report_sale_outlet_dealers extends Root_Controller
                 $info=$this->initialize_row($pack_sale['crop_name'],$pack_sale['crop_type_name'],$pack_sale['variety_name'],$pack_sale['pack_size'],$dealers);
                 foreach($pack_sale['dealers'] as $dealer_id=>$dealer_sale)
                 {
-                    $info['quantity_'.$dealer_id.'_pkt']=$dealer_sale['quantity_total']-$dealer_sale['quantity_cancel'];
-                    $info['quantity_'.$dealer_id.'_kg']=$info['quantity_'.$dealer_id.'_pkt']*$pack_sale['pack_size']/1000;
+                    if(in_array($dealer_id,$dealer_ids))
+                    {
+                        $info['quantity_'.$dealer_id.'_pkt']=$dealer_sale['quantity_total']-$dealer_sale['quantity_cancel'];
+                        $info['quantity_'.$dealer_id.'_kg']=$info['quantity_'.$dealer_id.'_pkt']*$pack_sale['pack_size']/1000;
 
-                    $amount_payable_all=$dealer_sale['amount_total']-$dealer_sale['amount_discount_variety']-$dealer_sale['amount_discount_self'];
-                    $amount_payable_cancel=$dealer_sale['amount_total_cancel']-$dealer_sale['amount_discount_variety_cancel']-$dealer_sale['amount_discount_self_cancel'];
-                    $info['amount_'.$dealer_id]=$amount_payable_all-$amount_payable_cancel;
+                        $amount_payable_all=$dealer_sale['amount_total']-$dealer_sale['amount_discount_variety']-$dealer_sale['amount_discount_self'];
+                        $amount_payable_cancel=$dealer_sale['amount_total_cancel']-$dealer_sale['amount_discount_variety_cancel']-$dealer_sale['amount_discount_self_cancel'];
+                        $info['amount_'.$dealer_id]=$amount_payable_all-$amount_payable_cancel;
 
-                    $info['quantity_total_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
-                    $info['quantity_total_kg']+=$info['quantity_'.$dealer_id.'_kg'];
-                    $info['amount_total']+=$info['amount_'.$dealer_id];
+                        $info['quantity_total_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
+                        $info['quantity_total_kg']+=$info['quantity_'.$dealer_id.'_kg'];
+                        $info['amount_total']+=$info['amount_'.$dealer_id];
+                    }
                 }
                 if($info['quantity_total_pkt']==0)
                 {
@@ -342,17 +345,20 @@ class Report_sale_outlet_dealers extends Root_Controller
 
                 foreach($pack_sale['dealers'] as $dealer_id=>$dealer_sale)
                 {
-                    $type_total['quantity_'.$dealer_id.'_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
-                    $crop_total['quantity_'.$dealer_id.'_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
-                    $grand_total['quantity_'.$dealer_id.'_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
+                    if(in_array($dealer_id,$dealer_ids))
+                    {
+                        $type_total['quantity_'.$dealer_id.'_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
+                        $crop_total['quantity_'.$dealer_id.'_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
+                        $grand_total['quantity_'.$dealer_id.'_pkt']+=$info['quantity_'.$dealer_id.'_pkt'];
 
-                    $type_total['quantity_'.$dealer_id.'_kg']+=$info['quantity_'.$dealer_id.'_kg'];
-                    $crop_total['quantity_'.$dealer_id.'_kg']+=$info['quantity_'.$dealer_id.'_kg'];
-                    $grand_total['quantity_'.$dealer_id.'_kg']+=$info['quantity_'.$dealer_id.'_kg'];
+                        $type_total['quantity_'.$dealer_id.'_kg']+=$info['quantity_'.$dealer_id.'_kg'];
+                        $crop_total['quantity_'.$dealer_id.'_kg']+=$info['quantity_'.$dealer_id.'_kg'];
+                        $grand_total['quantity_'.$dealer_id.'_kg']+=$info['quantity_'.$dealer_id.'_kg'];
 
-                    $type_total['amount_'.$dealer_id]+=$info['amount_'.$dealer_id];
-                    $crop_total['amount_'.$dealer_id]+=$info['amount_'.$dealer_id];
-                    $grand_total['amount_'.$dealer_id]+=$info['amount_'.$dealer_id];
+                        $type_total['amount_'.$dealer_id]+=$info['amount_'.$dealer_id];
+                        $crop_total['amount_'.$dealer_id]+=$info['amount_'.$dealer_id];
+                        $grand_total['amount_'.$dealer_id]+=$info['amount_'.$dealer_id];
+                    }
                 }
                 $type_total['quantity_total_pkt']+=$info['quantity_total_pkt'];
                 $crop_total['quantity_total_pkt']+=$info['quantity_total_pkt'];
