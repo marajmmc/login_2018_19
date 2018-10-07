@@ -64,6 +64,9 @@ function system_off_events()
 
     $(document).off('click', '#button_action_save_jqx');
 
+    $(document).off('change', '.datepicker');
+    $(document).off('change', '#dealer_id');
+
     /*SMS */
     /*$(document).off('input','#quantity_convert');
     $(document).off('input','#quantity_packet_actual');
