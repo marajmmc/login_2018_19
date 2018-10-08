@@ -70,6 +70,7 @@ class Barcode_variety extends Root_Controller
     }
     private function system_get_items()
     {
+        $outlet_id='000';//no outlet
         $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
         $this->db->select('price.id,price.variety_id,price.pack_size_id,price.price,price.price_net');
         $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=price.variety_id','INNER');
@@ -91,7 +92,7 @@ class Barcode_variety extends Root_Controller
         foreach($items as &$item)
         {
             $item['price']=number_format($item['price'],2);
-            $item['barcode']=Barcode_helper::get_barcode_variety($item['crop_id'],$item['variety_id'],$item['pack_size_id']);
+            $item['barcode']=Barcode_helper::get_barcode_variety($outlet_id,$item['variety_id'],$item['pack_size_id']);
         }
         $this->json_return($items);
 
