@@ -202,7 +202,7 @@ $CI = & get_instance();
             </div>
             <div class="col-xs-6">
                 <div class="action_button">
-                    <button id="button_action_report" type="button" class="btn" data-form="#save_form"><?php echo $CI->lang->line("ACTION_REPORT_VIEW"); ?></button>
+                    <button id="button_action_report" type="button" class="btn" data-form="#save_form"><?php echo $CI->lang->line("ACTION_REPORT"); ?></button>
                 </div>
             </div>
         </div>
