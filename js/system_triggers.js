@@ -40,6 +40,10 @@ function system_off_events()
     $(document).off('change', '.territory_id');
     $(document).off('change', '#district_id');
     $(document).off('change', '.district_id');
+    $(document).off('change', '#upazilla_id');
+    $(document).off('change', '.upazilla_id');
+    $(document).off('change', '#union_id');
+    $(document).off('change', '.union_id');
 
     /*Outlet*/
     $(document).off('change', '#customer_id');
