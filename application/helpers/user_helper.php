@@ -12,18 +12,6 @@ class User_helper
         $result=Query_helper::get_info($CI->config->item('table_login_setup_user'),'*',array('id ='.$id),1);
         if($result && (md5($result['user_name'])==$result['password']))
         {
-//            echo '<pre>';
-//            print_r($result);
-//
-//
-//            echo '</pre>';
-//            echo '<pre>';
-//            print_r(print_r(md5($result['user_name'])));
-//            echo '</pre>';
-//            echo '<pre>';
-//            print_r(($result['password']));
-//            echo '</pre>';
-
             $this->username_password_same=true;
         }
         //user info
