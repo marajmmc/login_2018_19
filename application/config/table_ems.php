@@ -13,6 +13,10 @@ $config['table_ems_ft_rnd_demo_disease_picture'] = 'arm_ems_2018_19.ems_ft_rnd_d
 $config['table_ems_ft_rnd_demo_fruit_picture'] = 'arm_ems_2018_19.ems_ft_rnd_demo_fruit_picture';
 $config['table_ems_ft_farmers'] = 'arm_ems_2018_19.ems_ft_farmers';
 
+//Field Day Module
+$config['table_ems_setup_fd_expense_items'] = 'arm_ems_2018_19.ems_setup_fd_expense_items';
+$config['table_ems_setup_fd_picture_category'] = 'arm_ems_2018_19.ems_setup_fd_picture_category';
+
 //Dealer And Farmer Visit Task --- Added by saiful
 
 $config['table_ems_setup_ft_dealer_file'] = 'arm_ems_2018_19.ems_setup_ft_dealer_file';
