@@ -211,7 +211,7 @@ class Setup_basic_fyear extends Root_Controller
             {
                 $ajax['status']=false;
                 $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
-                $this->jsonReturn($ajax);
+                $this->json_return($ajax);
             }
         }
     }
