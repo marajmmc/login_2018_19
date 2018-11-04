@@ -100,7 +100,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                             $time=time();
                             if($user_info['time_mobile_authentication_off_end']>$time)
                             {
-                                echo 'Inactive for '.ceil(($user_info['time_mobile_authentication_off_end']-$time)/(3600*24).' day(s)');
+                                echo ceil(($user_info['time_mobile_authentication_off_end']-$time)/(3600*24)).' day(s)';
                             }
                             else
                             {
