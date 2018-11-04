@@ -16,6 +16,8 @@ $config['table_ems_ft_farmers'] = 'arm_ems_2018_19.ems_ft_farmers';
 //Field Day Module
 $config['table_ems_setup_fd_expense_items'] = 'arm_ems_2018_19.ems_setup_fd_expense_items';
 $config['table_ems_setup_fd_picture_category'] = 'arm_ems_2018_19.ems_setup_fd_picture_category';
+$config['table_ems_fd_budget'] = 'arm_ems_2018_19.ems_fd_budget';
+$config['table_ems_fd_budget_details'] = 'arm_ems_2018_19.ems_fd_budget_details';
 
 //Dealer And Farmer Visit Task --- Added by saiful
 
