@@ -282,7 +282,7 @@ $CI = & get_instance();
 
     jQuery(document).ready(function()
     {
-        $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "2015:+0"});
+        $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "2015:c+2"});
         $("#crop_id").html(get_dropdown_with_select(system_crops));
         $(document).off("change", "#crop_id");
         $(document).on("change","#crop_id",function()

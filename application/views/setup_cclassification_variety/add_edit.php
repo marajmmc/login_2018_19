@@ -217,7 +217,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         $(document).off('change','input[name="item[whose]"]:radio');
         $(document).off('change','#hybrid');
 
-        $("#date_release").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "-100:+0"});
+        $("#date_release").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "c-10:c+2"});
 
         $(document).on("change","#crop_id",function()
         {

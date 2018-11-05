@@ -254,7 +254,7 @@ $CI = & get_instance();
 
     jQuery(document).ready(function()
     {
-        $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "2015:+0"});
+        $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "2015:c+2"});
         $(document).off("change", "#division_id");
         $(document).on('change','#division_id',function()
         {

@@ -277,7 +277,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         $(document).off('change','#union_id');
         
         $('#division_id').html(get_dropdown_with_select(system_divisions,'','All'));
-        $("#date_join").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "-100:+0"});
+        $("#date_join").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "c-10:c+2"});
 
         $(document).on("input","#employee_id",function()
         {
