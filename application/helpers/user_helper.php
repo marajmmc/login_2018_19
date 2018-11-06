@@ -63,7 +63,6 @@ class User_helper
                 if($data['password_wrong_consecutive']<=$result['config_value'])//3ed digit 0
                 {
                     $message_warning=sprintf($CI->lang->line('WARNING_LOGIN_FAIL_100'),$result['config_value']-$data['password_wrong_consecutive']+1);
-                    Query_helper::add($CI->config->item('table_login_setup_user'),$data,false);
                     Query_helper::update($CI->config->item('table_login_setup_user'),$data,array("id = ".$user['id']),false);
                     return array('status_code'=>'100','message'=>$CI->lang->line('MSG_LOGIN_FAIL_100'),'message_warning'=>$message_warning);
                 }
