@@ -27,7 +27,7 @@ class Home extends Root_controller
 
                 else
                 {
-                    $this->login_page($info['message'],$info['message_warning']);
+                    $this->login_page($info['message'],$info['message_warning'],$this->input->post('username'));
                 }
             }
             else

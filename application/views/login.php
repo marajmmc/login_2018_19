@@ -19,7 +19,7 @@
                 </div>
                 <div class="login_content">
                     <div class="alert-danger"><?php echo $message_warning;?></div>
-                    <input class="form-control margin_bottom" type="text" name="username" placeholder="Username" value="" required>
+                    <input class="form-control margin_bottom" type="text" name="username" placeholder="Username" value="<?php echo $username; ?>" required>
                     <input class="form-control" type="password" name="password" value="" placeholder="Password" required>
                 </div>
                 <div class="login_action">
