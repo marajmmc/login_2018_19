@@ -11,6 +11,14 @@ $lang['MSG_CONFIRM_SAVE'] = 'Are You Sure to save?';
 $lang['MSG_SELECT_ONE'] = 'Please Select At least one item';
 $lang['MSG_SESSION_TIME_OUT'] = 'Your session expired.Please login again';
 
+$lang['MSG_LOGIN_FAIL_0'] = 'Invalid username';
+$lang['MSG_LOGIN_FAIL_100'] = 'Wrong password';
+$lang['WARNING_LOGIN_FAIL_100'] = 'Your account will be suspended if you enter %s more time(s) wrong password ';
+$lang['MSG_LOGIN_FAIL_101'] = 'Wrong password';
+$lang['WARNING_LOGIN_FAIL_101'] = 'Your Account suspended.Please contact with admin(01713090961).';
+$lang['REMARKS_USER_SUSPEND_WRONG_PASSWORD'] = 'Wrong password entered %s times.';
+
+
 //Action buttons
 $lang['ACTION_DASHBOARD'] = 'Dashboard';
 $lang['ACTION_NEW'] = 'New';

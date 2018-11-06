@@ -16,17 +16,18 @@ class Home extends Root_controller
         }
         else
         {
-            if($this->input->post())
+            if(($this->input->post('username'))&&($this->input->post('password')))
             {
-                if(User_helper::login($this->input->post('username'),$this->input->post('password')))
+                $info=User_helper::login($this->input->post('username'),$this->input->post('password'));
+                if($info['status_code']=='111')
                 {
-                    $this->dashboard_page($this->lang->line('MSG_LOGIN_SUCCESS'));
+                    $this->dashboard_page($info['message']);
                 }
+                //elseif(($info['status_code']=='0')||($info['status_code']=='10')||($info['status_code']=='1100'))
+
                 else
                 {
-                    $ajax['status']=false;
-                    $ajax['system_message']=$this->lang->line('MSG_USERNAME_PASSWORD_INVALID');
-                    $this->json_return($ajax);
+                    $this->login_page($info['message'],$info['message_warning']);
                 }
             }
             else

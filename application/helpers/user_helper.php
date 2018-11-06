@@ -27,7 +27,63 @@ class User_helper
     public static function login($username, $password)
     {
         $CI = & get_instance();
-        $user = $CI->db->get_where($CI->config->item('table_login_setup_user'), array('user_name' => $username, 'password' =>(md5($password)),'status'=>$CI->config->item('system_status_active')))->row();
+        $time=time();
+        $user=Query_helper::get_info($CI->config->item('table_login_setup_user'),'*',array('user_name ="'.$username.'"', 'status ="'.$CI->config->item('system_status_active').'"'),1);
+        //1st digit 0=>!user 1=>user   0
+            //2nd digit 0=>!password
+                //3rd digit 0=>wrong password(100) 1 =>suspend account(101)
+            //2nd digit 1=>password
+                //3rd digit(1) 0=>otp 1=>!otp direct login  111
+
+            //4th digit 0=>!mobile 1=>view opt login 1100 1101
+        if($user)//first digit 1
+        {
+            if($user['password']==md5($password))//2nd digit 1
+            {
+                if($user['password_wrong_consecutive']>0)
+                {
+                    $data=array();
+                    $data['password_wrong_consecutive']=0;
+                    Query_helper::update($CI->config->item('table_login_setup_user'),$data,array("id = ".$user['id']),false);
+                }
+                //direct login
+                //reset cookie
+                //    set_cookie('otp_'.$user['id'],$cookie_info,$cookie_expire_time);
+                $CI->session->set_userdata("user_id", $user['id']);
+                return array('status_code'=>'111','message'=>$CI->lang->line('MSG_LOGIN_SUCCESS'),'message_warning'=>'');
+            }
+            else//2nd digit 0
+            {
+                $result=Query_helper::get_info($CI->config->item('table_login_setup_system_configures'),array('config_value'),array('purpose ="' .$CI->config->item('system_purpose_login_max_wrong_password').'"','status ="'.$CI->config->item('system_status_active').'"'),1);
+
+                $data=array();
+                $data['password_wrong_consecutive']=$user['password_wrong_consecutive']+1;
+                $data['password_wrong_total']=$user['password_wrong_total']+1;
+
+                if($data['password_wrong_consecutive']<=$result['config_value'])//3ed digit 0
+                {
+                    $message_warning=sprintf($CI->lang->line('WARNING_LOGIN_FAIL_100'),$result['config_value']-$data['password_wrong_consecutive']+1);
+                    Query_helper::add($CI->config->item('table_login_setup_user'),$data,false);
+                    Query_helper::update($CI->config->item('table_login_setup_user'),$data,array("id = ".$user['id']),false);
+                    return array('status_code'=>'100','message'=>$CI->lang->line('MSG_LOGIN_FAIL_100'),'message_warning'=>$message_warning);
+                }
+                else//3rd digit 1
+                {
+                    $data['status']=$CI->config->item('system_status_inactive');
+                    $data['remarks_status_change']=sprintf($CI->lang->line('REMARKS_USER_SUSPEND_WRONG_PASSWORD'),$data['password_wrong_consecutive']);
+                    $data['date_status_changed'] = $time;
+                    $data['user_status_changed'] = -1;
+                    Query_helper::update($CI->config->item('table_login_setup_user'),$data,array("id = ".$user['id']),false);
+                    return array('status_code'=>'101','message'=>$CI->lang->line('MSG_LOGIN_FAIL_101'),'message_warning'=>$CI->lang->line('WARNING_LOGIN_FAIL_101'));
+                }
+            }
+        }
+        else//first digit 0
+        {
+            return array('status_code'=>'0','message'=>$CI->lang->line('MSG_LOGIN_FAIL_0'),'message_warning'=>'');
+        }
+
+        /*$user = $CI->db->get_where($CI->config->item('table_login_setup_user'), array('user_name' => $username, 'password' =>(md5($password)),'status'=>$CI->config->item('system_status_active')))->row();
         if ($user)
         {
             $CI->session->set_userdata("user_id", $user->id);
@@ -36,7 +92,7 @@ class User_helper
         else
         {
             return FALSE;
-        }
+        }*/
     }
     public static function get_user()
     {
@@ -49,7 +105,6 @@ class User_helper
             if($CI->session->userdata("user_id")!="")
             {
                 $user = $CI->db->get_where($CI->config->item('table_login_setup_user'), array('id' => $CI->session->userdata('user_id'),'status'=>$CI->config->item('system_status_active')))->row();
-                //$user = $CI->db->get_where($CI->config->item('table_user'), array('id' => $CI->session->userdata('user_id'),'status'=>$CI->config->item('system_status_active')))->row();
                 if($user)
                 {
                     User_helper::$logged_user = new User_helper($CI->session->userdata('user_id'));

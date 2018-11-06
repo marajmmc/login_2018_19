@@ -65,10 +65,12 @@ abstract class Root_Controller extends CI_Controller
             return false;
         }
     }
-    public function login_page($message="")
+    public function login_page($message="",$message_warning='')
     {
         $ajax['status']=true;
-        $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("login","",true));
+        $data=array();
+        $data['message_warning']=$message_warning;
+        $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("login",$data,true));
         $ajax['system_content'][]=array("id"=>"#system_menus","html"=>'');
         if($message)
         {
