@@ -378,7 +378,7 @@ $config['encryption_key'] = '';
 |
 */
 $config['sess_driver'] = 'database';
-$config['sess_cookie_name'] = 'armalik_login_2018_19';
+$config['sess_cookie_name'] = 'arm_login_2018_19';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = 'arm_login_2018_19.system_session';
 $config['sess_match_ip'] = FALSE;

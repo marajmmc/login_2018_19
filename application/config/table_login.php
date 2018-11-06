@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
 $config['table_login_setup_user'] = 'arm_login_2018_19.login_setup_user';
 $config['table_login_setup_user_info'] = 'arm_login_2018_19.login_setup_user_info';
 
@@ -13,7 +12,6 @@ $config['table_login_setup_designation'] = 'arm_login_2018_19.login_setup_design
 $config['table_login_setup_user_type'] = 'arm_login_2018_19.login_setup_user_type';
 
 // other site
-$config['table_login_other_sites_visit'] = 'arm_login_2018_19.login_other_sites_visit';
 $config['table_login_system_other_sites'] = 'arm_login_2018_19.login_system_other_sites';
 $config['table_login_setup_users_other_sites'] = 'arm_login_2018_19.login_setup_users_other_sites';
 

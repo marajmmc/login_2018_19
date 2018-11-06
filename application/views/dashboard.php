@@ -108,11 +108,11 @@ if(!empty($user->designation))
             foreach($sites as $site)
             {
                 ?>
-                <a class="external" target="_blank" href="<?php echo site_url('other_sites_visit/visit_site/'.$site['id']); ?>">
+                <a class="external" target="_blank" href="<?php echo $site['site_url']; ?>">
                     <div class="col-md-3">
                         <div class="content-box text-center">
                             <span class="content-box-icon bg-vaiolet">
-                                <img src="<?php echo base_url()?>images/logo.png" alt="" style="width: 100%"/>
+                                <img src="<?php echo base_url('images/logo.png')?>" alt="<?php echo strtoupper($site['short_name']);?>" style="width: 100%"/>
                             </span>
                             <h4><?php echo strtoupper($site['short_name']);?></h4>
                         </div>
