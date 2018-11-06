@@ -9,6 +9,7 @@ $lang['MSG_LOCATION_NOT_ASSIGNED_OR_INVALID'] = 'No Location assigned.Please con
 $lang['MSG_USERNAME_PASSWORD_SAME'] = 'Please Change your password to Continue';
 $lang['MSG_CONFIRM_SAVE'] = 'Are You Sure to save?';
 $lang['MSG_SELECT_ONE'] = 'Please Select At least one item';
+$lang['MSG_SESSION_TIME_OUT'] = 'Your session expired.Please login again';
 
 //Action buttons
 $lang['ACTION_DASHBOARD'] = 'Dashboard';
