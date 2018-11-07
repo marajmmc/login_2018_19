@@ -69,7 +69,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                         <label class="control-label pull-right">User Created By</label>
                     </div>
                     <div class="col-sm-4 col-xs-8">
-                        <label class="control-label"><?php echo $users[$user_info['user_created']]['name'];?></label>
+                        <label class="control-label"><?php echo $users[$user_info['user_user_created']]['name'];?></label>
                     </div>
                 </div>
             </div>

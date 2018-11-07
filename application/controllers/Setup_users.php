@@ -972,7 +972,7 @@ class Setup_users extends Root_Controller
                 $user_id=$id;
             }
             $this->db->from($this->config->item('table_login_setup_user').' user');
-            $this->db->select('user.employee_id,user.user_name,user.date_created user_date_created');
+            $this->db->select('user.employee_id,user.user_name,user.date_created user_date_created,user.user_created user_user_created');
             $this->db->select('user.status,user.user_status_changed,user.date_status_changed,user.remarks_status_change');
             $this->db->select('user.max_logged_browser,user.time_mobile_authentication_off_end,user.date_authentication_setup_changed,user.user_authentication_setup_changed');
 
@@ -1086,7 +1086,7 @@ class Setup_users extends Root_Controller
                 $data['assigned_sites'][]=$result['site_id'];
             }
             $user_ids=array();
-            $user_ids[$data['user_info']['user_created']]=$data['user_info']['user_created'];
+            $user_ids[$data['user_info']['user_user_created']]=$data['user_info']['user_user_created'];
             if($data['user_info']['user_status_changed']>0)
             {
                 $user_ids[$data['user_info']['user_status_changed']]=$data['user_info']['user_status_changed'];
