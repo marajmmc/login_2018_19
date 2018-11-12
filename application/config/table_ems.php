@@ -18,8 +18,6 @@ $config['table_ems_setup_fd_expense_items'] = 'arm_ems_2018_19.ems_setup_fd_expe
 $config['table_ems_setup_fd_picture_category'] = 'arm_ems_2018_19.ems_setup_fd_picture_category';
 $config['table_ems_fd_budget'] = 'arm_ems_2018_19.ems_fd_budget';
 $config['table_ems_fd_budget_details'] = 'arm_ems_2018_19.ems_fd_budget_details';
-$config['table_ems_fd_budget_details_expense'] = 'arm_ems_2018_19.ems_fd_budget_details_expense';
-$config['table_ems_fd_budget_dealer_leadfarmer_participant'] = 'arm_ems_2018_19.ems_fd_budget_dealer_leadfarmer_participant';
 $config['table_ems_fd_budget_details_picture'] = 'arm_ems_2018_19.ems_fd_budget_details_picture';
 
 
