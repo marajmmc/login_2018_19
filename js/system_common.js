@@ -245,14 +245,28 @@ $(document).ready(function()
                     }
                 }
                 //if filesize is lower(less than 1.3mb) no need to resize
-                if(file.size>1372022)
+                var minimum_size_to_resize=SYSTEM_IMAGE_SIZE_TO_RESIZE;
+                if($(this).attr('data-resize-size'))
                 {
+                    minimum_size_to_resize=$(this).attr('data-resize-size');
+                }
+                if(file.size>minimum_size_to_resize)
+                {
+                    var MAX_WIDTH = SYSTEM_IMAGE_MAX_WIDTH;
+                    if($(this).attr('data-resize-width'))
+                    {
+                        MAX_WIDTH=$(this).attr('data-resize-width');
+                    }
+                    var MAX_HEIGHT = SYSTEM_IMAGE_MAX_HEIGHT;
+                    if($(this).attr('data-resize-height'))
+                    {
+                        MAX_HEIGHT=$(this).attr('data-resize-height');
+                    }
+
                     var img=new Image();
                     img.src=path;
                     img.onload=function()
                     {
-                        var MAX_WIDTH = 800;
-                        var MAX_HEIGHT = 600;
                         var width = img.naturalWidth;
                         var height = img.naturalHeight;
 
