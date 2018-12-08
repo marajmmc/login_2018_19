@@ -103,6 +103,7 @@ $lang['LABEL_FISCAL_YEAR'] = 'Fiscal Year';
 $lang['LABEL_NAME'] = 'Name';
 $lang['LABEL_EMAIL'] = 'Email Address';
 $lang['LABEL_ORDER'] = 'Ordering';
+$lang['LABEL_ORDERING'] = 'Ordering';
 $lang['LABEL_REMARKS'] = 'Remarks';
 $lang['SELECT_ONE_ITEM'] = 'Select an item';
 $lang['LABEL_ADD_MORE'] = 'Add more';
