@@ -9,3 +9,6 @@ $config['table_bms_hom_budget_target'] = 'arm_bms_2018_19.bms_hom_budget_target'
 $config['table_bms_hom_budget_target_hom'] = 'arm_bms_2018_19.bms_hom_budget_target_hom';
 $config['table_bms_setup_budget_config'] = 'arm_bms_2018_19.bms_setup_budget_config';
 $config['table_bms_setup_budget_config_variety_pricing'] = 'arm_bms_2018_19.bms_setup_budget_config_variety_pricing';
+// Principle Quantity Confirm
+$config['table_bms_principal_quantity'] = 'arm_bms_2018_19.bms_principal_quantity';
+$config['table_bms_principal_quantity_principal'] = 'arm_bms_2018_19.bms_principal_quantity_principal';
