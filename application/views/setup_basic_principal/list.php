@@ -120,6 +120,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 autoheight: true,
                 autorowheight:true,
                 columns: [
+                    { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id',width:50},
                     { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:200},
                     { text: 'Code', dataField: 'code',width:80},
                     { text: 'Contact Person', dataField: 'contact_person',width:100},
