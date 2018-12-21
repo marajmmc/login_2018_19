@@ -12,3 +12,4 @@ $config['table_bms_setup_budget_config_variety_pricing'] = 'arm_bms_2018_19.bms_
 // Principle Quantity Confirm
 $config['table_bms_principal_quantity'] = 'arm_bms_2018_19.bms_principal_quantity';
 $config['table_bms_principal_quantity_principal'] = 'arm_bms_2018_19.bms_principal_quantity_principal';
+$config['table_bms_budget_variety_pricing_finalize'] = 'arm_bms_2018_19.bms_budget_variety_pricing_finalize';
