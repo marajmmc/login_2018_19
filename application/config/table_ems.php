@@ -12,6 +12,9 @@ $config['table_ems_ft_rnd_demo_picture'] = 'arm_ems_2018_19.ems_ft_rnd_demo_pict
 $config['table_ems_ft_rnd_demo_disease_picture'] = 'arm_ems_2018_19.ems_ft_rnd_demo_disease_picture';
 $config['table_ems_ft_rnd_demo_fruit_picture'] = 'arm_ems_2018_19.ems_ft_rnd_demo_fruit_picture';
 $config['table_ems_ft_farmers'] = 'arm_ems_2018_19.ems_ft_farmers';
+//Added By Mahmud
+$config['table_ems_demonstration_status'] = 'arm_ems_2018_19.ems_demonstration_status';
+$config['table_ems_demonstration_status_info'] = 'arm_ems_2018_19.ems_demonstration_status_info';
 
 //Field Day Module
 $config['table_ems_setup_fd_expense_items'] = 'arm_ems_2018_19.ems_setup_fd_expense_items';
