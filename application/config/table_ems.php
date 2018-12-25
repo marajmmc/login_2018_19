@@ -15,6 +15,7 @@ $config['table_ems_ft_farmers'] = 'arm_ems_2018_19.ems_ft_farmers';
 //Added By Mahmud
 $config['table_ems_demonstration_status'] = 'arm_ems_2018_19.ems_demonstration_status';
 $config['table_ems_demonstration_status_info'] = 'arm_ems_2018_19.ems_demonstration_status_info';
+$config['table_ems_demonstration_status_image_video'] = 'arm_ems_2018_19.ems_demonstration_status_image_video';
 
 //Field Day Module
 $config['table_ems_setup_fd_expense_items'] = 'arm_ems_2018_19.ems_setup_fd_expense_items';
