@@ -60,6 +60,8 @@ $(document).ready(function()
 
     $(document).ajaxStart(function()
     {
+        $('#popup_content').html('');
+        //report pop up content area making blank to avoid conflict
         $("#system_loading").show();
 
     });
