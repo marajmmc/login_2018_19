@@ -238,7 +238,7 @@ footer a{
     transition: background-position 0.1s linear 0s;
 }
 /*datepicker*/
-.ui-datepicker-month,.ui-datepicker-year{
+select.ui-datepicker-month,select.ui-datepicker-year{
     color: #000000;
 }
 .jqxgrid_input{
