@@ -93,7 +93,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <div class="row show-grid">
                     <div class="col-xs-6">
                         <select id="fiscal_year_number" name="report[fiscal_year_number]" class="form-control">
-                            <option value="">Select</option>
                             <?php
                             for($i=1;$i<4;$i++)
                             {
