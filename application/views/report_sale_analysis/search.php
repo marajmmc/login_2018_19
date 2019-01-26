@@ -76,22 +76,23 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                         <select id="fiscal_year_id" name="report[fiscal_year_id]" class="form-control">
                             <option value=""><?php echo $CI->lang->line('SELECT');?></option>
                             <?php
+                            $fiscal_year_current = 4;//date('01-M-Y',strtotime(date("Y-07-d", time()) . " - 1 year")).'/'.date('t-M-Y', strtotime(date('30-06-Y',time())));
                             foreach($fiscal_years as $year)
                             {
                                 ?>
-                                <option value="<?php echo $year['value']?>"><?php echo $year['text'];?></option>
+                                <option value="<?php echo $year['value']?>" <?php if($year['value']==$fiscal_year_current){echo "selected='selected'";};?>><?php echo $year['text'];?></option>
                             <?php
                             }
                             ?>
                         </select>
                     </div>
                     <div class="col-xs-6">
-                        <label class="control-label"><?php echo $CI->lang->line('LABEL_FISCAL_YEAR');?></label>
+                        <label class="control-label"><?php echo $CI->lang->line('LABEL_FISCAL_YEAR');?><span style="color:#FF0000">*</span></label>
                     </div>
                 </div>
                 <div class="row show-grid">
                     <div class="col-xs-6">
-                        <input type="number" id="date_start" name="report[fiscal_year_number]" class="form-control" value="<?php //echo System_helper::display_date(time()); ?>">
+                        <input type="number" id="fiscal_year_number" name="report[fiscal_year_number]" class="form-control" value="1">
                     </div>
                     <div class="col-xs-6">
                         <label class="control-label">Number of Previous Year <span style="color:#FF0000">*</span></label>
@@ -99,20 +100,162 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 </div>
                 <div class="row show-grid">
                     <div class="col-xs-6">
-                        <select id="date_type" name="report[date_type]" class="form-control">
-                            <option value="date_opening">LC Opening Date</option>
-                            <option value="date_expected"><?php echo $CI->lang->line('LABEL_DATE_EXPECTED');?></option>
-                            <option value="date_awb">LC AWB Date</option>
-                            <option value="date_open_forward">LC Forward Time</option>
-                            <option value="date_release">LC Release Date</option>
-                            <option value="date_release_completed">LC Released Time</option>
-                            <option value="date_receive">LC Receive Date</option>
-                            <option value="date_receive_completed">LC Received Time</option>
-                            <option value="date_expense_completed">LC Completed Time</option>
+                        <select id="month" name="report[month]" class="form-control">
+                            <option value="">Select</option>
+                            <?php
+                            for($i=1;$i<13;$i++)
+                            {
+                                ?>
+                                <option value="<?php echo $i;?>"><?php echo date("F", mktime(0, 0, 0,  $i,1, 2000));?></option>
+                            <?php
+                            }
+                            ?>
                         </select>
                     </div>
                     <div class="col-xs-6">
                         <label class="control-label">Month<span style="color:#FF0000">*</span></label>
+                    </div>
+                </div>
+
+                <div style="" class="row show-grid">
+                    <div class="col-xs-6">
+                        <?php
+                        if($CI->locations['division_id']>0)
+                        {
+                            ?>
+                            <label class="control-label"><?php echo $CI->locations['division_name'];?></label>
+                            <input type="hidden" name="report[division_id]" value="<?php echo $CI->locations['division_id'];?>">
+                        <?php
+                        }
+                        else
+                        {
+                            ?>
+                            <select id="division_id" name="report[division_id]" class="form-control">
+                                <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                                <?php
+                                foreach($divisions as $division)
+                                {?>
+                                    <option value="<?php echo $division['value']?>"><?php echo $division['text'];?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        <?php
+                        }
+                        ?>
+                    </div>
+                    <div class="col-xs-6">
+                        <label class="control-label"><?php echo $CI->lang->line('LABEL_DIVISION_NAME');?><span style="color:#FF0000">*</span></label>
+                    </div>
+                </div>
+                <div style="<?php if(!(sizeof($zones)>0)){echo 'display:none';} ?>" class="row show-grid" id="zone_id_container">
+                    <div class="col-xs-6">
+                        <?php
+                        if($CI->locations['zone_id']>0)
+                        {
+                            ?>
+                            <label class="control-label"><?php echo $CI->locations['zone_name'];?></label>
+                            <input type="hidden" name="report[zone_id]" value="<?php echo $CI->locations['zone_id'];?>">
+                        <?php
+                        }
+                        else
+                        {
+                            ?>
+                            <select id="zone_id" class="form-control" name="report[zone_id]">
+                                <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                                <?php
+                                foreach($zones as $zone)
+                                {?>
+                                    <option value="<?php echo $zone['value']?>"><?php echo $zone['text'];?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        <?php
+                        }
+                        ?>
+                    </div>
+                    <div class="col-xs-6">
+                        <label class="control-label"><?php echo $CI->lang->line('LABEL_ZONE_NAME');?><span style="color:#FF0000">*</span></label>
+                    </div>
+                </div>
+                <div style="<?php if(!(sizeof($territories)>0)){echo 'display:none';} ?>" class="row show-grid" id="territory_id_container">
+                    <div class="col-xs-6">
+                        <?php
+                        if($CI->locations['territory_id']>0)
+                        {
+                            ?>
+                            <label class="control-label"><?php echo $CI->locations['territory_name'];?></label>
+                            <input type="hidden" name="report[territory_id]" value="<?php echo $CI->locations['territory_id'];?>">
+                        <?php
+                        }
+                        else
+                        {
+                            ?>
+                            <select id="territory_id" class="form-control" name="report[territory_id]">
+                                <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                                <?php
+                                foreach($territories as $territory)
+                                {?>
+                                    <option value="<?php echo $territory['value']?>"><?php echo $territory['text'];?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        <?php
+                        }
+                        ?>
+                    </div>
+                    <div class="col-xs-6">
+                        <label class="control-label"><?php echo $CI->lang->line('LABEL_TERRITORY_NAME');?><span style="color:#FF0000">*</span></label>
+                    </div>
+                </div>
+                <div style="<?php if(!(sizeof($districts)>0)){echo 'display:none';} ?>" class="row show-grid" id="district_id_container">
+                    <div class="col-xs-6">
+                        <?php
+                        if($CI->locations['district_id']>0)
+                        {
+                            ?>
+                            <label class="control-label"><?php echo $CI->locations['district_name'];?></label>
+                            <input type="hidden" name="report[district_id]" value="<?php echo $CI->locations['district_id'];?>">
+                        <?php
+                        }
+                        else
+                        {
+                            ?>
+                            <select id="district_id" class="form-control" name="report[district_id]">
+                                <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                                <?php
+                                foreach($districts as $district)
+                                {?>
+                                    <option value="<?php echo $district['value']?>"><?php echo $district['text'];?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        <?php
+                        }
+                        ?>
+                    </div>
+                    <div class="col-xs-6">
+                        <label class="control-label"><?php echo $CI->lang->line('LABEL_DISTRICT_NAME');?><span style="color:#FF0000">*</span></label>
+                    </div>
+                </div>
+                <div style="<?php if(!(sizeof($outlets)>0)){echo 'display:none';} ?>" class="row show-grid" id="outlet_id_container">
+                    <div class="col-xs-6">
+                        <select id="outlet_id" name="report[outlet_id]" class="form-control">
+                            <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                            <?php
+                            foreach($outlets as $outlet)
+                            {?>
+                                <option value="<?php echo $outlet['value']?>"><?php echo $outlet['text'];?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-xs-6">
+                        <label class="control-label"><?php echo $CI->lang->line('LABEL_OUTLET_NAME');?><span style="color:#FF0000">*</span></label>
                     </div>
                 </div>
             </div>
@@ -140,16 +283,14 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 
     jQuery(document).ready(function()
     {
+        system_off_events();
         system_preset({controller:'<?php echo $CI->router->class; ?>'});
 
-        $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "c-2:c+2"});
-
-        $(document).off('change','#warehouse_id');
-        $(document).off('change','#crop_id');
+        /*$(document).off('change','#crop_id');
         $(document).off('change','#crop_type_id');
         $(document).off('change','#variety_id');
         $(document).off('change','#pack_size_id');
-        $(document).off("change","#fiscal_year_id");
+        $(document).off("change","#fiscal_year_id");*/
 
         $('#crop_id').html(get_dropdown_with_select(system_crops));
 
@@ -187,18 +328,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 }
             }
         });
-        $(document).on("change","#fiscal_year_id",function()
-        {
 
-            var fiscal_year_ranges=$('#fiscal_year_id').val();
-            if(fiscal_year_ranges!='')
-            {
-                var dates = fiscal_year_ranges.split("/");
-                $("#date_start").val(dates[0]);
-                $("#date_end").val(dates[1]);
-
-            }
-        });
 
         /* Location Section */
         $(document).off('change', '#division_id');
@@ -281,29 +411,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     $('#outlet_id').html(get_dropdown_with_select(system_outlets[district_id]));
                 }
             }
-        });
-
-        $(document).off("click", ".pop_up");
-        $(document).on("click", ".pop_up", function(event)
-        {
-            $('#popup_content').html('');
-            var left=((($(window).width() - 550) / 2) +$(window).scrollLeft());
-            var top=((($(window).height() - 550) / 2) +$(window).scrollTop());
-            $("#popup_window").jqxWindow({position: { x: left, y: top  }});
-            $.ajax(
-                {
-                    url: $(this).attr('data-action-link'),
-                    type: 'POST',
-                    datatype: "JSON",
-                    success: function (data, status)
-                    {
-                    },
-                    error: function (xhr, desc, err)
-                    {
-                        console.log("error");
-                    }
-                });
-            $("#popup_window").jqxWindow('open');
         });
 
     });
