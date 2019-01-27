@@ -29,7 +29,7 @@ class Report_sale_analysis extends Root_Controller
         $this->lang->language['LABEL_FISCAL_YEARS']='Fiscal Years';
         $this->lang->language['LABEL_QUANTITY_PKT']='Quantity (pkt)';
         $this->lang->language['LABEL_QUANTITY_KG']='Quantity (kg)';
-        $this->lang->language['LABEL_AMOUNT_TOTAL']='Total Amount';
+        $this->lang->language['LABEL_SALES_AMOUNT']='Sales Amount';
     }
     public function index($action="search",$id=0)
     {
@@ -69,7 +69,7 @@ class Report_sale_analysis extends Root_Controller
             $data['pack_size']= 1;
             $data['quantity_pkt']= 1;
             $data['quantity_kg']= 1;
-            $data['amount_total']= 1;
+            $data['sales_amount']= 1;
         }
         return $data;
     }
@@ -166,7 +166,7 @@ class Report_sale_analysis extends Root_Controller
             }
 
             $data['options']=$reports;
-            $data['fiscal_years_previous_sales']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$reports['fiscal_year_number']+1,0,array('id DESC'));
+            $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$reports['fiscal_year_number']+1,0,array('id DESC'));
 
             $method='search';
             $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
@@ -220,7 +220,7 @@ class Report_sale_analysis extends Root_Controller
                 }
             }
         }
-        $this->db->where('v.status',$this->config->item('system_status_active'));
+        //$this->db->where('v.status',$this->config->item('system_status_active'));
         $this->db->where('v.whose','ARM');
         $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');
@@ -229,15 +229,11 @@ class Report_sale_analysis extends Root_Controller
         $this->db->order_by('v.ordering','ASC');
         $this->db->order_by('v.id','ASC');
         $varieties = $this->db->get()->result_array();
-        $variety_ids=array();
-        $variety_ids[0]=0;
-        foreach($varieties as $result)
-        {
-            $variety_ids[$result['variety_id']]=$result['variety_id'];
-        }
+
 
         /*fiscal year*/
         $fiscal_years=$this->get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month);
+
         $sales=$this->get_sales_fiscal_years($fiscal_years);
 
         $type_total=$this->initialize_row($fiscal_years,'','','Total Type','');
@@ -250,68 +246,60 @@ class Report_sale_analysis extends Root_Controller
 
         foreach($varieties as $variety)
         {
-            $info=$this->initialize_row($fiscal_years,$variety['crop_name'],$variety['crop_type_name'],$variety['variety_name'],'');
-            if(!$first_row)
+            if(isset($sales[$variety['variety_id']]))
             {
-                if($prev_crop_name!=$variety['crop_name'])
+                foreach($sales[$variety['variety_id']] as $pack_size=>$yearly_sale)
                 {
-                    $items[]=$type_total;
-                    $items[]=$crop_total;
-                    $type_total=$this->reset_row($type_total);
-                    $crop_total=$this->reset_row($crop_total);
-
-                    $info['crop_name']=$variety['crop_name'];
-                    $info['crop_type_name']=$variety['crop_type_name'];
-                    $prev_crop_name=$variety['crop_name'];
-                    $prev_type_name=$variety['crop_type_name'];
-                }
-                elseif($prev_type_name!=$variety['crop_type_name'])
-                {
-                    $items[]=$type_total;
-                    $type_total=$this->reset_row($type_total);
-                    $info['crop_type_name']=$variety['crop_type_name'];
-                    $prev_type_name=$variety['crop_type_name'];
-                }
-                else
-                {
-                    $info['crop_name']='';
-                    $info['crop_type_name']='';
-                }
-            }
-            else
-            {
-                $info['crop_name']=$variety['crop_name'];
-                $info['crop_type_name']=$variety['crop_type_name'];
-
-                $prev_crop_name=$variety['crop_name'];
-                $prev_type_name=$variety['crop_type_name'];
-                $first_row=false;
-            }
-            $info['variety_name']=$variety['variety_name'];
-            foreach($fiscal_years as $fy)
-            {
-                if(isset($sales[$fy['id']][$variety['variety_id']]))
-                {
-                    foreach($sales[$fy['id']][$variety['variety_id']] as $pack_size_id=>$sale_detail)
+                    $info=$this->initialize_row($fiscal_years,$variety['crop_name'],$variety['crop_type_name'],$variety['variety_name'],$pack_size);
+                    if(!$first_row)
                     {
-                        $info['pack_size']=$sale_detail['pack_size'];
-                        $info['quantity_sale_pkt_'.$fy['id']]=$sale_detail['quantity_sale_pkt'];
-                        $info['quantity_sale_kg_'.$fy['id']]=$sale_detail['quantity_sale_kg'];
-                        $info['amount_total_'.$fy['id']]=$sale_detail['amount_total'];
-                    }
-                }
-            }
-            foreach($info as $key=>$r)
-            {
-                if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
-                {
-                    $type_total[$key]+=$info[$key];
-                    $crop_total[$key]+=$info[$key];
-                    $grand_total[$key]+=$info[$key];
-                }
-            }
-            $items[]=$info;
+                        if($prev_crop_name!=$variety['crop_name'])
+                        {
+                            $items[]=$type_total;
+                            $items[]=$crop_total;
+                            $type_total=$this->reset_row($type_total);
+                            $crop_total=$this->reset_row($crop_total);
 
+                            $prev_crop_name=$variety['crop_name'];
+                            $prev_type_name=$variety['crop_type_name'];
+                        }
+                        elseif($prev_type_name!=$variety['crop_type_name'])
+                        {
+                            $items[]=$type_total;
+                            $type_total=$this->reset_row($type_total);
+                            $info['crop_name']='';
+                            $prev_type_name=$variety['crop_type_name'];
+                        }
+                        else
+                        {
+                            $info['crop_name']='';
+                            $info['crop_type_name']='';
+                        }
+                    }
+                    else
+                    {
+                        $prev_crop_name=$variety['crop_name'];
+                        $prev_type_name=$variety['crop_type_name'];
+                        $first_row=false;
+                    }
+                    foreach($yearly_sale as $fy_id=>$details_sale)
+                    {
+                        $info['quantity_'.$fy_id.'_pkt']=$details_sale['quantity_sale_pkt'];
+                        $info['quantity_'.$fy_id.'_kg']=$details_sale['quantity_sale_kg'];
+                        $info['sales_'.$fy_id.'_amount']=$details_sale['amount_total'];
+                    }
+                    foreach($info as $key=>$r)
+                    {
+                        if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
+                        {
+                            $type_total[$key]+=$info[$key];
+                            $crop_total[$key]+=$info[$key];
+                            $grand_total[$key]+=$info[$key];
+                        }
+                    }
+                    $items[]=$info;
+                }
+            }
         }
         $items[]=$type_total;
         $items[]=$crop_total;
@@ -320,20 +308,16 @@ class Report_sale_analysis extends Root_Controller
     }
     private function initialize_row($fiscal_years,$crop_name,$crop_type_name,$variety_name,$pack_size)
     {
-        $row=$this->get_preference_headers('list');
-        foreach($row  as $key=>$r)
-        {
-            $row[$key]=0;
-        }
+        $row=array();
         $row['crop_name']=$crop_name;
         $row['crop_type_name']=$crop_type_name;
         $row['variety_name']=$variety_name;
         $row['pack_size']=$pack_size;
         foreach($fiscal_years as $fy)
         {
-            $row['quantity_sale_pkt_'.$fy['id']]=0;
-            $row['quantity_sale_kg_'.$fy['id']]=0;
-            $row['amount_total_'.$fy['id']]=0;
+            $row['quantity_'.$fy['id'].'_pkt']=0;
+            $row['quantity_'.$fy['id'].'_kg']=0;
+            $row['sales_'.$fy['id'].'_amount']=0;
         }
         return $row;
     }
@@ -403,19 +387,19 @@ class Report_sale_analysis extends Root_Controller
 
         $this->db->where('outlet.status',$this->config->item('system_status_active'));
         $this->db->where('outlet_info.revision',1);
-        if($division_id)
+        if($division_id>0)
         {
             $this->db->where('zones.division_id',$division_id);
-            if($zone_id)
+            if($zone_id>0)
             {
                 $this->db->where('zones.id',$zone_id);
-                if($territory_id)
+                if($territory_id>0)
                 {
                     $this->db->where('territories.id',$territory_id);
-                    if($district_id)
+                    if($district_id>0)
                     {
                         $this->db->where('districts.id',$district_id);
-                        if($outlet_id)
+                        if($outlet_id>0)
                         {
                             $this->db->where('outlet.id',$outlet_id);
                         }
@@ -441,48 +425,37 @@ class Report_sale_analysis extends Root_Controller
 
             $this->db->join($this->config->item('table_pos_sale').' sale','sale.id = details.sale_id','INNER');
 
-            /*$this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = sale.outlet_id','INNER');
-            $this->db->select('cus_info.customer_id outlet_id, cus_info.name outlet_name');
 
-            $this->db->join($this->config->item('table_login_setup_location_districts').' districts','districts.id = cus_info.district_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_territories').' territories','territories.id = districts.territory_id','INNER');*/
-
-            /*$this->db->join($this->config->item('table_login_setup_location_zones').' zones','zones.id = territories.zone_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_divisions').' divisions','divisions.id = zones.division_id','INNER');*/
 
             $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=details.variety_id', 'INNER');
             $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id = v.crop_type_id','INNER');
 
-            /*$this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
-            $this->db->where('cus_info.revision',1);*/
+
             $this->db->where('sale.date_sale >=',$fy['date_start']);
             $this->db->where('sale.date_sale <=',$fy['date_end']);
             $this->db->where('sale.status',$this->config->item('system_status_active'));
-            if($crop_id)
+            if($crop_id>0)
             {
                 $this->db->where('crop_type.crop_id',$crop_id);
-                if($crop_type_id)
+                if($crop_type_id>0)
                 {
                     $this->db->where('crop_type.id',$crop_type_id);
-                    if($variety_id)
+                    if($variety_id>0)
                     {
                         $this->db->where('v.id',$variety_id);
                     }
                 }
             }
-            if($pack_size_id)
+            if($pack_size_id>0)
             {
                 $this->db->where('details.pack_size_id',$pack_size_id);
             }
-            if($outlet_ids)
-            {
-                $this->db->where_in('sale.outlet_id',$outlet_ids);
-            }
+            $this->db->where_in('sale.outlet_id',$outlet_ids);
             $this->db->group_by('details.variety_id, details.pack_size_id');
             $results=$this->db->get()->result_array();
             foreach($results as $result)
             {
-                $sales[$fy['id']][$result['variety_id']][$result['pack_size_id']]=$result;
+                $sales[$result['variety_id']][$result['pack_size']][$fy['id']]=$result;
             }
         }
 

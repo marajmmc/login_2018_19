@@ -56,7 +56,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                         <div class="col-xs-6">
                             <select id="pack_size_id" name="report[pack_size_id]" class="form-control">
                                 <option value=""><?php echo $CI->lang->line('SELECT');?></option>
-                                <option value="0">Bulk</option>
                                 <?php
                                 foreach($pack_sizes as $pack_size)
                                 {?>
@@ -74,13 +73,11 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <div class="row show-grid">
                     <div class="col-xs-6">
                         <select id="fiscal_year_id" name="report[fiscal_year_id]" class="form-control">
-                            <option value=""><?php echo $CI->lang->line('SELECT');?></option>
+                            <option value=""><?php echo $this->lang->line('SELECT');?></option>
                             <?php
-                            $fiscal_year_current = 4;//date('01-M-Y',strtotime(date("Y-07-d", time()) . " - 1 year")).'/'.date('t-M-Y', strtotime(date('30-06-Y',time())));
                             foreach($fiscal_years as $year)
-                            {
-                                ?>
-                                <option value="<?php echo $year['value']?>" <?php if($year['value']==$fiscal_year_current){echo "selected='selected'";};?>><?php echo $year['text'];?></option>
+                            {?>
+                                <option value="<?php echo $year['value']?>"><?php echo $year['text'];?></option>
                             <?php
                             }
                             ?>
@@ -97,7 +94,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                             for($i=1;$i<4;$i++)
                             {
                                 ?>
-                                <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                                <option value="<?php echo $i;?>" <?php if($i==2){echo "selected='selected'";}?>><?php echo $i;?></option>
                             <?php
                             }
                             ?>
