@@ -27,6 +27,9 @@ class Report_sale_analysis extends Root_Controller
     private function language_labels()
     {
         $this->lang->language['LABEL_FISCAL_YEARS']='Fiscal Years';
+        $this->lang->language['LABEL_QUANTITY_PKT']='Quantity (pkt)';
+        $this->lang->language['LABEL_QUANTITY_KG']='Quantity (kg)';
+        $this->lang->language['LABEL_AMOUNT_TOTAL']='Total Amount';
     }
     public function index($action="search",$id=0)
     {
@@ -64,6 +67,9 @@ class Report_sale_analysis extends Root_Controller
             $data['crop_type_name']= 1;
             $data['variety_name']= 1;
             $data['pack_size']= 1;
+            $data['quantity_pkt']= 1;
+            $data['quantity_kg']= 1;
+            $data['amount_total']= 1;
         }
         return $data;
     }
@@ -244,7 +250,7 @@ class Report_sale_analysis extends Root_Controller
 
         foreach($varieties as $variety)
         {
-            //$info=$this->initialize_row($fiscal_years,$variety);
+            $info=$this->initialize_row($fiscal_years,$variety['crop_name'],$variety['crop_type_name'],$variety['variety_name'],'');
             if(!$first_row)
             {
                 if($prev_crop_name!=$variety['crop_name'])

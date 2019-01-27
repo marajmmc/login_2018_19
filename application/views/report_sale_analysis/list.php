@@ -139,27 +139,47 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             return element[0].outerHTML;
 
         };
+        var aggregates=function (total, column, element, record)
+        {
+            if(record.crop_name=="Grand Total")
+            {
+                return record[element];
+
+            }
+            return total;
+        };
         var aggregatesrenderer=function (aggregates)
         {
             //console.log('here');
-            return '<div style="position: relative; margin: 0px;padding: 5px;width: 100%;height: 100%; overflow: hidden;background-color:'+system_report_color_grand+';">' +aggregates['sum']+'</div>';
+            return '<div style="position: relative; margin: 0px;padding: 5px;width: 100%;height: 100%; overflow: hidden;background-color:'+system_report_color_grand+';">' +aggregates['total']+'</div>';
 
         };
         var aggregatesrenderer_kg=function (aggregates)
         {
             var text='';
-            if(!((aggregates['sum']=='0.000')||(aggregates['sum']=='')))
+            if(!((aggregates['total']=='0.000')||(aggregates['total']=='')))
             {
-                text=get_string_kg(aggregates['sum']);
+                text=get_string_kg(aggregates['total'])
+            }
+
+            return '<div style="position: relative; margin: 0px;padding: 5px;width: 100%;height: 100%; overflow: hidden;background-color:'+system_report_color_grand+';">' +text+'</div>';
+
+        };
+        var aggregatesrenderer_quantity=function (aggregates)
+        {
+            var text='';
+            if(!((aggregates['total']=='0.000')||(aggregates['total']=='')))
+            {
+                text=get_string_quantity(aggregates['total'])
             }
             return '<div style="position: relative; margin: 0px;padding: 5px;width: 100%;height: 100%; overflow: hidden;background-color:'+system_report_color_grand+';">' +text+'</div>';
         };
         var aggregatesrenderer_amount=function (aggregates)
         {
             var text='';
-            if(!((aggregates['total']=='0.00')||(aggregates['sum']=='')))
+            if(!((aggregates['total']=='0.000')||(aggregates['total']=='')))
             {
-                text=get_string_amount(aggregates['sum']);
+                text=get_string_amount(aggregates['total'])
             }
             return '<div style="position: relative; margin: 0px;padding: 5px;width: 100%;height: 100%; overflow: hidden;background-color:'+system_report_color_grand+';">' +text+'</div>';
         };
@@ -184,16 +204,16 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 editable:false,
                 columns:
                     [
-                        { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['crop_name']?0:1;?>},
-                        { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE_NAME'); ?>', dataField: 'crop_type_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>},
-                        { text: '<?php echo $CI->lang->line('LABEL_VARIETY_NAME'); ?>', dataField: 'variety_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['variety_name']?0:1;?>},
-                        { text: '<?php echo $CI->lang->line('LABEL_PACK_SIZE'); ?>', dataField: 'pack_size',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['pack_size']?0:1;?>},
+                        { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',pinned:true,width:'100',filterable: false,hidden: <?php echo $system_preference_items['crop_name']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
+                        { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE_NAME'); ?>', dataField: 'crop_type_name',pinned:true,width:'100',filterable: false,hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
+                        { text: '<?php echo $CI->lang->line('LABEL_VARIETY_NAME'); ?>', dataField: 'variety_name',pinned:true,width:'100',filterable: false,hidden: <?php echo $system_preference_items['variety_name']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
+                        { text: '<?php echo $CI->lang->line('LABEL_PACK_SIZE'); ?>', dataField: 'pack_size',pinned:true,width:'100',filterable: false,hidden: <?php echo $system_preference_items['pack_size']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
                             <?php
                             for($i=sizeof($fiscal_years_previous_sales)-1;$i>=0;$i--)
                             {?>
-                            {columngroup: 'fiscal_years',text: '<?php echo $fiscal_years_previous_sales[$i]['name']; ?> (pkt)', dataField: 'quantity_sale_pkt_<?php echo $fiscal_years_previous_sales[$i]['id']; ?>',width:'100',filterable: false,cellsrenderer: cellsrenderer,align:'center',cellsAlign:'right',editable:false,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_kg},
-                            {columngroup: 'fiscal_years',text: '<?php echo $fiscal_years_previous_sales[$i]['name']; ?> (kg)', dataField: 'quantity_sale_kg_<?php echo $fiscal_years_previous_sales[$i]['id']; ?>',width:'100',filterable: false,cellsrenderer: cellsrenderer,align:'center',cellsAlign:'right',editable:false,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_kg},
-                            {columngroup: 'fiscal_years',text: '<?php echo $fiscal_years_previous_sales[$i]['name']; ?> (amt)', dataField: 'amount_total_<?php echo $fiscal_years_previous_sales[$i]['id']; ?>',width:'100',filterable: false,cellsrenderer: cellsrenderer,align:'center',cellsAlign:'right',editable:false,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_amount},
+                            {columngroup: 'fiscal_years',text: '<?php echo $fiscal_years_previous_sales[$i]['name']; ?> (pkt)', dataField: 'quantity_sale_pkt_<?php echo $fiscal_years_previous_sales[$i]['id']; ?>',width:'100',filterable: false,align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['quantity_pkt']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_quantity},
+                            {columngroup: 'fiscal_years',text: '<?php echo $fiscal_years_previous_sales[$i]['name']; ?> (kg)', dataField: 'quantity_sale_kg_<?php echo $fiscal_years_previous_sales[$i]['id']; ?>',width:'100',filterable: false,align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['quantity_kg']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
+                            {columngroup: 'fiscal_years',text: '<?php echo $fiscal_years_previous_sales[$i]['name']; ?> (amt)', dataField: 'amount_total_<?php echo $fiscal_years_previous_sales[$i]['id']; ?>',width:'150',filterable: false,align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['amount_total']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             <?php
                             }
                             ?>
