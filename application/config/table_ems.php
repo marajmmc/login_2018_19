@@ -23,6 +23,7 @@ $config['table_ems_setup_fd_picture_category'] = 'arm_ems_2018_19.ems_setup_fd_p
 $config['table_ems_fd_budget'] = 'arm_ems_2018_19.ems_fd_budget';
 $config['table_ems_fd_budget_details'] = 'arm_ems_2018_19.ems_fd_budget_details';
 $config['table_ems_fd_budget_details_picture'] = 'arm_ems_2018_19.ems_fd_budget_details_picture';
+$config['table_ems_fd_budget_reporting'] = 'arm_ems_2018_19.ems_fd_budget_reporting';
 
 
 //Dealer And Farmer Visit Task --- Added by saiful
