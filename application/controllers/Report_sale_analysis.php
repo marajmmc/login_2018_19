@@ -41,13 +41,21 @@ class Report_sale_analysis extends Root_Controller
         {
             $this->system_list();
         }
-        elseif($action=="get_items")
+        elseif($action=="get_items_area_amount")
         {
-            $this->system_get_items();
+            $this->system_get_items_area_amount();
         }
-        elseif($action=="set_preference")
+        elseif($action=="get_items_outlets_amount")
         {
-            $this->system_set_preference('search');
+            $this->system_get_items_outlets_amount();
+        }
+        elseif($action=="set_preference_variety_amount_quantity")
+        {
+            $this->system_set_preference('list_variety_amount_quantity');
+        }
+        elseif($action=="get_items_variety_amount_quantity")
+        {
+            $this->system_get_items_variety_amount_quantity();
         }
         elseif($action=="save_preference")
         {
@@ -61,7 +69,7 @@ class Report_sale_analysis extends Root_Controller
     private function get_preference_headers($method)
     {
         $data=array();
-        if($method=='search')
+        if($method=='list_variety_amount_quantity')
         {
             $data['crop_name']= 1;
             $data['crop_type_name']= 1;
@@ -92,7 +100,6 @@ class Report_sale_analysis extends Root_Controller
             $this->json_return($ajax);
         }
     }
-
     private function system_search()
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
@@ -114,18 +121,22 @@ class Report_sale_analysis extends Root_Controller
                         $data['districts']=Query_helper::get_info($this->config->item('table_login_setup_location_districts'),array('id value','name text'),array('territory_id ='.$this->locations['territory_id'],'status ="'.$this->config->item('system_status_active').'"'));
                         if($this->locations['district_id']>0)
                         {
-                            $data['outlets']=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('type =1','revision =1','district_id ='.$this->locations['district_id']),0,0,array('ordering ASC'));
-                            $data['upazillas']=Query_helper::get_info($this->config->item('table_login_setup_location_upazillas'),array('id value','name text'),array('district_id ='.$this->locations['district_id'],'status ="'.$this->config->item('system_status_active').'"'),0,0,array('ordering ASC'));
+                            $this->db->from($this->config->item('table_login_csetup_customer').' customer');
+                            $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id=customer.id','INNER');
+                            $this->db->select('customer.id value, cus_info.name text');
+                            $this->db->where('customer.status',$this->config->item('system_status_active'));
+                            $this->db->where('cus_info.district_id',$this->locations['district_id']);
+                            $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
+                            $this->db->where('cus_info.revision',1);
+                            $data['outlets']=$this->db->get()->result_array();
                         }
                     }
 
                 }
             }
             $data['pack_sizes']=Query_helper::get_info($this->config->item('table_login_setup_classification_pack_size'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
-            $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),array('id value','name text'),array());
+            $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),array('id value','name text','date_start','date_end'),array());
 
-            $data['date_start']='';
-            $data['date_end']='';
 
             $data['title']="Sales Analysis Report";
             $ajax['status']=true;
@@ -164,21 +175,63 @@ class Report_sale_analysis extends Root_Controller
                 $ajax['system_message']='Number of Previous Year field is required.';
                 $this->json_return($ajax);
             }
-
             $data['options']=$reports;
             $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$reports['fiscal_year_number']+1,0,array('id DESC'));
 
-            $method='search';
-            $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
-            $data['title']="Fiscal Year Wise Sales Analysis Report";
-            $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list",$data,true));
-
             $ajax['status']=true;
+            if($reports['report_name']=='area_amount')
+            {
+                if($reports['outlet_id']>0)
+                {
+                    $data['areas']='Outlet';
+                }
+                elseif($reports['district_id']>0)
+                {
+                    $data['areas']='Outlets';
+                }
+                elseif($reports['territory_id']>0)
+                {
+                    $data['areas']='Districts';
+                }
+                elseif($reports['zone_id']>0)
+                {
+                    $data['areas']='Territories';
+                }
+                elseif($reports['division_id']>0)
+                {
+                    $data['areas']='Zones';
+                }
+                else
+                {
+                    $data['areas']='Divisions';
+                }
+                $data['title']=$data['areas'].' Sales Analysis Report';
+                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_area_amount",$data,true));
+            }
+            elseif($reports['report_name']=='outlets_amount')
+            {
+                $data['title']="Outlet Wise Sales Analysis Report";
+                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_outlets_amount",$data,true));
+
+            }
+            elseif($reports['report_name']=='variety_amount_quantity')
+            {
+                $method='list_variety_amount_quantity';
+                $data['title']="Product Sales Analysis Report";
+                $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
+                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_variety_amount_quantity",$data,true));
+
+            }
+            else
+            {
+                $this->message='Invalid Report type';
+            }
+
             if($this->message)
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url);
+
             $this->json_return($ajax);
         }
         else
@@ -187,8 +240,207 @@ class Report_sale_analysis extends Root_Controller
             $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
             $this->json_return($ajax);
         }
+
     }
-    private function system_get_items()
+
+    private function system_get_items_area_amount()
+    {
+        $items=array();
+        $fiscal_year_id=$this->input->post('fiscal_year_id');
+        $month=$this->input->post('month');
+        $fiscal_year_number=$this->input->post('fiscal_year_number');
+        $fiscal_years=$this->get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month);
+
+        $division_id=$this->input->post('division_id');
+        $zone_id=$this->input->post('zone_id');
+        $territory_id=$this->input->post('territory_id');
+        $district_id=$this->input->post('district_id');
+        $outlet_id=$this->input->post('outlet_id');
+
+
+        if($outlet_id>0)
+        {
+            $areas=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$outlet_id,'revision =1'));
+            $location_type='outlet_id';
+        }
+        elseif($district_id>0)
+        {
+            $areas=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('district_id ='.$district_id,'revision =1','type ="'.$this->config->item('system_customer_type_outlet_id').'"'));
+            $location_type='outlet_id';
+        }
+        elseif($territory_id>0)
+        {
+            $areas=Query_helper::get_info($this->config->item('table_login_setup_location_districts'),array('id value','name text'),array('territory_id ='.$territory_id,'status ="'.$this->config->item('system_status_active').'"'));
+            $location_type='district_id';
+        }
+        elseif($zone_id>0)
+        {
+            $areas=Query_helper::get_info($this->config->item('table_login_setup_location_territories'),array('id value','name text'),array('zone_id ='.$zone_id,'status ="'.$this->config->item('system_status_active').'"'));
+            $location_type='territory_id';
+        }
+        elseif($division_id>0)
+        {
+            $areas=Query_helper::get_info($this->config->item('table_login_setup_location_zones'),array('id value','name text'),array('division_id ='.$division_id,'status ="'.$this->config->item('system_status_active').'"'));
+            $location_type='zone_id';
+        }
+        else
+        {
+            $areas=Query_helper::get_info($this->config->item('table_login_setup_location_divisions'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
+            $location_type='division_id';
+        }
+        $area_initial=array();
+        foreach($areas as $area)
+        {
+            $area_initial[$area['value']]=$this->initialize_row($fiscal_years,array('area'=>$area['text']));
+        }
+        foreach($fiscal_years as $fy)
+        {
+            $this->db->from($this->config->item('table_pos_sale').' sale');
+            $this->db->select('SUM(sale.amount_payable) sale_amount');
+
+            $this->db->join($this->config->item('table_login_csetup_cus_info').' outlet_info','outlet_info.customer_id = sale.outlet_id and outlet_info.revision =1','INNER');
+            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = outlet_info.district_id','INNER');
+            $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
+            $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
+
+            $this->db->select('sale.outlet_id');
+            $this->db->select('d.id district_id');
+            $this->db->select('t.id territory_id');
+            $this->db->select('zone.id zone_id');
+            $this->db->select('zone.division_id division_id');
+            if($division_id>0)
+            {
+                $this->db->where('zone.division_id',$division_id);
+                if($zone_id>0)
+                {
+                    $this->db->where('zone.id',$zone_id);
+                    if($territory_id>0)
+                    {
+                        $this->db->where('t.id',$territory_id);
+                        if($district_id>0)
+                        {
+                            $this->db->where('d.id',$district_id);
+                            if($outlet_id>0)
+                            {
+                                $this->db->where('sale.outlet_id',$outlet_id);
+                            }
+                        }
+                    }
+                }
+            }
+            $this->db->where('sale.date_sale >=',$fy['date_start']);
+            $this->db->where('sale.date_sale <=',$fy['date_end']);
+            $this->db->where('sale.status',$this->config->item('system_status_active'));
+            $this->db->group_by(array($location_type));
+            $results=$this->db->get()->result_array();
+            foreach($results as $result)
+            {
+                $area_initial[$result[$location_type]]['sales_'.$fy['id'].'_amount']=$result['sale_amount'];
+            }
+        }
+        $grand_total=$this->initialize_row($fiscal_years,array('area'=>'Grand Total'));
+        foreach($area_initial as $row)
+        {
+            foreach($row  as $key=>$r)
+            {
+                if(!($key=='area'))
+                {
+                    $grand_total[$key]+=$row[$key];
+                }
+            }
+            $items[]=$row;
+        }
+        $items[]=$grand_total;
+        $this->json_return($items);
+    }
+    private function system_get_items_outlets_amount()
+    {
+        $items=array();
+        $fiscal_year_id=$this->input->post('fiscal_year_id');
+        $month=$this->input->post('month');
+        $fiscal_year_number=$this->input->post('fiscal_year_number');
+        $fiscal_years=$this->get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month);
+
+        $division_id=$this->input->post('division_id');
+        $zone_id=$this->input->post('zone_id');
+        $territory_id=$this->input->post('territory_id');
+        $district_id=$this->input->post('district_id');
+        $outlet_id=$this->input->post('outlet_id');
+
+
+
+        $this->db->from($this->config->item('table_login_csetup_cus_info').' outlet_info');
+        $this->db->select('outlet_info.customer_id outlet_id, outlet_info.name outlet_name');
+        $this->db->join($this->config->item('table_login_setup_location_districts').' districts','districts.id = outlet_info.district_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_territories').' territories','territories.id = districts.territory_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_zones').' zones','zones.id = territories.zone_id','INNER');
+        $this->db->order_by('outlet_info.ordering');
+        $this->db->where('outlet_info.revision',1);
+        $this->db->where('outlet_info.type',$this->config->item('system_customer_type_outlet_id'));
+
+        if($division_id>0)
+        {
+            $this->db->where('zones.division_id',$division_id);
+            if($zone_id>0)
+            {
+                $this->db->where('zones.id',$zone_id);
+                if($territory_id>0)
+                {
+                    $this->db->where('territories.id',$territory_id);
+                    if($district_id>0)
+                    {
+                        $this->db->where('districts.id',$district_id);
+                        if($outlet_id>0)
+                        {
+                            $this->db->where('outlet_info.customer_id',$outlet_id);
+                        }
+                    }
+                }
+            }
+        }
+        $results=$this->db->get()->result_array();
+        $outlets=array();
+        $outlet_ids=array();
+        $outlet_ids[0]=0;
+        foreach($results as $result)
+        {
+            $outlets[$result['outlet_id']]=$this->initialize_row($fiscal_years,array('area'=>$result['outlet_name']));
+            $outlet_ids[$result['outlet_id']]=$result['outlet_id'];
+        }
+
+        foreach($fiscal_years as $fy)
+        {
+            $this->db->from($this->config->item('table_pos_sale').' sale');
+            $this->db->select('SUM(sale.amount_payable) sale_amount');
+            $this->db->select('sale.outlet_id');
+            $this->db->where('sale.date_sale >=',$fy['date_start']);
+            $this->db->where('sale.date_sale <=',$fy['date_end']);
+            $this->db->where('sale.status',$this->config->item('system_status_active'));
+            $this->db->where_in('sale.outlet_id',$outlet_ids);
+            $this->db->group_by('sale.outlet_id');
+            $results=$this->db->get()->result_array();
+            foreach($results as $result)
+            {
+                $outlets[$result['outlet_id']]['sales_'.$fy['id'].'_amount']=$result['sale_amount'];
+            }
+        }
+        $grand_total=$this->initialize_row($fiscal_years,array('area'=>'Grand Total'));
+        foreach($outlets as $row)
+        {
+            foreach($row  as $key=>$r)
+            {
+                if(!($key=='area'))
+                {
+                    $grand_total[$key]+=$row[$key];
+                }
+            }
+            $items[]=$row;
+        }
+        $items[]=$grand_total;
+        $this->json_return($items);
+    }
+
+    private function system_get_items_variety_amount_quantity()
     {
         $items=array();
 
@@ -234,11 +486,11 @@ class Report_sale_analysis extends Root_Controller
         /*fiscal year*/
         $fiscal_years=$this->get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month);
 
-        $sales=$this->get_sales_fiscal_years($fiscal_years);
+        $sales=$this->get_sales_variety_amount_quantity($fiscal_years);
 
-        $type_total=$this->initialize_row($fiscal_years,'','','Total Type','');
-        $crop_total=$this->initialize_row($fiscal_years,'','Total Crop','','');
-        $grand_total=$this->initialize_row($fiscal_years,'Grand Total','','','');
+        $type_total=$this->initialize_row($fiscal_years,array('crop_name'=>'','crop_type_name'=>'','variety_name'=>'Total Type','pack_size'=>''));
+        $crop_total=$this->initialize_row($fiscal_years,array('crop_name'=>'','crop_type_name'=>'Total Crop','variety_name'=>'','pack_size'=>''));
+        $grand_total=$this->initialize_row($fiscal_years,array('crop_name'=>'Grand Total','crop_type_name'=>'','variety_name'=>'','pack_size'=>''));
 
         $prev_crop_name='';
         $prev_type_name='';
@@ -250,7 +502,8 @@ class Report_sale_analysis extends Root_Controller
             {
                 foreach($sales[$variety['variety_id']] as $pack_size=>$yearly_sale)
                 {
-                    $info=$this->initialize_row($fiscal_years,$variety['crop_name'],$variety['crop_type_name'],$variety['variety_name'],$pack_size);
+                    $row=$this->initialize_row($fiscal_years,array('crop_name'=>$variety['crop_name'],'crop_type_name'=>$variety['crop_type_name'],'variety_name'=>$variety['variety_name'],'pack_size'=>$pack_size));
+                    //$info=$this->initialize_row($fiscal_years,$variety['crop_name'],$variety['crop_type_name'],$variety['variety_name'],$pack_size);
                     if(!$first_row)
                     {
                         if($prev_crop_name!=$variety['crop_name'])
@@ -267,13 +520,13 @@ class Report_sale_analysis extends Root_Controller
                         {
                             $items[]=$type_total;
                             $type_total=$this->reset_row($type_total);
-                            $info['crop_name']='';
+                            $row['crop_name']='';
                             $prev_type_name=$variety['crop_type_name'];
                         }
                         else
                         {
-                            $info['crop_name']='';
-                            $info['crop_type_name']='';
+                            $row['crop_name']='';
+                            $row['crop_type_name']='';
                         }
                     }
                     else
@@ -284,20 +537,20 @@ class Report_sale_analysis extends Root_Controller
                     }
                     foreach($yearly_sale as $fy_id=>$details_sale)
                     {
-                        $info['quantity_'.$fy_id.'_pkt']=$details_sale['quantity_sale_pkt'];
-                        $info['quantity_'.$fy_id.'_kg']=$details_sale['quantity_sale_kg'];
-                        $info['sales_'.$fy_id.'_amount']=$details_sale['amount_total'];
+                        $row['quantity_'.$fy_id.'_pkt']=$details_sale['quantity_sale_pkt'];
+                        $row['quantity_'.$fy_id.'_kg']=$details_sale['quantity_sale_kg'];
+                        $row['sales_'.$fy_id.'_amount']=$details_sale['amount_total'];
                     }
-                    foreach($info as $key=>$r)
+                    foreach($row as $key=>$r)
                     {
                         if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
                         {
-                            $type_total[$key]+=$info[$key];
-                            $crop_total[$key]+=$info[$key];
-                            $grand_total[$key]+=$info[$key];
+                            $type_total[$key]+=$row[$key];
+                            $crop_total[$key]+=$row[$key];
+                            $grand_total[$key]+=$row[$key];
                         }
                     }
-                    $items[]=$info;
+                    $items[]=$row;
                 }
             }
         }
@@ -306,65 +559,7 @@ class Report_sale_analysis extends Root_Controller
         $items[]=$grand_total;
         $this->json_return($items);
     }
-    private function initialize_row($fiscal_years,$crop_name,$crop_type_name,$variety_name,$pack_size)
-    {
-        $row=array();
-        $row['crop_name']=$crop_name;
-        $row['crop_type_name']=$crop_type_name;
-        $row['variety_name']=$variety_name;
-        $row['pack_size']=$pack_size;
-        foreach($fiscal_years as $fy)
-        {
-            $row['quantity_'.$fy['id'].'_pkt']=0;
-            $row['quantity_'.$fy['id'].'_kg']=0;
-            $row['sales_'.$fy['id'].'_amount']=0;
-        }
-        return $row;
-    }
-    private function reset_row($info)
-    {
-        foreach($info  as $key=>$r)
-        {
-            if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
-            {
-                $info[$key]=0;
-            }
-        }
-        return $info;
-    }
-    private function get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month)
-    {
-        $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$fiscal_year_number+1,0,array('id DESC'));
-        if($month>0)
-        {
-            foreach($fiscal_years as &$fy)
-            {
-                $year_start=date('Y', $fy['date_start']);
-                $month_start=date('m', $fy['date_start']);
-                $year_end=date('Y', $fy['date_end']);
-                $month_end=date('m', $fy['date_end']);
-                if($month>$month_end)
-                {
-                    $fy['date_start']=strtotime('01-'.$month.'-'.$year_start);
-                    if($month==12)
-                    {
-                        $fy['date_end']=strtotime('01-01-'.$year_end)-1;
-                    }
-                    else
-                    {
-                        $fy['date_end']=strtotime('01-'.($month+1).'-'.$year_start)-1;
-                    }
-                }
-                else
-                {
-                    $fy['date_start']=strtotime('01-'.$month.'-'.$year_end);
-                    $fy['date_end']=strtotime('01-'.($month+1).'-'.$year_end)-1;
-                }
-            }
-        }
-        return $fiscal_years;
-    }
-    private function get_sales_fiscal_years($fiscal_years)
+    private function get_sales_variety_amount_quantity($fiscal_years)
     {
         $crop_id=$this->input->post('crop_id');
         $crop_type_id=$this->input->post('crop_type_id');
@@ -462,4 +657,61 @@ class Report_sale_analysis extends Root_Controller
         return $sales;
 
     }
+
+    private function get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month)
+    {
+        $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$fiscal_year_number+1,0,array('id DESC'));
+        if($month>0)
+        {
+            foreach($fiscal_years as &$fy)
+            {
+                $year_start=date('Y', $fy['date_start']);
+                $month_start=date('m', $fy['date_start']);
+                $year_end=date('Y', $fy['date_end']);
+                $month_end=date('m', $fy['date_end']);
+                if($month>$month_end)
+                {
+                    $fy['date_start']=strtotime('01-'.$month.'-'.$year_start);
+                    if($month==12)
+                    {
+                        $fy['date_end']=strtotime('01-01-'.$year_end)-1;
+                    }
+                    else
+                    {
+                        $fy['date_end']=strtotime('01-'.($month+1).'-'.$year_start)-1;
+                    }
+                }
+                else
+                {
+                    $fy['date_start']=strtotime('01-'.$month.'-'.$year_end);
+                    $fy['date_end']=strtotime('01-'.($month+1).'-'.$year_end)-1;
+                }
+            }
+        }
+        return $fiscal_years;
+    }
+    private function initialize_row($fiscal_years,$row)
+    {
+        foreach($fiscal_years as $fy)
+        {
+            $row['quantity_'.$fy['id'].'_pkt']=0;
+            $row['quantity_'.$fy['id'].'_kg']=0;
+            $row['sales_'.$fy['id'].'_amount']=0;
+        }
+        return $row;
+    }
+    private function reset_row($row)
+    {
+        foreach($row  as $key=>$r)
+        {
+            if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
+            {
+                $row[$key]=0;
+            }
+        }
+        return $row;
+    }
+
+
+
 }

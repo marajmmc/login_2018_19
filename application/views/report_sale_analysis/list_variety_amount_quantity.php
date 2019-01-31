@@ -25,7 +25,7 @@ if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
     $action_buttons[]=array
     (
         'label'=>'Preference',
-        'href'=>site_url($CI->controller_url.'/index/set_preference')
+        'href'=>site_url($CI->controller_url.'/index/set_preference_variety_amount_quantity')
     );
 }
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
@@ -149,7 +149,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             $(jqx_grid_id).jqxGrid('endupdate');
         });
 
-        var url = "<?php echo site_url($CI->controller_url.'/index/get_items');?>";
+        var url = "<?php echo site_url($CI->controller_url.'/index/get_items_variety_amount_quantity');?>";
         // prepare the data
         var source =
         {
