@@ -12,8 +12,12 @@ class Setup_users extends Root_Controller
         $this->message='';
         $this->permissions=User_helper::get_permission('Setup_users');
         $this->controller_url='setup_users';
+        $this->language_labels();
     }
-
+    private function language_labels()
+    {
+        $this->lang->language['LABEL_STATUS_APPS']='Apps Status';
+    }
     public function index($action='list',$id=0)
     {
         if($action=='list')
@@ -121,6 +125,16 @@ class Setup_users extends Root_Controller
         {
             $this->system_save_authentication_setup();
         }
+
+        elseif($action=='edit_app_preference')
+        {
+            $this->system_edit_app_preference($id);
+        }
+        elseif($action=="save_app_preference")
+        {
+            $this->system_save_app_preference();
+        }
+
         else
         {
             $this->system_list();
@@ -243,6 +257,14 @@ class Setup_users extends Root_Controller
                 }
             }
         }
+        // app status
+        $this->db->from($this->config->item('table_login_setup_user_app').' preference');
+        $results=$this->db->get()->result_array();
+        $app_users=array();
+        foreach($results as $result)
+        {
+            $app_users[$result['user_id']]=$result['status'];
+        }
 
         $this->db->from($this->config->item('table_login_setup_user').' user');
         $this->db->select('user.id,user.employee_id,user.user_name username,user.status');
@@ -297,6 +319,14 @@ class Setup_users extends Root_Controller
             else
             {
                 $item['user_area']="Not Assigned";
+            }
+            if(isset($app_users[$item['id']]))
+            {
+                $item['status_apps']=$app_users[$item['id']];
+            }
+            else
+            {
+                $item['status_apps']="Not Register";
             }
         }
 
@@ -1609,6 +1639,226 @@ class Setup_users extends Root_Controller
             }
         }
     }
+
+    private function system_edit_app_preference($id)
+    {
+        if(isset($this->permissions['action2']) && ($this->permissions['action2']==1))
+        {
+            if(($this->input->post('id')))
+            {
+                $user_id=$this->input->post('id');
+            }
+            else
+            {
+                $user_id=$id;
+            }
+            //$user=User_helper::get_user();
+
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_app'),array('*'),array('user_id ='.$user_id),1);
+            if(!$result)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='User not login in mobile apps.';
+                $this->json_return($ajax);
+            }
+            if($result['status']!=$this->config->item('system_status_yes'))
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='User logged out in mobile apps.';
+                $this->json_return($ajax);
+            }
+
+            //EMS all Assign Task
+            $this->db->from($this->config->item('table_system_ems_assigned_group').' assigned_group');
+            $this->db->join($this->config->item('table_system_ems_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+            $this->db->join($this->config->item('table_system_ems_task').' task','task.id=role.task_id','INNER');
+            $this->db->select('task.id, task.name');
+            $this->db->where('assigned_group.user_id',$user_id);
+            $this->db->where('role.revision',1);
+            $this->db->where('task.type','TASK');
+            $data['task_ems']=$this->db->get()->result_array();
+
+            //SMS all Assign Task
+            $this->db->from($this->config->item('table_system_sms_assigned_group').' assigned_group');
+            $this->db->join($this->config->item('table_system_sms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+            $this->db->join($this->config->item('table_system_sms_task').' task','task.id=role.task_id','INNER');
+            $this->db->select('task.id, task.name');
+            $this->db->where('assigned_group.user_id',$user_id);
+            $this->db->where('role.revision',1);
+            $this->db->where('task.type','TASK');
+            $data['task_sms']=$this->db->get()->result_array();
+
+            //BMS all Assign Task
+            $this->db->from($this->config->item('table_system_bms_assigned_group').' assigned_group');
+            $this->db->join($this->config->item('table_system_bms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+            $this->db->join($this->config->item('table_system_bms_task').' task','task.id=role.task_id','INNER');
+            $this->db->select('task.id, task.name');
+            $this->db->where('assigned_group.user_id',$user_id);
+            $this->db->where('role.revision',1);
+            $this->db->where('task.type','TASK');
+            $data['task_bms']=$this->db->get()->result_array();
+
+            $result=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'*',array('user_id ='.$user_id),1);
+            $data['notify_task_ems_ids']=array();
+            $data['notify_task_sms_ids']=array();
+            $data['notify_task_bms_ids']=array();
+            if($result['ems'])
+            {
+                $notify_task_ems_ids=explode(',',$result['ems']);
+                unset($notify_task_ems_ids[0]);
+                unset($notify_task_ems_ids[sizeof($notify_task_ems_ids)]);
+                $data['notify_task_ems_ids']=array_flip($notify_task_ems_ids);
+            }
+            if($result['sms'])
+            {
+                $notify_task_sms_ids=explode(',',$result['sms']);
+                unset($notify_task_sms_ids[0]);
+                unset($notify_task_sms_ids[sizeof($notify_task_sms_ids)]);
+                $data['notify_task_sms_ids']=array_flip($notify_task_sms_ids);
+            }
+            if($result['bms'])
+            {
+                $notify_task_bms_ids=explode(',',$result['bms']);
+                unset($notify_task_bms_ids[0]);
+                unset($notify_task_bms_ids[sizeof($notify_task_bms_ids)]);
+                $data['notify_task_bms_ids']=array_flip($notify_task_bms_ids);
+            }
+
+            $data['item']['id']=$user_id;
+            $data['title']="User App Preference Edit";
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url.'/edit_app_preference',$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/edit_app_preference/'.$user_id);
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_save_app_preference()
+    {
+        $time=time();
+        $user_id = $this->input->post("id");
+        $ems=$this->input->post('ems');
+        $sms=$this->input->post('sms');
+        $bms=$this->input->post('bms');
+        $user = User_helper::get_user();
+        if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+            die();
+        }
+        //old items
+        $item_old=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'*',array('user_id ='.$user_id),1);
+        if(!$item_old)
+        {
+            $ajax['status']=false;
+            $ajax['system_message']='User not login in mobile apps.';
+            $this->json_return($ajax);
+        }
+        if($item_old['status']!=$this->config->item('system_status_yes'))
+        {
+            $ajax['status']=false;
+            $ajax['system_message']='User logged out in mobile apps.';
+            $this->json_return($ajax);
+        }
+
+        //EMS all Assign Task
+        $task_ems_ids='';
+        $task_sms_ids='';
+        $task_bms_ids='';
+        if($ems)
+        {
+            $this->db->from($this->config->item('table_system_ems_assigned_group').' assigned_group');
+            $this->db->join($this->config->item('table_system_ems_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+            $this->db->join($this->config->item('table_system_ems_task').' task','task.id=role.task_id','INNER');
+            $this->db->select('task.id, task.name');
+            $this->db->where('assigned_group.user_id',$user_id);
+            $this->db->where('role.revision',1);
+            $this->db->where('task.type','TASK');
+            $results=$this->db->get()->result_array();
+            $task_ems_ids=',';
+            foreach($results as $result)
+            {
+                if(isset($ems[$result['id']]))
+                {
+                    $task_ems_ids.=$result['id'].',';
+                }
+            }
+        }
+        if($sms)
+        {
+            $this->db->from($this->config->item('table_system_sms_assigned_group').' assigned_group');
+            $this->db->join($this->config->item('table_system_sms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+            $this->db->join($this->config->item('table_system_sms_task').' task','task.id=role.task_id','INNER');
+            $this->db->select('task.id, task.name');
+            $this->db->where('assigned_group.user_id',$user_id);
+            $this->db->where('role.revision',1);
+            $this->db->where('task.type','TASK');
+            $results=$this->db->get()->result_array();
+            $task_sms_ids=',';
+            foreach($results as $result)
+            {
+                if(isset($sms[$result['id']]))
+                {
+                    $task_sms_ids.=$result['id'].',';
+                }
+            }
+        }
+        if($bms)
+        {
+            $this->db->from($this->config->item('table_system_bms_assigned_group').' assigned_group');
+            $this->db->join($this->config->item('table_system_bms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+            $this->db->join($this->config->item('table_system_bms_task').' task','task.id=role.task_id','INNER');
+            $this->db->select('task.id, task.name');
+            $this->db->where('assigned_group.user_id',$user_id);
+            $this->db->where('role.revision',1);
+            $this->db->where('task.type','TASK');
+            $results=$this->db->get()->result_array();
+            $task_bms_ids=',';
+            foreach($results as $result)
+            {
+                if(isset($bms[$result['id']]))
+                {
+                    $task_bms_ids.=$result['id'].',';
+                }
+            }
+        }
+
+        $this->db->trans_start();  //DB Transaction Handle START
+
+        // old item
+        $data=array();
+        $data['ems']=$task_ems_ids;
+        $data['sms']=$task_sms_ids;
+        $data['bms']=$task_bms_ids;
+        $data['user_updated']=$user->user_id;
+        $data['date_updated']=$time;
+        Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('user_id='.$user_id),false);
+
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status() === TRUE)
+        {
+            $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+            $this->system_list();
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+            $this->json_return($ajax);
+        }
+    }
+
     private function check_validation_for_add()
     {
         $this->load->library('form_validation');
@@ -1979,6 +2229,7 @@ class Setup_users extends Root_Controller
         $data['mobile_no']= 1;
         $data['email']= 1;
         $data['blood_group']= 1;
+        $data['status_apps']= 1;
         $data['status']= 1;
         if($result)
         {

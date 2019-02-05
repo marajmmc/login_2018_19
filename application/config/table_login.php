@@ -79,3 +79,6 @@ $config['table_login_setup_expense_item_outlet'] = 'arm_login_2018_19.login_setu
 
 // IOU items
 $config['table_login_setup_expense_item_iou'] = 'arm_login_2018_19.login_setup_expense_item_iou';
+
+// Apps Related table
+$config['table_login_setup_user_app'] = 'arm_login_2018_19.login_setup_user_app';

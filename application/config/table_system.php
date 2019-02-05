@@ -14,3 +14,18 @@ $config['table_system_setup_print'] = 'arm_sms_2018_19.system_setup_print';
 //Mobile sms history
 $config['table_system_history_mobile_sms'] = 'arm_login_2018_19.system_history_mobile_sms';
 $config['table_system_history_login_verification_code'] = 'arm_login_2018_19.system_history_login_verification_code';
+// EMS system table
+$config['table_system_ems_user_group'] = 'arm_ems_2018_19.system_user_group';
+$config['table_system_ems_assigned_group'] = 'arm_ems_2018_19.system_assigned_group';
+$config['table_system_ems_user_group_role'] = 'arm_ems_2018_19.system_user_group_role';
+$config['table_system_ems_task'] = 'arm_ems_2018_19.system_task';
+// SMS system table
+$config['table_system_sms_user_group'] = 'arm_sms_2018_19.system_user_group';
+$config['table_system_sms_assigned_group'] = 'arm_sms_2018_19.system_assigned_group';
+$config['table_system_sms_user_group_role'] = 'arm_sms_2018_19.system_user_group_role';
+$config['table_system_sms_task'] = 'arm_sms_2018_19.system_task';
+// BMS system table
+$config['table_system_bms_user_group'] = 'arm_bms_2018_19.system_user_group';
+$config['table_system_bms_assigned_group'] = 'arm_bms_2018_19.system_assigned_group';
+$config['table_system_bms_user_group_role'] = 'arm_bms_2018_19.system_user_group_role';
+$config['table_system_bms_task'] = 'arm_bms_2018_19.system_task';

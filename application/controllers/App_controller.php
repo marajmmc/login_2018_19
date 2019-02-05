@@ -1,0 +1,195 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class App_controller extends CI_Controller
+{
+    private $APP_KEY='ARMLoginApp';
+    public function __construct()
+    {
+        parent::__construct();
+    }
+    public function index()
+    {
+        //echo $this->APP_KEY;
+    }
+    private function json_return($array)
+    {
+        header('Content-type: application/json');
+        echo json_encode($array);
+        exit();
+    }
+    public function device_login()
+    {
+        //$response=array();
+        $time=time();
+        $user_name=$this->input->post('user_name');
+        $password=$this->input->post('password');
+        $device_token=$this->input->post('device_token');
+        $app_key=$this->input->post('app_key');
+        if($app_key!=$this->APP_KEY)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid Application.'
+            );
+            $this->json_return($response);
+        }
+
+        if(!($device_token))
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid Device.'
+            );
+            $this->json_return($response);
+        }
+
+        $this->db->from($this->config->item('table_login_setup_user').' user');
+        $this->db->select('user.id, user.password, user.employee_id, user.status');
+        $this->db->join($this->config->item('table_login_setup_user_info').' user_info','user_info.user_id=user.id','INNER');
+        $this->db->select('user_info.name user_full_name');
+        //$this->db->where('user.status',$this->config->item('system_status_active'));
+        $this->db->where('user_info.revision',1);
+        $this->db->where('user.user_name',$user_name);
+        $this->db->order_by('user_info.ordering','ASC');
+        $user=$this->db->get()->row_array();
+        if(!$user)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'User not found.'
+            );
+            $this->json_return($response);
+        }
+
+        if($user['status']!=$this->config->item('system_status_active'))
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid User.'
+            );
+            $this->json_return($response);
+        }
+
+        if($user['password']!=md5($password))
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Wrong password.'
+            );
+            $this->json_return($response);
+        }
+
+        $user_id=$user['id'];
+        $user_info=array
+        (
+            'user_full_name'=>$user['user_full_name'],
+            'user_id'=>$user_id,
+            'device_token'=>$device_token,
+        );
+        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('(device_token ="'.$device_token.'" OR user_id='.$user['id'].')'));
+        if(sizeof($app_user)>1)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Currently you are illegally login. Contact HQ office'
+            );
+            $this->json_return($response);
+        }
+
+        // get EMS User role
+        $this->db->from($this->config->item('table_system_ems_assigned_group').' assigned_group');
+        $this->db->join($this->config->item('table_system_ems_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+        $this->db->join($this->config->item('table_system_ems_task').' task','task.id=role.task_id','INNER');
+        $this->db->select('task.id, task.name');
+        $this->db->where('assigned_group.user_id',$user_id);
+        $this->db->where('role.revision',1);
+        $this->db->where('task.type','TASK');
+        $results=$this->db->get()->result_array();
+        $task_ems_ids='';
+        if($results)
+        {
+            $task_ems_ids=',';
+            foreach($results as $result)
+            {
+                $task_ems_ids.=$result['id'].',';
+            }
+        }
+        // get SMS User Role
+        $this->db->from($this->config->item('table_system_sms_assigned_group').' assigned_group');
+        $this->db->join($this->config->item('table_system_sms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+        $this->db->join($this->config->item('table_system_sms_task').' task','task.id=role.task_id','INNER');
+        $this->db->select('task.id, task.name');
+        $this->db->where('assigned_group.user_id',$user_id);
+        $this->db->where('role.revision',1);
+        $this->db->where('task.type','TASK');
+        $results=$this->db->get()->result_array();
+        $task_sms_ids='';
+        if($results)
+        {
+            $task_sms_ids=',';
+            foreach($results as $result)
+            {
+                $task_sms_ids.=$result['id'].',';
+            }
+        }
+        // get BMS User Role
+        $this->db->from($this->config->item('table_system_bms_assigned_group').' assigned_group');
+        $this->db->join($this->config->item('table_system_bms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
+        $this->db->join($this->config->item('table_system_bms_task').' task','task.id=role.task_id','INNER');
+        $this->db->select('task.id, task.name');
+        $this->db->where('assigned_group.user_id',$user_id);
+        $this->db->where('role.revision',1);
+        $this->db->where('task.type','TASK');
+        $results=$this->db->get()->result_array();
+        $task_bms_ids='';
+        if($results)
+        {
+            $task_bms_ids=',';
+            foreach($results as $result)
+            {
+                $task_bms_ids.=$result['id'].',';
+            }
+        }
+
+        $data=array();
+        $data['user_id']=$user_id;
+        $data['device_token']=$device_token;
+        $data['ems']=$task_ems_ids;
+        $data['sms']=$task_sms_ids;
+        $data['bms']=$task_bms_ids;
+        $data['status']=$this->config->item('system_status_yes');
+
+
+        if(sizeof($app_user)==1)
+        {
+            // update query
+            $data['user_updated']=$user_id;
+            $data['date_updated']=$time;
+            Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('user_id='.$user_id),false);
+        }
+        else
+        {
+            // insert query
+            $data['user_created']=$user_id;
+            $data['date_created']=$time;
+            Query_helper::add($this->config->item('table_login_setup_user_app'),$data,false);
+        }
+        $response=array
+        (
+            'status'=>true,
+            'data'=>$user_info
+        );
+        $this->json_return($response);
+    }
+    public function device_logout()
+    {
+
+    }
+}

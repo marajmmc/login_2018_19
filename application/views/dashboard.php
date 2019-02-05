@@ -67,7 +67,7 @@ if(!empty($user->designation))
                         <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span><?php echo !empty($user->email)?$user->email:'Email not set'?></p></li>
                         <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span><?php echo $designation_name;?></p></li>
                         <li>
-                            <p class="btn-group btn-group-lg">
+                            <p class="btn-group btn-group-md">
                                 <a href="<?php echo base_url()?>profile_info/index/details/<?php echo $user->id;?>" class="btn btn-primary">
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Profile View
@@ -80,6 +80,18 @@ if(!empty($user->designation))
                                     <span class="glyphicon glyphicon-edit one"></span>
                                     Change Profile Picture
                                 </a>
+                                <?php
+                                $result=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'*',array('user_id ='.$user->user_id, 'status="'.$this->config->item('system_status_yes').'"'),1);
+                                if($result)
+                                {
+                                    ?>
+                                    <a href="<?php echo base_url()?>setup_user_app/index/edit/" class="btn btn-success">
+                                        <span class="glyphicon glyphicon-phone"></span>
+                                        App Notify Preference
+                                    </a>
+                                <?php
+                                }
+                                ?>
                             </p>
                         </li>
                     </ul>

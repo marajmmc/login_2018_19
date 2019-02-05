@@ -53,6 +53,12 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/edit_authentication_setup')
     );
+    $action_buttons[]=array(
+        'type'=>'button',
+        'label'=>'Edit App Preference',
+        'class'=>'button_jqx_action',
+        'data-action-link'=>site_url($CI->controller_url.'/index/edit_app_preference')
+    );
 }
 if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
 {
@@ -147,7 +153,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         var source =
         {
             dataType: "json",
-            dataFields: [
+            datafields: [
                 { name: 'id', type: 'int' },
                 { name: 'employee_id', type: 'string' },
                 { name: 'username', type: 'string' },
@@ -161,6 +167,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'mobile_no', type: 'string' },
                 { name: 'email', type: 'string' },
                 { name: 'blood_group', type: 'string' },
+                { name: 'status_apps', type: 'string' },
                 { name: 'status', type: 'string' }
             ],
             id: 'id',
@@ -200,6 +207,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_MOBILE_NO'); ?>', dataField: 'mobile_no',width:'120', hidden: <?php echo $system_preference_items['mobile_no']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_EMAIL'); ?>', dataField: 'email',width:'200', hidden: <?php echo $system_preference_items['email']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_BLOOD_GROUP'); ?>', dataField: 'blood_group',filtertype: 'list',width:'40', hidden: <?php echo $system_preference_items['blood_group']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_STATUS_APPS'); ?>', dataField: 'status_apps',filtertype: 'list',width:'70',cellsalign: 'right', hidden: <?php echo $system_preference_items['status_apps']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'70',cellsalign: 'right', hidden: <?php echo $system_preference_items['status']?0:1;?>}
 
                 ]
