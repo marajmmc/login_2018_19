@@ -326,7 +326,7 @@ class Setup_users extends Root_Controller
             }
             else
             {
-                $item['status_apps']="Not Register";
+                $item['status_apps']="N/A";
             }
         }
 
@@ -1675,7 +1675,9 @@ class Setup_users extends Root_Controller
             $this->db->select('task.id, task.name');
             $this->db->where('assigned_group.user_id',$user_id);
             $this->db->where('role.revision',1);
+            $this->db->where('assigned_group.revision',1);
             $this->db->where('task.type','TASK');
+            $this->db->where('task.status_notification',$this->config->item('system_status_yes'));
             $data['task_ems']=$this->db->get()->result_array();
 
             //SMS all Assign Task
@@ -1685,7 +1687,9 @@ class Setup_users extends Root_Controller
             $this->db->select('task.id, task.name');
             $this->db->where('assigned_group.user_id',$user_id);
             $this->db->where('role.revision',1);
+            $this->db->where('assigned_group.revision',1);
             $this->db->where('task.type','TASK');
+            $this->db->where('task.status_notification',$this->config->item('system_status_yes'));
             $data['task_sms']=$this->db->get()->result_array();
 
             //BMS all Assign Task
@@ -1695,7 +1699,9 @@ class Setup_users extends Root_Controller
             $this->db->select('task.id, task.name');
             $this->db->where('assigned_group.user_id',$user_id);
             $this->db->where('role.revision',1);
+            $this->db->where('assigned_group.revision',1);
             $this->db->where('task.type','TASK');
+            $this->db->where('task.status_notification',$this->config->item('system_status_yes'));
             $data['task_bms']=$this->db->get()->result_array();
 
             $result=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'*',array('user_id ='.$user_id),1);
@@ -1704,25 +1710,16 @@ class Setup_users extends Root_Controller
             $data['notify_task_bms_ids']=array();
             if($result['ems'])
             {
-                $notify_task_ems_ids=explode(',',$result['ems']);
-                unset($notify_task_ems_ids[0]);
-                unset($notify_task_ems_ids[sizeof($notify_task_ems_ids)]);
-                $data['notify_task_ems_ids']=array_flip($notify_task_ems_ids);
-            }
+                $data['notify_task_ems_ids']=explode(',',trim($result['ems'],','));
+            };
             if($result['sms'])
             {
-                $notify_task_sms_ids=explode(',',$result['sms']);
-                unset($notify_task_sms_ids[0]);
-                unset($notify_task_sms_ids[sizeof($notify_task_sms_ids)]);
-                $data['notify_task_sms_ids']=array_flip($notify_task_sms_ids);
-            }
+                $data['notify_task_sms_ids']=explode(',',trim($result['sms'],','));
+            };
             if($result['bms'])
             {
-                $notify_task_bms_ids=explode(',',$result['bms']);
-                unset($notify_task_bms_ids[0]);
-                unset($notify_task_bms_ids[sizeof($notify_task_bms_ids)]);
-                $data['notify_task_bms_ids']=array_flip($notify_task_bms_ids);
-            }
+                $data['notify_task_bms_ids']=explode(',',trim($result['bms'],','));
+            };
 
             $data['item']['id']=$user_id;
             $data['title']="User App Preference Edit";
@@ -1778,60 +1775,15 @@ class Setup_users extends Root_Controller
         $task_bms_ids='';
         if($ems)
         {
-            $this->db->from($this->config->item('table_system_ems_assigned_group').' assigned_group');
-            $this->db->join($this->config->item('table_system_ems_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
-            $this->db->join($this->config->item('table_system_ems_task').' task','task.id=role.task_id','INNER');
-            $this->db->select('task.id, task.name');
-            $this->db->where('assigned_group.user_id',$user_id);
-            $this->db->where('role.revision',1);
-            $this->db->where('task.type','TASK');
-            $results=$this->db->get()->result_array();
-            $task_ems_ids=',';
-            foreach($results as $result)
-            {
-                if(isset($ems[$result['id']]))
-                {
-                    $task_ems_ids.=$result['id'].',';
-                }
-            }
+            $task_ems_ids=','.implode(',',$ems).',';
         }
         if($sms)
         {
-            $this->db->from($this->config->item('table_system_sms_assigned_group').' assigned_group');
-            $this->db->join($this->config->item('table_system_sms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
-            $this->db->join($this->config->item('table_system_sms_task').' task','task.id=role.task_id','INNER');
-            $this->db->select('task.id, task.name');
-            $this->db->where('assigned_group.user_id',$user_id);
-            $this->db->where('role.revision',1);
-            $this->db->where('task.type','TASK');
-            $results=$this->db->get()->result_array();
-            $task_sms_ids=',';
-            foreach($results as $result)
-            {
-                if(isset($sms[$result['id']]))
-                {
-                    $task_sms_ids.=$result['id'].',';
-                }
-            }
+            $task_sms_ids=','.implode(',',$sms).',';
         }
         if($bms)
         {
-            $this->db->from($this->config->item('table_system_bms_assigned_group').' assigned_group');
-            $this->db->join($this->config->item('table_system_bms_user_group_role').' role','role.user_group_id=assigned_group.user_group','INNER');
-            $this->db->join($this->config->item('table_system_bms_task').' task','task.id=role.task_id','INNER');
-            $this->db->select('task.id, task.name');
-            $this->db->where('assigned_group.user_id',$user_id);
-            $this->db->where('role.revision',1);
-            $this->db->where('task.type','TASK');
-            $results=$this->db->get()->result_array();
-            $task_bms_ids=',';
-            foreach($results as $result)
-            {
-                if(isset($bms[$result['id']]))
-                {
-                    $task_bms_ids.=$result['id'].',';
-                }
-            }
+            $task_bms_ids=','.implode(',',$bms).',';
         }
 
         $this->db->trans_start();  //DB Transaction Handle START

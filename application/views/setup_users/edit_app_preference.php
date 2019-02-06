@@ -78,7 +78,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                                     ?>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="ems[<?php echo $task['id']?>]" value="<?php echo $task['id']?>" <?php if(isset($notify_task_ems_ids[$task['id']])){echo "checked='true'";}?> id="ems_task_<?php echo $task['id']?>" style="cursor: pointer"/>
+                                            <input type="checkbox" name="ems[<?php echo $task['id']?>]" value="<?php echo $task['id']?>" <?php if(in_array($task['id'], $notify_task_ems_ids)){echo "checked='true'";}?> id="ems_task_<?php echo $task['id']?>" style="cursor: pointer"/>
                                         </td>
                                         <th><label for="ems_task_<?php echo $task['id']?>" style="cursor: pointer"><?php echo $task['name']?></label></th>
                                     </tr>
@@ -119,7 +119,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                                     ?>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="sms[<?php echo $task['id']?>]" value="<?php echo $task['id']?>" <?php if(isset($notify_task_sms_ids[$task['id']])){echo "checked='true'";}?> id="sms_task_<?php echo $task['id']?>" style="cursor: pointer"/>
+                                            <input type="checkbox" name="sms[<?php echo $task['id']?>]" value="<?php echo $task['id']?>" <?php if(in_array($task['id'], $notify_task_sms_ids)){echo "checked='true'";}?> id="sms_task_<?php echo $task['id']?>" style="cursor: pointer"/>
                                         </td>
                                         <th><label for="sms_task_<?php echo $task['id']?>" style="cursor: pointer"><?php echo $task['name']?></label></th>
                                     </tr>
@@ -159,7 +159,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                                     ?>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="bms[<?php echo $task['id']?>]" value="<?php echo $task['id']?>" <?php if(isset($notify_task_bms_ids[$task['id']])){echo "checked='true'";}?> id="bms_task_<?php echo $task['id']?>" style="cursor: pointer"/>
+                                            <input type="checkbox" name="bms[<?php echo $task['id']?>]" value="<?php echo $task['id']?>" <?php if(in_array($task['id'], $notify_task_bms_ids)){echo "checked='true'";}?> id="bms_task_<?php echo $task['id']?>" style="cursor: pointer"/>
                                         </td>
                                         <th><label for="bms_task_<?php echo $task['id']?>" style="cursor: pointer"><?php echo $task['name']?></label></th>
                                     </tr>

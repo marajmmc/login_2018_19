@@ -49,7 +49,9 @@ class App_controller extends CI_Controller
         $this->db->from($this->config->item('table_login_setup_user').' user');
         $this->db->select('user.id, user.password, user.employee_id, user.status');
         $this->db->join($this->config->item('table_login_setup_user_info').' user_info','user_info.user_id=user.id','INNER');
-        $this->db->select('user_info.name user_full_name');
+        $this->db->select('user_info.name user_full_name, user_info.mobile_no, user_info.email');
+        $this->db->join($this->config->item('table_login_setup_designation').' designation','designation.id=user_info.designation','LEFT');
+        $this->db->select('designation.name designation_name');
         //$this->db->where('user.status',$this->config->item('system_status_active'));
         $this->db->where('user_info.revision',1);
         $this->db->where('user.user_name',$user_name);
@@ -88,7 +90,10 @@ class App_controller extends CI_Controller
         $user_id=$user['id'];
         $user_info=array
         (
-            'user_full_name'=>$user['user_full_name'],
+            'name'=>$user['user_full_name'],
+            'designation'=>$user['designation_name'],
+            'mobile_no'=>$user['mobile_no'],
+            'email'=>$user['email'],
             'user_id'=>$user_id,
             'device_token'=>$device_token,
         );
@@ -110,7 +115,9 @@ class App_controller extends CI_Controller
         $this->db->select('task.id, task.name');
         $this->db->where('assigned_group.user_id',$user_id);
         $this->db->where('role.revision',1);
+        $this->db->where('assigned_group.revision',1);
         $this->db->where('task.type','TASK');
+        $this->db->where('task.status_notification',$this->config->item('system_status_yes'));
         $results=$this->db->get()->result_array();
         $task_ems_ids='';
         if($results)
@@ -128,7 +135,9 @@ class App_controller extends CI_Controller
         $this->db->select('task.id, task.name');
         $this->db->where('assigned_group.user_id',$user_id);
         $this->db->where('role.revision',1);
+        $this->db->where('assigned_group.revision',1);
         $this->db->where('task.type','TASK');
+        $this->db->where('task.status_notification',$this->config->item('system_status_yes'));
         $results=$this->db->get()->result_array();
         $task_sms_ids='';
         if($results)
@@ -146,7 +155,9 @@ class App_controller extends CI_Controller
         $this->db->select('task.id, task.name');
         $this->db->where('assigned_group.user_id',$user_id);
         $this->db->where('role.revision',1);
+        $this->db->where('assigned_group.revision',1);
         $this->db->where('task.type','TASK');
+        $this->db->where('task.status_notification',$this->config->item('system_status_yes'));
         $results=$this->db->get()->result_array();
         $task_bms_ids='';
         if($results)
@@ -166,7 +177,7 @@ class App_controller extends CI_Controller
         $data['bms']=$task_bms_ids;
         $data['status']=$this->config->item('system_status_yes');
 
-
+        $this->db->trans_start();  //DB Transaction Handle START
         if(sizeof($app_user)==1)
         {
             // update query
@@ -181,15 +192,124 @@ class App_controller extends CI_Controller
             $data['date_created']=$time;
             Query_helper::add($this->config->item('table_login_setup_user_app'),$data,false);
         }
-        $response=array
-        (
-            'status'=>true,
-            'data'=>$user_info
-        );
-        $this->json_return($response);
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status() === TRUE)
+        {
+            $response=array
+            (
+                'status'=>true,
+                'data'=>$user_info
+            );
+            $this->json_return($response);
+        }
+        else
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>$this->lang->line("MSG_SAVED_FAIL"),
+            );
+            $this->json_return($response);
+        }
+
     }
     public function device_logout()
     {
+        $time=time();
+        $user_name=$this->input->post('user_name');
+        $device_token=$this->input->post('device_token');
+        $app_key=$this->input->post('app_key');
+        if($app_key!=$this->APP_KEY)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid Application.'
+            );
+            $this->json_return($response);
+        }
+        if(!($device_token))
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid Device.'
+            );
+            $this->json_return($response);
+        }
 
+        $user=Query_helper::get_info($this->config->item('table_login_setup_user'),'id, user_name, status',array('user_name="'.$user_name.'"'),1);
+        if(!$user)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'User not found.'
+            );
+            $this->json_return($response);
+        }
+        if($user['status']!=$this->config->item('system_status_active'))
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid User.'
+            );
+            $this->json_return($response);
+        }
+        $user_id=$user['id'];
+        $user_info=array
+        (
+            'user_id'=>$user_id,
+            'device_token'=>$device_token,
+            'app_key'=>$app_key,
+        );
+
+        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('device_token ="'.$device_token.'" AND user_id="'.$user_id.'"'));
+        if(!$app_user)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Invalid User'
+            );
+            $this->json_return($response);
+        }
+        if(sizeof($app_user)>1)
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>'Currently you are illegally login. Contact HQ office'
+            );
+            $this->json_return($response);
+        }
+
+        $this->db->trans_start();  //DB Transaction Handle START
+
+        $data['status']=$this->config->item('system_status_no');
+        $data['user_updated']=$user_id;
+        $data['date_updated']=$time;
+        Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('device_token ="'.$device_token.'" AND user_id='.$user_id),false);
+
+        $this->db->trans_complete();   //DB Transaction Handle END
+
+        if ($this->db->trans_status() === TRUE)
+        {
+            $response=array
+            (
+                'status'=>true,
+                'data'=>$user_info
+            );
+        }
+        else
+        {
+            $response=array
+            (
+                'status'=>false,
+                'massage'=>$this->lang->line("MSG_SAVED_FAIL"),
+            );
+        }
+        $this->json_return($response);
     }
 }
