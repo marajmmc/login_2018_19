@@ -183,7 +183,7 @@ class App_controller extends CI_Controller
             // update query
             $data['user_updated']=$user_id;
             $data['date_updated']=$time;
-            Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('user_id='.$user_id),false);
+            Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('id='.$app_user[0]['id']),false);
         }
         else
         {
@@ -207,7 +207,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>$this->lang->line("MSG_SAVED_FAIL"),
+                'massage'=>'Database Transaction Error',
             );
             $this->json_return($response);
         }
@@ -216,7 +216,7 @@ class App_controller extends CI_Controller
     public function device_logout()
     {
         $time=time();
-        $user_name=$this->input->post('user_name');
+        $user_id=$this->input->post('user_id');
         $device_token=$this->input->post('device_token');
         $app_key=$this->input->post('app_key');
         if($app_key!=$this->APP_KEY)
@@ -238,49 +238,13 @@ class App_controller extends CI_Controller
             $this->json_return($response);
         }
 
-        $user=Query_helper::get_info($this->config->item('table_login_setup_user'),'id, user_name, status',array('user_name="'.$user_name.'"'),1);
-        if(!$user)
-        {
-            $response=array
-            (
-                'status'=>false,
-                'massage'=>'User not found.'
-            );
-            $this->json_return($response);
-        }
-        if($user['status']!=$this->config->item('system_status_active'))
-        {
-            $response=array
-            (
-                'status'=>false,
-                'massage'=>'Invalid User.'
-            );
-            $this->json_return($response);
-        }
-        $user_id=$user['id'];
-        $user_info=array
-        (
-            'user_id'=>$user_id,
-            'device_token'=>$device_token,
-            'app_key'=>$app_key,
-        );
-
-        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('device_token ="'.$device_token.'" AND user_id="'.$user_id.'"'));
+        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('device_token ="'.$device_token.'" AND user_id="'.$user_id.'"'),1);
         if(!$app_user)
         {
             $response=array
             (
-                'status'=>false,
-                'massage'=>'Invalid User'
-            );
-            $this->json_return($response);
-        }
-        if(sizeof($app_user)>1)
-        {
-            $response=array
-            (
-                'status'=>false,
-                'massage'=>'Currently you are illegally login. Contact HQ office'
+                'status'=>true,
+                'massage'=>'Already Logged Out'
             );
             $this->json_return($response);
         }
@@ -290,7 +254,7 @@ class App_controller extends CI_Controller
         $data['status']=$this->config->item('system_status_no');
         $data['user_updated']=$user_id;
         $data['date_updated']=$time;
-        Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('device_token ="'.$device_token.'" AND user_id='.$user_id),false);
+        Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('id ='.$app_user['id']),false);
 
         $this->db->trans_complete();   //DB Transaction Handle END
 
@@ -299,7 +263,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>true,
-                'data'=>$user_info
+                'massage'=>'Logged Out Successfully'
             );
         }
         else
@@ -307,7 +271,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>$this->lang->line("MSG_SAVED_FAIL"),
+                'massage'=>'Database Transaction Error',
             );
         }
         $this->json_return($response);
