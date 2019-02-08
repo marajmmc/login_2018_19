@@ -31,7 +31,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Invalid Application.'
+                'message'=>'Invalid Application.'
             );
             $this->json_return($response);
         }
@@ -41,7 +41,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Invalid Device.'
+                'message'=>'Invalid Device.'
             );
             $this->json_return($response);
         }
@@ -49,7 +49,7 @@ class App_controller extends CI_Controller
         $this->db->from($this->config->item('table_login_setup_user').' user');
         $this->db->select('user.id, user.password, user.employee_id, user.status');
         $this->db->join($this->config->item('table_login_setup_user_info').' user_info','user_info.user_id=user.id','INNER');
-        $this->db->select('user_info.name user_full_name, user_info.mobile_no, user_info.email');
+        $this->db->select('user_info.name user_full_name, user_info.mobile_no, user_info.email, user_info.image_location');
         $this->db->join($this->config->item('table_login_setup_designation').' designation','designation.id=user_info.designation','LEFT');
         $this->db->select('designation.name designation_name');
         //$this->db->where('user.status',$this->config->item('system_status_active'));
@@ -62,7 +62,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'User not found.'
+                'message'=>'User not found.'
             );
             $this->json_return($response);
         }
@@ -72,7 +72,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Invalid User.'
+                'message'=>'Invalid User.'
             );
             $this->json_return($response);
         }
@@ -82,7 +82,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Wrong password.'
+                'message'=>'Wrong password.'
             );
             $this->json_return($response);
         }
@@ -96,16 +96,13 @@ class App_controller extends CI_Controller
             'email'=>$user['email'],
             'user_id'=>$user_id,
             'device_token'=>$device_token,
+            'image_location'=>$this->config->item('system_base_url_profile_picture').$user['image_location']
         );
-        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('(device_token ="'.$device_token.'" OR user_id='.$user['id'].')'));
-        if(sizeof($app_user)>1)
+        $id_registered=0;
+        $result=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id',array('user_id='.$user['id']),1);
+        if($result)
         {
-            $response=array
-            (
-                'status'=>false,
-                'massage'=>'Currently you are illegally login. Contact HQ office'
-            );
-            $this->json_return($response);
+            $id_registered=$result['id'];
         }
 
         // get EMS User role
@@ -178,12 +175,12 @@ class App_controller extends CI_Controller
         $data['status']=$this->config->item('system_status_yes');
 
         $this->db->trans_start();  //DB Transaction Handle START
-        if(sizeof($app_user)==1)
+        if($id_registered>0)
         {
             // update query
             $data['user_updated']=$user_id;
             $data['date_updated']=$time;
-            Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('id='.$app_user[0]['id']),false);
+            Query_helper::update($this->config->item('table_login_setup_user_app'),$data,array('id='.$id_registered),false);
         }
         else
         {
@@ -207,7 +204,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Database Transaction Error',
+                'message'=>'Database Transaction Error'
             );
             $this->json_return($response);
         }
@@ -224,7 +221,16 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Invalid Application.'
+                'message'=>'Invalid Application.'
+            );
+            $this->json_return($response);
+        }
+        if(!($user_id))
+        {
+            $response=array
+            (
+                'status'=>false,
+                'message'=>'Invalid User.'
             );
             $this->json_return($response);
         }
@@ -233,18 +239,18 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Invalid Device.'
+                'message'=>'Invalid Device.'
             );
             $this->json_return($response);
         }
 
-        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('device_token ="'.$device_token.'" AND user_id="'.$user_id.'"'),1);
+        $app_user=Query_helper::get_info($this->config->item('table_login_setup_user_app'),'id, user_id, device_token,status',array('device_token ="'.$device_token.'"','user_id='.$user_id),1);
         if(!$app_user)
         {
             $response=array
             (
                 'status'=>true,
-                'massage'=>'Already Logged Out'
+                'message'=>'Already Logged Out'
             );
             $this->json_return($response);
         }
@@ -263,7 +269,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>true,
-                'massage'=>'Logged Out Successfully'
+                'message'=>'Logged Out Successfully'
             );
         }
         else
@@ -271,7 +277,7 @@ class App_controller extends CI_Controller
             $response=array
             (
                 'status'=>false,
-                'massage'=>'Database Transaction Error',
+                'message'=>'Database Transaction Error'
             );
         }
         $this->json_return($response);
