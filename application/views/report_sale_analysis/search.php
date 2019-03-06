@@ -82,6 +82,23 @@ $time=time();
                             </select>
                         </div>
                     </div>
+                    <div class="row show-grid" style="display: none;" id="container_num_of_months">
+                        <div class="col-xs-6">
+                            <label class="control-label pull-right">Number of Months <span style="color:#FF0000">*</span></label>
+                        </div>
+                        <div class="col-xs-6">
+                            <select id="num_of_months" name="report[num_of_months]" class="form-control">
+                                <?php
+                                for($i=1;$i<13;$i++)
+                                {
+                                    ?>
+                                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
 
                     <div id="container_product" style="display: none;">
                         <div style="" class="row show-grid" id="crop_id_container">
@@ -442,6 +459,20 @@ $time=time();
                 $('#container_product').hide();
             }
 
+        });
+        $(document).off("change", "#month");
+        $(document).on("change","#month",function()
+        {
+            $("#system_report_container").html("");
+            if($('#month').val()>0)
+            {
+                $('#container_num_of_months').show();
+            }
+            else
+            {
+                $('#num_of_months').val(1);
+                $('#container_num_of_months').hide();
+            }
         });
     });
 </script>

@@ -660,9 +660,11 @@ class Report_sale_analysis extends Root_Controller
 
     private function get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month)
     {
+
         $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$fiscal_year_number+1,0,array('id DESC'));
         if($month>0)
         {
+            $num_of_months=$this->input->post('num_of_months');
             foreach($fiscal_years as &$fy)
             {
                 $year_start=date('Y', $fy['date_start']);
@@ -672,19 +674,27 @@ class Report_sale_analysis extends Root_Controller
                 if($month>$month_end)
                 {
                     $fy['date_start']=strtotime('01-'.$month.'-'.$year_start);
-                    if($month==12)
+                    if(($month+$num_of_months)>12)
                     {
-                        $fy['date_end']=strtotime('01-01-'.$year_end)-1;
+                        $fy['date_end']=strtotime('01-'.($month+$num_of_months-12).'-'.$year_end)-1;
                     }
                     else
                     {
-                        $fy['date_end']=strtotime('01-'.($month+1).'-'.$year_start)-1;
+                        $fy['date_end']=strtotime('01-'.($month+$num_of_months).'-'.$year_start)-1;
                     }
                 }
                 else
                 {
                     $fy['date_start']=strtotime('01-'.$month.'-'.$year_end);
-                    $fy['date_end']=strtotime('01-'.($month+1).'-'.$year_end)-1;
+
+                    if(($month+$num_of_months)>12)
+                    {
+                        $fy['date_end']=strtotime('01-'.($month+$num_of_months-12).'-'.($year_end+1))-1;
+                    }
+                    else
+                    {
+                        $fy['date_end']=strtotime('01-'.($month+$num_of_months).'-'.$year_end)-1;
+                    }
                 }
             }
         }
