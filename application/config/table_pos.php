@@ -47,6 +47,10 @@ $config['table_pos_si_budget_target'] = 'arm_beeztola_2018_19.pos_si_budget_targ
 $config['table_pos_si_budget_target_dealer'] = 'arm_beeztola_2018_19.pos_si_budget_target_dealer';
 $config['table_pos_si_budget_target_outlet'] = 'arm_beeztola_2018_19.pos_si_budget_target_outlet';
 
+// Notice
+$config['table_pos_setup_notice_types'] = 'arm_beeztola_2018_19.pos_setup_notice_types';
+$config['table_pos_setup_notice_request'] = 'arm_beeztola_2018_19.pos_setup_notice_request';
+$config['table_pos_setup_notice_file_videos'] = 'arm_beeztola_2018_19.pos_setup_notice_file_videos';
 
 
 
