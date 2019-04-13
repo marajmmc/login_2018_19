@@ -6,3 +6,4 @@ $config['table_ams_setup_locations'] = 'arm_ams_2019_20.ams_setup_locations';
 $config['table_ams_setup_suppliers'] = 'arm_ams_2019_20.ams_setup_suppliers';
 $config['table_ams_requisition_request'] = 'arm_ams_2019_20.ams_requisition_request';
 $config['table_ams_requisition_payment'] = 'arm_ams_2019_20.ams_requisition_payment';
+$config['table_ams_assets'] = 'arm_ams_2019_20.ams_assets';
