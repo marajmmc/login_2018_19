@@ -33,6 +33,7 @@ class Report_purchase_lc extends Root_Controller
         $this->lang->language['LABEL_PRICE_COMPLETE_OTHER_TAKA']='Total Other Taka';
         $this->lang->language['LABEL_PRICE_DC_EXPENSE_TAKA']='DC Expense Taka';
         $this->lang->language['LABEL_PRICE_TOTAL_TAKA']='Total Taka';
+        $this->lang->language['LABEL_PRICE_PER_KG']='Per Kg Price';
     }
     public function index($action="search")
     {
@@ -76,6 +77,7 @@ class Report_purchase_lc extends Root_Controller
             $data['price_complete_other_taka']= 1;
             $data['price_dc_expense_taka']= 1;
             $data['price_total_taka']= 1;
+            $data['price_per_kg']= 1;
         }
         return $data;
     }
@@ -269,11 +271,13 @@ class Report_purchase_lc extends Root_Controller
                     {
                         if($details_sale['pack_size_id']==0)
                         {
-                            $row['quantity_'.$fy_id.'_kg']=$details_sale['quantity_kg'];
+                            $row['quantity_'.$fy_id.'_pkt']='';
+                            $row['quantity_'.$fy_id.'_kg']=$details_sale['quantity_pkt'];
                         }
                         else
                         {
                             $row['quantity_'.$fy_id.'_pkt']=$details_sale['quantity_pkt'];
+                            $row['quantity_'.$fy_id.'_kg']=$details_sale['quantity_kg'];
                         }
                         /*$row['quantity_'.$fy_id.'_kg']=$details_sale['quantity_kg'];
                         $row['quantity_'.$fy_id.'_pkt']=$details_sale['quantity_pkt'];*/
@@ -281,6 +285,7 @@ class Report_purchase_lc extends Root_Controller
                         $row['price_complete_other_'.$fy_id.'_taka']=$details_sale['price_complete_other_taka'];
                         $row['price_dc_expense_'.$fy_id.'_taka']=$details_sale['price_dc_expense_taka'];
                         $row['price_total_'.$fy_id.'_taka']=$details_sale['price_total_taka'];
+                        $row['price_per_'.$fy_id.'_kg']=($details_sale['price_total_taka']/$row['quantity_'.$fy_id.'_kg']);
                     }
                     foreach($row as $key=>$r)
                     {
@@ -308,6 +313,7 @@ class Report_purchase_lc extends Root_Controller
         $variety_id=$this->input->post('variety_id');
         $pack_size_id=$this->input->post('pack_size_id');
         $principal_id=$this->input->post('principal_id');
+        $month=$this->input->post('month');
 
         $fy_ids[0]=0;
         foreach($fiscal_years as $fy)
@@ -351,6 +357,8 @@ class Report_purchase_lc extends Root_Controller
         $this->db->select('principal.name principal_name');
 
         $this->db->where('lco.status_open !=',$this->config->item('system_status_delete'));
+        $this->db->where('lco.status_receive',$this->config->item('system_status_complete'));
+        $this->db->where('lco.month_id',$month);
         $this->db->where('lcd.quantity_open >0');
         $this->db->where_in('fy.id',$fy_ids);
         if($crop_id>0)
@@ -435,6 +443,7 @@ class Report_purchase_lc extends Root_Controller
             $row['price_complete_other_'.$fy['id'].'_taka']=0;
             $row['price_dc_expense_'.$fy['id'].'_taka']=0;
             $row['price_total_'.$fy['id'].'_taka']=0;
+            $row['price_per_'.$fy['id'].'_kg']=0;
         }
         return $row;
     }

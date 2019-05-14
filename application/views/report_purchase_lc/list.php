@@ -53,6 +53,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_other_amount" <?php if($system_preference_items['price_complete_other_taka']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PRICE_COMPLETE_OTHER_TAKA'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_dc_expense_amount" <?php if($system_preference_items['price_dc_expense_taka']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PRICE_DC_EXPENSE_TAKA'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_amount" <?php if($system_preference_items['price_total_taka']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PRICE_TOTAL_TAKA'); ?></span></label></div></div>
+        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_price_per_kg" <?php if($system_preference_items['price_per_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PRICE_PER_KG'); ?></span></label></div></div>
     <?php
     }
     ?>
@@ -240,6 +241,35 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             }
             $(jqx_grid_id).jqxGrid('endupdate');
         });
+        $(document).off("click", ".system_jqx_column_price_per_kg");
+        $(document).on("click", ".system_jqx_column_price_per_kg", function(event)
+        {
+            var jqx_grid_id='#system_jqx_container';
+            $(jqx_grid_id).jqxGrid('beginupdate');
+            if($(this).is(':checked'))
+            {
+                <?php
+                foreach($fiscal_years as $fy)
+                {
+                ?>
+                $(jqx_grid_id).jqxGrid('showcolumn', '<?php echo 'price_per_'.$fy['id'].'_kg'; ?>');
+                <?php
+                }
+                ?>
+            }
+            else
+            {
+                <?php
+                foreach($fiscal_years as $fy)
+                {
+                ?>
+                $(jqx_grid_id).jqxGrid('hidecolumn', '<?php echo 'price_per_'.$fy['id'].'_kg'; ?>');
+                <?php
+                }
+                ?>
+            }
+            $(jqx_grid_id).jqxGrid('endupdate');
+        });
 
         var url = "<?php echo site_url($CI->controller_url.'/index/get_items');?>";
         // prepare the data
@@ -261,6 +291,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { name: 'price_complete_other_<?php echo $fy['id']; ?>_taka', type: 'number' },
                     { name: 'price_dc_expense_<?php echo $fy['id']; ?>_taka', type: 'number' },
                     { name: 'price_total_<?php echo $fy['id']; ?>_taka', type: 'number' },
+                    { name: 'price_per_<?php echo $fy['id']; ?>_kg', type: 'number' },
                     <?php
                 }
              ?>
@@ -306,6 +337,17 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     element.html(get_string_amount(value));
                 }
             }
+            /*else if(column.pack_size=='taka')
+            {
+                if(value==0)
+                {
+                    element.html('');
+                }
+                else
+                {
+                    element.html(get_string_amount(value));
+                }
+            }*/
             if (record.variety_name=="Total Type")
             {
                 if(!((column=='crop_name')||(column=='crop_type_name')))
@@ -408,6 +450,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                             {columngroup: 'fiscal_year_<?php echo $fiscal_years[$i]['id']; ?>',text: '<?php echo $CI->lang->line('LABEL_PRICE_COMPLETE_OTHER_TAKA'); ?>', dataField: 'price_complete_other_<?php echo $fiscal_years[$i]['id']; ?>_taka',width:'120',align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['price_complete_other_taka']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             {columngroup: 'fiscal_year_<?php echo $fiscal_years[$i]['id']; ?>',text: '<?php echo $CI->lang->line('LABEL_PRICE_DC_EXPENSE_TAKA'); ?>', dataField: 'price_dc_expense_<?php echo $fiscal_years[$i]['id']; ?>_taka',width:'120',align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['price_dc_expense_taka']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             {columngroup: 'fiscal_year_<?php echo $fiscal_years[$i]['id']; ?>',text: '<?php echo $CI->lang->line('LABEL_PRICE_TOTAL_TAKA'); ?>', dataField: 'price_total_<?php echo $fiscal_years[$i]['id']; ?>_taka',width:'120',align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['price_total_taka']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
+                            {columngroup: 'fiscal_year_<?php echo $fiscal_years[$i]['id']; ?>',text: '<?php echo $CI->lang->line('LABEL_PRICE_PER_KG'); ?>', dataField: 'price_per_<?php echo $fiscal_years[$i]['id']; ?>_kg',width:'120',align:'center',cellsAlign:'right',hidden: <?php echo $system_preference_items['price_per_kg']?0:1;?>,editable:false,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             <?php
                             }
                             ?>
