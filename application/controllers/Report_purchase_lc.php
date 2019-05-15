@@ -6,7 +6,7 @@ class Report_purchase_lc extends Root_Controller
     public $permissions;
     public $controller_url;
     public $common_view_location;
-    public $locations;
+
 
     public function __construct()
     {
@@ -15,13 +15,6 @@ class Report_purchase_lc extends Root_Controller
         $this->permissions=User_helper::get_permission(get_class());
         $this->controller_url=strtolower(get_class());
         $this->common_view_location='report_purchase_lc';
-        $this->locations=User_helper::get_locations();
-        if(!($this->locations))
-        {
-            $ajax['status']=false;
-            $ajax['system_message']=$this->lang->line('MSG_LOCATION_NOT_ASSIGNED_OR_INVALID');
-            $this->json_return($ajax);
-        }
         $this->language_labels();
     }
     private function language_labels()
@@ -51,7 +44,7 @@ class Report_purchase_lc extends Root_Controller
         }
         elseif($action=="set_preference")
         {
-            $this->system_set_preference('list');
+            $this->system_set_preference('list_variety');
         }
         elseif($action=="save_preference")
         {
@@ -65,7 +58,7 @@ class Report_purchase_lc extends Root_Controller
     private function get_preference_headers($method)
     {
         $data=array();
-        if($method=='list')
+        if($method=='list_variety')
         {
             $data['crop_name']= 1;
             $data['crop_type_name']= 1;
@@ -104,10 +97,9 @@ class Report_purchase_lc extends Root_Controller
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
         {
-            $data['principals']=Query_helper::get_info($this->config->item('table_login_basic_setup_principal'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'),0,0,array('ordering'));
-            $data['pack_sizes']=Query_helper::get_info($this->config->item('table_login_setup_classification_pack_size'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
             $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),array('id value','name text','date_start','date_end'),array());
-
+            $data['pack_sizes']=Query_helper::get_info($this->config->item('table_login_setup_classification_pack_size'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
+            $data['principals']=Query_helper::get_info($this->config->item('table_login_basic_setup_principal'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'),0,0,array('ordering'));
 
             $data['title']="Purchase Report (LC)";
             $ajax['status']=true;
@@ -149,7 +141,7 @@ class Report_purchase_lc extends Root_Controller
             $data['options']=$reports;
             $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$reports['fiscal_year_number']+1,0,array('id DESC'));
 
-            $method='list';
+            $method='list_variety';
             $data['title']="Purchase Report (LC)";
             $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
             $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list",$data,true));
@@ -169,7 +161,6 @@ class Report_purchase_lc extends Root_Controller
         }
 
     }
-
     private function system_get_items()
     {
         $items=array();
@@ -177,9 +168,7 @@ class Report_purchase_lc extends Root_Controller
         $crop_id=$this->input->post('crop_id');
         $crop_type_id=$this->input->post('crop_type_id');
         $variety_id=$this->input->post('variety_id');
-        $pack_size_id=$this->input->post('pack_size_id');
         $fiscal_year_id=$this->input->post('fiscal_year_id');
-        $month=$this->input->post('month');
         $fiscal_year_number=$this->input->post('fiscal_year_number');
 
         /*get variety*/
@@ -211,13 +200,10 @@ class Report_purchase_lc extends Root_Controller
         $this->db->order_by('v.id','ASC');
         $varieties = $this->db->get()->result_array();
 
-
-        /*fiscal year*/
-        $fiscal_years=$this->get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month);
-
-        //$sales=$this->get_sales_variety_amount_quantity($fiscal_years);
+        /*get fiscal year*/
+        $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$fiscal_year_number+1,0,array('id DESC'));
+        /*get lc details info*/
         $purchase=$this->get_lc_details($fiscal_years);
-
 
         $type_total=$this->initialize_row($fiscal_years,array('crop_name'=>'','crop_type_name'=>'','variety_name'=>'Total Type','pack_size'=>''));
         $crop_total=$this->initialize_row($fiscal_years,array('crop_name'=>'','crop_type_name'=>'Total Crop','variety_name'=>'','pack_size'=>''));
@@ -235,7 +221,6 @@ class Report_purchase_lc extends Root_Controller
                 {
                     $row=$this->initialize_row($fiscal_years,array('crop_name'=>$variety['crop_name'],'crop_type_name'=>$variety['crop_type_name'],'variety_name'=>$variety['variety_name'],'pack_size'=>$pack_size));
 
-                    //$info=$this->initialize_row($fiscal_years,$variety['crop_name'],$variety['crop_type_name'],$variety['variety_name'],$pack_size);
                     if(!$first_row)
                     {
                         if($prev_crop_name!=$variety['crop_name'])
@@ -356,11 +341,13 @@ class Report_purchase_lc extends Root_Controller
         $this->db->join($this->config->item('table_login_basic_setup_principal').' principal','principal.id = lco.principal_id','INNER');
         $this->db->select('principal.name principal_name');
 
-        $this->db->where('lco.status_open !=',$this->config->item('system_status_delete'));
-        $this->db->where('lco.status_receive',$this->config->item('system_status_complete'));
-        $this->db->where('lco.month_id',$month);
+        $this->db->where('lco.status_open',$this->config->item('system_status_complete'));
         $this->db->where('lcd.quantity_open >0');
         $this->db->where_in('fy.id',$fy_ids);
+        if($month>0)
+        {
+            $this->db->where('lco.month_id',$month);
+        }
         if($crop_id>0)
         {
             $this->db->where('crop_type.crop_id',$crop_id);
@@ -375,7 +362,7 @@ class Report_purchase_lc extends Root_Controller
         }
         if($pack_size_id>0)
         {
-            $this->db->where('details.pack_size_id',$pack_size_id);
+            $this->db->where('lcd.pack_size_id',$pack_size_id);
         }
 
         $this->db->order_by('lcd.id ASC');
@@ -389,49 +376,6 @@ class Report_purchase_lc extends Root_Controller
             $purchase[$result['variety_id']][$result['pack_size']][$result['fiscal_id']]=$result;
         }
         return $purchase;
-    }
-
-    private function get_fiscal_years($fiscal_year_id, $fiscal_year_number, $month)
-    {
-
-        $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$fiscal_year_number+1,0,array('id DESC'));
-        if($month>0)
-        {
-            $num_of_months=$this->input->post('num_of_months');
-            foreach($fiscal_years as &$fy)
-            {
-                $year_start=date('Y', $fy['date_start']);
-                $month_start=date('m', $fy['date_start']);
-                $year_end=date('Y', $fy['date_end']);
-                $month_end=date('m', $fy['date_end']);
-                if($month>$month_end)
-                {
-                    $fy['date_start']=strtotime('01-'.$month.'-'.$year_start);
-                    if(($month+$num_of_months)>12)
-                    {
-                        $fy['date_end']=strtotime('01-'.($month+$num_of_months-12).'-'.$year_end)-1;
-                    }
-                    else
-                    {
-                        $fy['date_end']=strtotime('01-'.($month+$num_of_months).'-'.$year_start)-1;
-                    }
-                }
-                else
-                {
-                    $fy['date_start']=strtotime('01-'.$month.'-'.$year_end);
-
-                    if(($month+$num_of_months)>12)
-                    {
-                        $fy['date_end']=strtotime('01-'.($month+$num_of_months-12).'-'.($year_end+1))-1;
-                    }
-                    else
-                    {
-                        $fy['date_end']=strtotime('01-'.($month+$num_of_months).'-'.$year_end)-1;
-                    }
-                }
-            }
-        }
-        return $fiscal_years;
     }
     private function initialize_row($fiscal_years,$row)
     {
