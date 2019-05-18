@@ -22,11 +22,11 @@ class Report_purchase_lc extends Root_Controller
         $this->lang->language['LABEL_FISCAL_YEARS']='Fiscal Years';
         $this->lang->language['LABEL_QUANTITY_PKT']='Quantity (pkt)';
         $this->lang->language['LABEL_QUANTITY_KG']='Quantity (kg)';
-        $this->lang->language['LABEL_PRICE_COMPLETE_VARIETY_TAKA']='Total Variety Taka';
-        $this->lang->language['LABEL_PRICE_COMPLETE_OTHER_TAKA']='Total Other Taka';
-        $this->lang->language['LABEL_PRICE_DC_EXPENSE_TAKA']='DC Expense Taka';
-        $this->lang->language['LABEL_PRICE_TOTAL_TAKA']='Total Taka';
-        $this->lang->language['LABEL_PRICE_PER_KG']='Per Kg Price';
+        $this->lang->language['LABEL_PRICE_COMPLETE_VARIETY_TAKA']='Variety Price';
+        $this->lang->language['LABEL_PRICE_COMPLETE_OTHER_TAKA']='Air Freight & Docs';
+        $this->lang->language['LABEL_PRICE_DC_EXPENSE_TAKA']='DC Expense';
+        $this->lang->language['LABEL_PRICE_TOTAL_TAKA']='Total';
+        $this->lang->language['LABEL_PRICE_PER_KG']='Unit (Kg) Price';
     }
     public function index($action="search")
     {
@@ -200,6 +200,13 @@ class Report_purchase_lc extends Root_Controller
         $this->db->order_by('v.id','ASC');
         $varieties = $this->db->get()->result_array();
 
+        /*get pack size*/
+        $results=Query_helper::get_info($this->config->item('table_login_setup_classification_pack_size'),'*',array());
+        $pack_sizes=array();
+        foreach($results as $result)
+        {
+            $pack_sizes[$result['id']]=$result;
+        }
         /*get fiscal year*/
         $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id <='.$fiscal_year_id),$fiscal_year_number+1,0,array('id DESC'));
         /*get lc details info*/
@@ -217,8 +224,9 @@ class Report_purchase_lc extends Root_Controller
         {
             if(isset($purchase[$variety['variety_id']]))
             {
-                foreach($purchase[$variety['variety_id']] as $pack_size=>$yearly_sale)
+                foreach($purchase[$variety['variety_id']] as $pack_size_id=>$yearly_sale)
                 {
+                    $pack_size=isset($pack_sizes[$pack_size_id])?$pack_sizes[$pack_size_id]['name']:'Bulk';
                     $row=$this->initialize_row($fiscal_years,array('crop_name'=>$variety['crop_name'],'crop_type_name'=>$variety['crop_type_name'],'variety_name'=>$variety['variety_name'],'pack_size'=>$pack_size));
 
                     if(!$first_row)
@@ -373,7 +381,7 @@ class Report_purchase_lc extends Root_Controller
         $purchase=array();
         foreach($results as $result)
         {
-            $purchase[$result['variety_id']][$result['pack_size']][$result['fiscal_id']]=$result;
+            $purchase[$result['variety_id']][$result['pack_size_id']][$result['fiscal_id']]=$result;
         }
         return $purchase;
     }
