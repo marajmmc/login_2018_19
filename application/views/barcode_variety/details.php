@@ -102,8 +102,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-xs-2">
                 <select name="items[line1][show]" class="form-control">
-                    <option value="1">Yes</option>
                     <option value="0">No</option>
+                    <option value="1">Yes</option>
                 </select>
             </div>
             <div class="col-xs-2">
