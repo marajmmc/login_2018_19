@@ -66,6 +66,10 @@ $config['table_login_setup_bank_account'] = 'arm_login_2018_19.login_setup_bank_
 $config['table_login_setup_bank_account_purpose'] = 'arm_login_2018_19.login_setup_bank_account_purpose';
 $config['table_login_setup_payment_way'] = 'arm_login_2018_19.login_setup_payment_way';
 
+// Setup Discount
+$config['table_login_setup_discount_customer'] = 'arm_login_2018_19.login_setup_discount_customer';
+$config['table_login_setup_discount_variety'] = 'arm_login_2018_19.login_setup_discount_variety';
+
 // Currency & Direct Cost Item Setup
 $config['table_login_setup_currency'] = 'arm_login_2018_19.login_setup_currency';
 $config['table_login_setup_direct_cost_items'] = 'arm_login_2018_19.login_setup_direct_cost_items';
