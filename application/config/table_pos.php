@@ -52,5 +52,7 @@ $config['table_pos_setup_notice_types'] = 'arm_beeztola_2018_19.pos_setup_notice
 $config['table_pos_setup_notice_request'] = 'arm_beeztola_2018_19.pos_setup_notice_request';
 $config['table_pos_setup_notice_file_videos'] = 'arm_beeztola_2018_19.pos_setup_notice_file_videos';
 
-
+// farmer credit, balance, payment, history
+$config['table_pos_farmer_credit_payment'] = 'arm_beeztola_2018_19.pos_farmer_credit_payment';
+$config['table_pos_farmer_credit_balance_history'] = 'arm_beeztola_2018_19.pos_farmer_credit_balance_history';
 
