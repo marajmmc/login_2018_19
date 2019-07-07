@@ -22,6 +22,7 @@ $CI = & get_instance();
                                 <option value="outlets_amount">Outlet wise Sales Amount</option>
                                 <option value="variety_amount_quantity">Product wise Sales</option>
                                 <option value="variety_amount_quantity_sortable">Product wise Sales ordering</option>
+                                <option value="outlets_sales_cash">Outlet Sales and Cash</option>
                             </select>
                         </div>
                     </div>

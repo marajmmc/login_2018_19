@@ -21,8 +21,16 @@ class Report_sale_outlets extends Root_Controller
         }
         $this->controller_url = strtolower(get_class($this));
         $this->lang->load('report_sale');
+        $this->language_labels();
     }
-
+    private function language_labels()
+    {
+        $this->lang->language['LABEL_AMOUNT_PAYABLE']='payable(actual)';
+        $this->lang->language['LABEL_AMOUNT_SALE_CREDIT']='Credit Sale';
+        $this->lang->language['LABEL_AMOUNT_SALE_CASH']='Cash Sale';
+        $this->lang->language['LABEL_AMOUNT_CASH_PAYMENT']='Cash Payment';
+        $this->lang->language['LABEL_AMOUNT_CASH_TOTAL']='Total Cash';
+    }
 
     public function index($action="search",$id=0)
     {
@@ -66,6 +74,14 @@ class Report_sale_outlets extends Root_Controller
         {
             $this->system_get_items_variety_amount_quantity_sortable();
         }
+        elseif($action=="set_preference_outlets_sales_cash")
+        {
+            $this->system_set_preference('list_outlets_sales_cash');
+        }
+        elseif($action=="get_items_outlets_sales_cash")
+        {
+            $this->system_get_items_outlets_sales_cash();
+        }
         elseif($action=="save_preference")
         {
             System_helper::save_preference();
@@ -73,6 +89,40 @@ class Report_sale_outlets extends Root_Controller
         else
         {
             $this->system_search();
+        }
+    }
+    private function get_preference_headers($method)
+    {
+        $data=array();
+        if($method=='list_outlets_sales_cash')
+        {
+            $data['sl_no']= 1;
+            $data['outlet']= 1;
+            $data['amount_payable']= 1;
+            $data['amount_sale_credit']= 1;
+            $data['amount_sale_cash']= 1;
+            $data['amount_cash_payment']= 1;
+            $data['amount_cash_total']= 1;
+        }
+        return $data;
+    }
+    private function system_set_preference($method)
+    {
+        $user = User_helper::get_user();
+        if(isset($this->permissions['action6']) && ($this->permissions['action6']==1))
+        {
+            $data['system_preference_items']=System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
+            $data['preference_method_name']=$method;
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference_'.$method);
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
         }
     }
     private function system_search()
@@ -139,6 +189,7 @@ class Report_sale_outlets extends Root_Controller
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
         {
+            $user = User_helper::get_user();
             $reports=$this->input->post('report');
             $reports['date_end']=System_helper::get_time($reports['date_end']);
             $reports['date_end']=$reports['date_end']+3600*24-1;
@@ -201,6 +252,14 @@ class Report_sale_outlets extends Root_Controller
                 $data['title']="Sortable Product Sales Report";
                 $data['system_preference_items']= $this->get_preference_variety_amount_quantity_sortable();
                 $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_variety_amount_quantity_sortable",$data,true));
+
+            }
+            elseif($reports['report_name']=='outlets_sales_cash')
+            {
+                $method='list_outlets_sales_cash';
+                $data['title']="Outlet Wise Sales and Cash Report";
+                $data['system_preference_items']= System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
+                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_outlets_sales_cash",$data,true));
 
             }
             else
@@ -1150,6 +1209,107 @@ class Report_sale_outlets extends Root_Controller
         $row['variety_name']=$variety_name;
         $row['pack_size']=$pack_size;
         $row['sl_no']='';
+        return $row;
+    }
+    private function system_get_items_outlets_sales_cash()
+    {
+        $items=array();
+        $division_id=$this->input->post('division_id');
+        $zone_id=$this->input->post('zone_id');
+        $territory_id=$this->input->post('territory_id');
+        $district_id=$this->input->post('district_id');
+        $outlet_id=$this->input->post('outlet_id');
+        $date_end=$this->input->post('date_end');
+        $date_start=$this->input->post('date_start');
+
+        $this->db->from($this->config->item('table_login_csetup_cus_info').' outlet_info');
+        $this->db->select('outlet_info.customer_id outlet_id, outlet_info.name outlet_name');
+        $this->db->join($this->config->item('table_login_setup_location_districts').' districts','districts.id = outlet_info.district_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_territories').' territories','territories.id = districts.territory_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_zones').' zones','zones.id = territories.zone_id','INNER');
+        $this->db->order_by('outlet_info.ordering');
+        $this->db->where('outlet_info.revision',1);
+        $this->db->where('outlet_info.type',$this->config->item('system_customer_type_outlet_id'));
+
+        if($division_id>0)
+        {
+            $this->db->where('zones.division_id',$division_id);
+            if($zone_id>0)
+            {
+                $this->db->where('zones.id',$zone_id);
+                if($territory_id>0)
+                {
+                    $this->db->where('territories.id',$territory_id);
+                    if($district_id>0)
+                    {
+                        $this->db->where('districts.id',$district_id);
+                        if($outlet_id>0)
+                        {
+                            $this->db->where('outlet_info.customer_id',$outlet_id);
+                        }
+                    }
+                }
+            }
+        }
+        $results=$this->db->get()->result_array();
+        $outlets=array();
+        $outlet_ids=array();
+        $outlet_ids[0]=0;
+        $i=0;
+        foreach($results as $result)
+        {
+            $outlets[$result['outlet_id']]=$this->initialize_row_outlets_sales_cash($result['outlet_name'],++$i);
+            $outlet_ids[$result['outlet_id']]=$result['outlet_id'];
+        }
+
+        //total sales
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('sale.outlet_id');
+
+        $this->db->select('SUM(CASE WHEN sale.date_sale>='.$date_start.' and sale.date_sale<='.$date_end.' then sale.amount_payable ELSE 0 END) amount_payable',false);
+        $this->db->select('SUM(CASE WHEN sale.date_sale>='.$date_start.' and sale.date_sale<='.$date_end.' and sale.sales_payment_method="Credit" then sale.amount_payable ELSE 0 END) amount_sale_credit',false);
+        $this->db->select('SUM(CASE WHEN sale.date_sale>='.$date_start.' and sale.date_sale<='.$date_end.' and sale.sales_payment_method="Cash" then sale.amount_payable ELSE 0 END) amount_sale_cash',false);
+
+        $this->db->where_in('sale.outlet_id',$outlet_ids);
+        $this->db->where_in('sale.status',$this->config->item('system_status_active'));
+        $this->db->group_by('sale.outlet_id');
+        $results=$this->db->get()->result_array();
+        foreach($results as $result)
+        {
+            $outlets[$result['outlet_id']]['amount_payable']=$result['amount_payable'];
+            $outlets[$result['outlet_id']]['amount_sale_credit']=$result['amount_sale_credit'];
+            $outlets[$result['outlet_id']]['amount_sale_cash']=$result['amount_sale_cash'];
+        }
+        //total cash payment
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' payment');
+        $this->db->select('payment.outlet_id');
+        $this->db->select('SUM(CASE WHEN payment.date_payment>='.$date_start.' and payment.date_payment<='.$date_end.' then payment.amount ELSE 0 END) amount_cash_payment',false);
+        $this->db->where_in('payment.outlet_id',$outlet_ids);
+        $this->db->where_in('payment.status',$this->config->item('system_status_active'));
+        $this->db->group_by('payment.outlet_id');
+        $results=$this->db->get()->result_array();
+        foreach($results as $result)
+        {
+            $outlets[$result['outlet_id']]['amount_cash_payment']=$result['amount_cash_payment'];
+        }
+
+        foreach($outlets as $info)
+        {
+            $info['amount_cash_total']=$info['amount_sale_cash']+$info['amount_cash_payment'];
+            $items[]=$info;
+        }
+
+        $this->json_return($items);
+    }
+    private function initialize_row_outlets_sales_cash($outlet_name,$sl_no)
+    {
+        $row=$this->get_preference_headers('list_outlets_sales_cash');
+        foreach($row  as $key=>$r)
+        {
+            $row[$key]=0;
+        }
+        $row['outlet']=$outlet_name;
+        $row['sl_no']=$sl_no;
         return $row;
     }
 }
