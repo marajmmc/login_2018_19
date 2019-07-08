@@ -4,9 +4,9 @@ $CI=& get_instance();
 //line1 is outlet name and outlet id
 //assuming all outlet id is 3
 $price_outlet_id=$id.'_000';
-if($items['line1']['show']==1)
+//if($items['line2']['show']==1)
 {
-    $price_outlet_id=$id.'_'.substr($items['line1']['text'],-3);
+    $price_outlet_id=$id.'_'.substr($items['line2']['text'],-3);
 }
 
 ?>
@@ -21,7 +21,7 @@ if($items['line1']['show']==1)
             {
             ?>
                 <?php
-                if($key=='line1')
+                if($key=='line2')
                 {
                     ?>
                     <div><?php echo substr($line['text'],0,-3);?></div>
@@ -52,7 +52,7 @@ if($items['line1']['show']==1)
                 ?>
 
                 <?php
-                if($key=='line1')
+                if($key=='line2')
                 {
                     ?>
                     <div><?php echo substr($line['text'],0,-3);?></div>

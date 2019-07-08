@@ -90,7 +90,25 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right">Line 1</label>
             </div>
             <div class="col-xs-4">
-                <select name="items[line1][text]" class="form-control">
+                <input type="text" name="items[line1][text]" class="form-control" value="<?php echo $item['title_barcode'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line1][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 2(outlet)</label>
+            </div>
+            <div class="col-xs-4">
+                <select name="items[line2][text]" class="form-control">
+                    <option value="000"><?php echo $CI->lang->line('SELECT');?></option>
                     <?php
                     foreach($outlets as $row)
                     {?>
@@ -101,26 +119,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 </select>
             </div>
             <div class="col-xs-2">
-                <select name="items[line1][show]" class="form-control">
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </select>
-            </div>
-            <div class="col-xs-2">
-                <label class="control-label">Show</label>
-            </div>
-        </div>
-        <div style="" class="row show-grid">
-            <div class="col-xs-4">
-                <label class="control-label pull-right">Line 2</label>
-            </div>
-            <div class="col-xs-4">
-                <input type="text" name="items[line2][text]" class="form-control" value="<?php echo $item['lot_number'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
-            </div>
-            <div class="col-xs-2">
                 <select name="items[line2][show]" class="form-control">
-                    <option value="1">Yes</option>
                     <option value="0">No</option>
+                    <option value="1">Yes</option>
                 </select>
             </div>
             <div class="col-xs-2">
@@ -132,7 +133,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right">Line 3</label>
             </div>
             <div class="col-xs-4">
-                <input type="text" name="items[line3][text]" class="form-control" value="MRP Tk: <?php echo $item['price'].' (Wt: '.$item['pack_size'].'g)'; ?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+                <input type="text" name="items[line3][text]" class="form-control" value="<?php echo $item['lot_number'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
             </div>
             <div class="col-xs-2">
                 <select name="items[line3][show]" class="form-control">
@@ -149,7 +150,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right">Line 4</label>
             </div>
             <div class="col-xs-4">
-                <input type="text" name="items[line4][text]" class="form-control" value="<?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+                <input type="text" name="items[line4][text]" class="form-control" value="MRP Tk: <?php echo $item['price'].' (Wt: '.$item['pack_size'].'g)'; ?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
             </div>
             <div class="col-xs-2">
                 <select name="items[line4][show]" class="form-control">
@@ -166,10 +167,27 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <label class="control-label pull-right">Line 5</label>
             </div>
             <div class="col-xs-4">
-                <input type="text" name="items[line5][text]" class="form-control" value="<?php echo $item['ger_pur'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+                <input type="text" name="items[line5][text]" class="form-control" value="<?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
             </div>
             <div class="col-xs-2">
                 <select name="items[line5][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 6</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="text" name="items[line6][text]" class="form-control" value="<?php echo $item['ger_pur'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line6][show]" class="form-control">
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                 </select>
