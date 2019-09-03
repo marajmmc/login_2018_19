@@ -98,7 +98,24 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     element.html(get_string_amount(value));
                 }
             }
+            if (record.date=="Initial")
+            {
+                element.css({ 'background-color': system_report_color_type,'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+            }
+            else if (record.date=="Sub Total")
+            {
+                element.css({ 'background-color': system_report_color_crop,'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+            }
+            else if (record.date=="Total")
+            {
 
+                element.css({ 'background-color': system_report_color_grand,'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+
+            }
+            else
+            {
+                element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+            }
             return element[0].outerHTML;
 
         };
@@ -118,19 +135,16 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 height: '350px',
                 source: dataAdapter,
                 columnsresize: true,
-                pageable: true,
-                pagesize:50,
-                pagesizeoptions: ['50', '100', '200','300','500','1000','5000'],
                 selectionmode: 'singlerow',
                 altrows: true,
-               /* rowsheight: 35,
-                columnsheight: 40,*/
+                rowsheight: 40,
                 columnsreorder: true,
                 enablebrowserselection: true,
                 columns:
                 [
-                    { text: '<?php echo $CI->lang->line('LABEL_DATE'); ?>', dataField: 'date', width:80, hidden: <?php echo $system_preference_items['date']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ACTION_TRANSACTION'); ?>', dataField: 'action_transaction', width:200, hidden: <?php echo $system_preference_items['action_transaction']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DATE'); ?>', dataField: 'date', width:200,cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['date']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ACTION_TRANSACTION'); ?>', dataField: 'action_transaction',cellsrenderer: cellsrenderer, width:80, hidden: <?php echo $system_preference_items['action_transaction']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ACTION_NO'); ?>', dataField: 'action_no',width:'100',cellsrenderer: cellsrenderer, hidden: <?php echo $system_preference_items['action_no']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_DEBIT'); ?>', dataField: 'amount_debit', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_debit']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT'); ?>', dataField: 'amount_credit', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_BALANCE'); ?>', dataField: 'amount_balance', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_balance']?0:1;?>}

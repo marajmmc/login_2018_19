@@ -121,9 +121,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 sortable: true,
                 showfilterrow: true,
                 columnsresize: true,
-                pageable: true,
-                pagesize:50,
-                pagesizeoptions: ['50', '100', '200','300','500','1000','5000'],
                 selectionmode: 'singlerow',
                 showaggregates: true,
                 showstatusbar: true,
@@ -134,8 +131,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 enablebrowserselection: true,
                 columns:
                 [
-                    { text: '<?php echo $CI->lang->line('LABEL_BARCODE'); ?>', dataField: 'barcode', width:80, hidden: <?php echo $system_preference_items['barcode']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', width:200, hidden: <?php echo $system_preference_items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_BARCODE'); ?>', dataField: 'barcode', width:80,cellsrenderer: cellsrenderer, hidden: <?php echo $system_preference_items['barcode']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name', width:200,cellsrenderer: cellsrenderer, hidden: <?php echo $system_preference_items['name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT_LIMIT'); ?>', dataField: 'amount_credit_limit', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit_limit']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT_BALANCE'); ?>', dataField: 'amount_credit_balance', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit_balance']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT_DUE'); ?>', dataField: 'amount_credit_due', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit_due']?0:1;?>,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_amount},

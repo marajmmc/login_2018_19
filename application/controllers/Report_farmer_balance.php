@@ -30,6 +30,7 @@ class Report_farmer_balance extends Root_Controller
         $this->lang->language['LABEL_AMOUNT_CREDIT_DUE']='Due';
         $this->lang->language['LABEL_AMOUNT_CREDIT_ADVANCE']='Advance';
         $this->lang->language['LABEL_ACTION_TRANSACTION']='Action';
+        $this->lang->language['LABEL_ACTION_NO']='Invoice/Payment No';
         $this->lang->language['LABEL_AMOUNT_DEBIT']='Debit Amount';
         $this->lang->language['LABEL_AMOUNT_CREDIT']='Credit Amount';
         $this->lang->language['LABEL_AMOUNT_BALANCE']='Balance';
@@ -150,6 +151,7 @@ class Report_farmer_balance extends Root_Controller
         {
             $data['date']= 1;
             $data['action_transaction']= 1;
+            $data['action_no']= 1;
             $data['amount_debit']= 1;
             $data['amount_credit']= 1;
             $data['amount_balance']= 1;
@@ -296,81 +298,129 @@ class Report_farmer_balance extends Root_Controller
         $farmer_id=$this->input->post('farmer_id');
         $date_end=$this->input->post('date_end');
         $date_start=$this->input->post('date_start');
-        echo '<pre>';
-        print_r($farmer_id);
-        echo '</pre>';
-        die();
-        /*$outlet_ids=array();
-        if($outlet_id>0)
+        $items=array();
+        $debit_sub_total=0;
+        //$debit_initial=0;
+        $credit_sub_total=0;
+        //$credit_initial=0;
+        //$balance=0;
+
+        //previous sale
+
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('SUM(sale.amount_payable_actual) amount_debit_total',false);
+        $this->db->select('SUM(CASE WHEN sale.sales_payment_method="Cash" then sale.amount_payable_actual ELSE 0 END) amount_sale_cash',false);
+
+        $this->db->where_in('sale.status',$this->config->item('system_status_active'));
+        $this->db->where('sale.farmer_id',$farmer_id);
+        $this->db->where('sale.date_sale <',$date_start);
+        $result=$this->db->get()->row_array();
+        $item=array();
+        $item['date']="Initial";
+        $item['action_transaction']="-";
+        $item['action_no']="-";
+        $item['amount_debit']=$result['amount_debit_total'];
+        $item['amount_credit']=$result['amount_sale_cash'];//+payment
+
+        //previous payment
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' dp');
+        $this->db->select('SUM(dp.amount) amount_payment_total',false);
+        $this->db->where('dp.status',$this->config->item('system_status_active'));
+        $this->db->where('dp.farmer_id',$farmer_id);
+        $this->db->where('dp.date_payment <',$date_start);
+        $result=$this->db->get()->row_array();
+        $item['amount_credit']=$item['amount_credit']+$result['amount_payment_total'];
+
+        $debit_initial=$item['amount_debit'];
+        $credit_initial=$item['amount_credit'];
+        $balance=$item['amount_balance']=$item['amount_credit']-$item['amount_debit'];
+        $items[]=$item;//previous item
+
+        //current payment
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' dp');
+        $this->db->select('dp.id,dp.date_payment,dp.amount');
+        $this->db->where('dp.status',$this->config->item('system_status_active'));
+        $this->db->where('dp.farmer_id',$farmer_id);
+        $this->db->where('dp.date_payment >=',$date_start);
+        $this->db->where('dp.date_payment <=',$date_end);
+        $this->db->order_by('dp.date_payment','ASC');
+        $payments=$this->db->get()->result_array();
+        //current sales
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('sale.id,sale.date_sale,sale.sales_payment_method,sale.amount_payable_actual');
+        $this->db->where_in('sale.status',$this->config->item('system_status_active'));
+        $this->db->where('sale.farmer_id',$farmer_id);
+        $this->db->where('sale.date_sale >=',$date_start);
+        $this->db->where('sale.date_sale <=',$date_end);
+        $this->db->order_by('sale.date_sale','ASC');
+        $invoices=$this->db->get()->result_array();
+        $i=0;
+        foreach($payments as $payment)
         {
-            $outlet_ids[]=$outlet_id;
+            while(($i<sizeof($invoices)) &&($invoices[$i]['date_sale']<$payment['date_payment']))
+            {
+                $item=$this->get_row_invoice($invoices[$i],$debit_sub_total,$credit_sub_total,$balance);
+                $i++;
+                $items[]=$item;
+            }
+            $item=array();
+            $item['date']=System_helper::display_date_time($payment['date_payment']);
+            $item['action_transaction']="Payment";
+            $item['action_no']=Barcode_helper::get_barcode_dealer_payment($payment['id']);
+            $item['amount_debit']=0;
+            $item['amount_credit']=$payment['amount'];
+            $balance+=$item['amount_credit'];
+            $items[]=$item;
+
+        }
+        while(($i<sizeof($invoices)))
+        {
+            $item=$this->get_row_invoice($invoices[$i],$debit_sub_total,$credit_sub_total,$balance);
+            $i++;
+            $items[]=$item;
+        }
+        $item=array();
+        $item['date']="Sub Total";
+        $item['action_transaction']="-";
+        $item['action_no']="-";
+        $item['amount_debit']=$debit_sub_total;
+        $item['amount_credit']=$credit_sub_total;
+        $item['amount_balance']=$balance;
+        $items[]=$item;
+
+        $item=array();
+        $item['date']="Total";
+        $item['action_transaction']="-";
+        $item['action_no']="-";
+        $item['amount_debit']=$debit_initial+$debit_sub_total;
+        $item['amount_credit']=$credit_initial+$credit_sub_total;
+        $item['amount_balance']=$balance;
+        $items[]=$item;
+        $this->json_return($items);
+    }
+    private function get_row_invoice($result,&$debit_sub_total,&$credit_sub_total,&$balance)
+    {
+        $item=array();
+        $item['date']=System_helper::display_date_time($result['date_sale']);
+        $item['action_transaction']="Purchase";
+        $item['action_no']=Barcode_helper::get_barcode_sales($result['id']);
+        if($result['sales_payment_method']=="Cash")
+        {
+            $item['amount_debit']=$result['amount_payable_actual'];
+            $item['amount_credit']=$result['amount_payable_actual'];
+
         }
         else
         {
-            $this->db->from($this->config->item('table_login_csetup_customer').' cus');
-            $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = cus.id','INNER');
-            $this->db->select('cus.id value');
-            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_divisions').' division','division.id = zone.division_id','INNER');
-            if($this->locations['division_id']>0)
-            {
-                $this->db->where('division.id',$this->locations['division_id']);
-                if($this->locations['zone_id']>0)
-                {
-                    $this->db->where('zone.id',$this->locations['zone_id']);
-                    if($this->locations['territory_id']>0)
-                    {
-                        $this->db->where('t.id',$this->locations['territory_id']);
-                        if($this->locations['district_id']>0)
-                        {
-                            $this->db->where('cus_info.district_id',$this->locations['district_id']);
-                        }
-                    }
+            $item['amount_debit']=$result['amount_payable_actual'];
+            $item['amount_credit']=0;
+            $balance=$balance-$result['amount_payable_actual'];
+        }
+        $debit_sub_total+=$item['amount_debit'];
+        $credit_sub_total+=$item['amount_credit'];
+        $item['amount_balance']=$balance;
+        return $item;
 
-                }
-            }
-            $this->db->where('cus_info.revision',1);
-            $this->db->where('cus.status !=',$this->config->item('system_status_delete'));
-
-            $this->db->where('cus.status',$this->config->item('system_status_active'));
-            $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
-            $this->db->where('cus_info.revision',1);
-            $results=$this->db->get()->result_array();
-            foreach($results as $result)
-            {
-                $outlet_ids[]=$result['value'];
-            }
-        }
-        if(!(sizeof($outlet_ids)>0))
-        {
-            $this->json_return(array());
-        }
-        //$user=User_helper::get_user();
-        $this->db->from($this->config->item('table_pos_setup_farmer_farmer').' f');
-        $this->db->select('f.id,f.name,f.amount_credit_limit,f.amount_credit_balance');
-        $this->db->join($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet','farmer_outlet.farmer_id = f.id and farmer_outlet.revision =1','INNER');
-        $this->db->where_in('farmer_outlet.outlet_id',$outlet_ids);
-        $this->db->where('f.amount_credit_limit > ',0);
-        $this->db->order_by('f.id DESC');
-        $this->db->group_by('f.id');
-        $items=$this->db->get()->result_array();
-        foreach($items as &$item)
-        {
-            $item['barcode']=Barcode_helper::get_barcode_farmer($item['id']);
-            $item['amount_credit_due']=$item['amount_credit_limit']-$item['amount_credit_balance'];
-            if($item['amount_credit_due']>0)
-            {
-                $item['amount_credit_advance']=0;
-            }
-            else
-            {
-                $item['amount_credit_advance']=0-$item['amount_credit_due'];
-                $item['amount_credit_due']=0;
-            }
-        }
-        $this->json_return($items);*/
     }
     private function system_set_preference($method)
     {
