@@ -369,6 +369,7 @@ class Report_farmer_balance extends Root_Controller
             $item['action_no']=Barcode_helper::get_barcode_dealer_payment($payment['id']);
             $item['amount_debit']=0;
             $item['amount_credit']=$payment['amount'];
+            $credit_sub_total+=$payment['amount'];
             $balance+=$item['amount_credit'];
             $item['amount_balance']=$balance;
             $items[]=$item;
