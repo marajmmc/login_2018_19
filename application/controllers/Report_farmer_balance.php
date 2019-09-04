@@ -370,6 +370,7 @@ class Report_farmer_balance extends Root_Controller
             $item['amount_debit']=0;
             $item['amount_credit']=$payment['amount'];
             $balance+=$item['amount_credit'];
+            $item['amount_balance']=$balance;
             $items[]=$item;
 
         }
