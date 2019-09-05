@@ -193,14 +193,17 @@ class Report_target_sales extends Root_Controller
         $zone_id=$this->input->post('zone_id');
         if($zone_id>0)
         {
+            $location_type='outlet_id';
             $areas=$this->get_outlets($zone_id);
         }
         elseif($division_id>0)
         {
+            $location_type='zone_id';
             $areas=Query_helper::get_info($this->config->item('table_login_setup_location_zones'),array('id value','name text'),array('division_id ='.$division_id,'status ="'.$this->config->item('system_status_active').'"'));
         }
         else
         {
+            $location_type='division_id';
             $areas=Query_helper::get_info($this->config->item('table_login_setup_location_divisions'),array('id value','name text'),array('status ="'.$this->config->item('system_status_active').'"'));
         }
 
@@ -273,7 +276,66 @@ class Report_target_sales extends Root_Controller
         {
             $budget_target[$result['variety_id']]=$result;
         }
-        //get sales
+
+        //get sales info
+
+        //get fiscal year for start and end date
+        $fiscal_year=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array('id ='.$fiscal_year_id),1);
+        //get sales quantity and amount
+        $this->db->from($this->config->item('table_pos_sale_details').' details');
+        $this->db->select('details.variety_id');
+
+        $this->db->select('SUM((details.pack_size*details.quantity)/1000) sales_kg');
+        $this->db->select('SUM(details.amount_payable_actual-((details.amount_payable_actual*sale.discount_self_percentage)/100)) sales_amount');
+
+        $this->db->join($this->config->item('table_pos_sale').' sale','sale.id = details.sale_id','INNER');
+        $this->db->join($this->config->item('table_login_csetup_cus_info').' outlet_info','outlet_info.customer_id = sale.outlet_id and outlet_info.revision =1','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = outlet_info.district_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
+
+        $this->db->select('sale.outlet_id');        ;
+        $this->db->select('zone.id zone_id');
+        $this->db->select('zone.division_id division_id');
+        if($division_id>0)
+        {
+            $this->db->where('zone.division_id',$division_id);
+            if($zone_id>0)
+            {
+                $this->db->where('zone.id',$zone_id);
+            }
+        }
+        $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=details.variety_id', 'INNER');
+        $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id = v.crop_type_id','INNER');
+
+
+        $this->db->where('sale.date_sale >=',$fiscal_year['date_start']);
+        $this->db->where('sale.date_sale <=',$fiscal_year['date_end']);
+        $this->db->where('sale.status',$this->config->item('system_status_active'));
+
+        if($crop_id>0)
+        {
+            $this->db->where('crop_type.crop_id',$crop_id);
+            if($crop_type_id>0)
+            {
+                $this->db->where('crop_type.id',$crop_type_id);
+                if($variety_id>0)
+                {
+                    $this->db->where('v.id',$variety_id);
+                }
+            }
+        }
+        //$this->db->where_in('sale.outlet_id',$outlet_ids);
+        $this->db->group_by(array($location_type));
+        $this->db->group_by('details.variety_id');
+        $results=$this->db->get()->result_array();
+        $sales=array();
+        foreach($results as $result)
+        {
+            $sales[$result['variety_id']][$result[$location_type]]=$result;
+        }
+        //get sales info end
+
 
 
         $this->db->from($this->config->item('table_login_setup_classification_varieties').' v');
@@ -337,6 +399,19 @@ class Report_target_sales extends Root_Controller
                     //$result['quantity_budget_'.$area_id]=$bud_tar['quantity_budget'];
                     $result['quantity_target_'.$area_id]=$bud_tar['quantity_target'];
                 }
+            }
+            $result['sales_kg']=0;
+            $result['sales_amount']=0;
+            if(isset($sales[$result['variety_id']]))
+            {
+                foreach($sales[$result['variety_id']] as $area_id=>$sale)
+                {
+                    $result['sales_kg_'.$area_id]=$sale['sales_kg'];
+                    $result['sales_amount_'.$area_id]=$sale['sales_amount'];
+                    $result['sales_kg']+=$sale['sales_kg'];
+                    $result['sales_amount']+=$sale['sales_amount'];
+                }
+
             }
             $info=$this->initialize_row($result,$areas);
             if(!$first_row)
@@ -408,16 +483,16 @@ class Report_target_sales extends Root_Controller
         $row['target_kg']=isset($info['quantity_target'])?$info['quantity_target']:0;
         $row['target_amount']=$row['target_kg']*$row['price_unit_kg_amount'];
 
-        $row['sales_kg']=isset($info['quantity_sale'])?$info['quantity_sale']:0;
-        $row['sales_amount']=isset($info['amount_sale'])?$info['amount_sale']:0;
+        $row['sales_kg']=isset($info['sales_kg'])?$info['sales_kg']:0;
+        $row['sales_amount']=isset($info['sales_amount'])?$info['sales_amount']:0;
 
         foreach($areas as $area)
         {
             $row['target_sub_'.$area['value'].'_kg']=isset($info['quantity_target_'.$area['value']])?$info['quantity_target_'.$area['value']]:0;
             $row['target_sub_'.$area['value'].'_amount']=$row['target_sub_'.$area['value'].'_kg']*$row['price_unit_kg_amount'];
 
-            $row['sales_sub_'.$area['value'].'_kg']=isset($info['quantity_sale_'.$area['value']])?$info['quantity_sale_'.$area['value']]:0;
-            $row['sales_sub_'.$area['value'].'_amount']=isset($info['amount_sale_'.$area['value']])?$info['amount_sale_'.$area['value']]:0;
+            $row['sales_sub_'.$area['value'].'_kg']=isset($info['sales_kg_'.$area['value']])?$info['sales_kg_'.$area['value']]:0;
+            $row['sales_sub_'.$area['value'].'_amount']=isset($info['sales_amount_'.$area['value']])?$info['sales_amount_'.$area['value']]:0;
 
         }
         return $row;
