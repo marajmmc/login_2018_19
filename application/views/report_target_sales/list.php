@@ -53,12 +53,16 @@ $zone_id=$report['zone_id'];
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="price_unit_kg_amount" <?php if($system_preference_items['price_unit_kg_amount']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PRICE_UNIT_KG_AMOUNT'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="target_kg" <?php if($system_preference_items['target_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_TARGET_KG'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="sales_kg" <?php if($system_preference_items['sales_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_SALES_KG'); ?></span></label></div></div>
+        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="percentage_kg_main" <?php if($system_preference_items['percentage_kg_main']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PERCENTAGE_KG_MAIN'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="target_amount" <?php if($system_preference_items['target_amount']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_TARGET_AMOUNT'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="sales_amount" <?php if($system_preference_items['sales_amount']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_SALES_AMOUNT'); ?></span></label></div></div>
+        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="percentage_amount_main" <?php if($system_preference_items['percentage_amount_main']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PERCENTAGE_AMOUNT_MAIN'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_target_sub_kg" value="target_sub_kg" <?php if($system_preference_items['target_sub_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_TARGET_SUB_KG'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_sales_sub_kg" value="sales_sub_kg" <?php if($system_preference_items['sales_sub_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_SALES_SUB_KG'); ?></span></label></div></div>
+        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_percentage_kg_sub" value="percentage_kg_sub" <?php if($system_preference_items['percentage_kg_sub']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PERCENTAGE_KG_SUB'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_target_sub_amount" value="target_sub_amount" <?php if($system_preference_items['target_sub_amount']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_TARGET_SUB_AMOUNT'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_sales_sub_amount" value="sales_sub_amount" <?php if($system_preference_items['sales_sub_amount']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_SALES_SUB_AMOUNT'); ?></span></label></div></div>
+        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_percentage_amount_sub" value="percentage_amount_sub" <?php if($system_preference_items['percentage_amount_sub']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_PERCENTAGE_AMOUNT_SUB'); ?></span></label></div></div>
     <?php
     }
     ?>
@@ -186,6 +190,64 @@ $zone_id=$report['zone_id'];
             }
             $(jqx_grid_id).jqxGrid('endupdate');
         });
+        $(document).off("click", ".system_jqx_column_percentage_kg_sub");
+        $(document).on("click", ".system_jqx_column_percentage_kg_sub", function(event)
+        {
+            var jqx_grid_id='#system_jqx_container';
+            $(jqx_grid_id).jqxGrid('beginupdate');
+            if($(this).is(':checked'))
+            {
+                <?php
+                foreach($areas as $area)
+                {
+                ?>
+                $(jqx_grid_id).jqxGrid('showcolumn', '<?php echo 'percentage_kg_sub_'.$area['value']; ?>');
+                <?php
+                }
+                ?>
+            }
+            else
+            {
+                <?php
+                foreach($areas as $area)
+                {
+                ?>
+                $(jqx_grid_id).jqxGrid('hidecolumn', '<?php echo 'percentage_kg_sub_'.$area['value']; ?>');
+                <?php
+                }
+                ?>
+            }
+            $(jqx_grid_id).jqxGrid('endupdate');
+        });
+        $(document).off("click", ".system_jqx_column_percentage_amount_sub");
+        $(document).on("click", ".system_jqx_column_percentage_amount_sub", function(event)
+        {
+            var jqx_grid_id='#system_jqx_container';
+            $(jqx_grid_id).jqxGrid('beginupdate');
+            if($(this).is(':checked'))
+            {
+                <?php
+                foreach($areas as $area)
+                {
+                ?>
+                $(jqx_grid_id).jqxGrid('showcolumn', '<?php echo 'percentage_amount_sub_'.$area['value']; ?>');
+                <?php
+                }
+                ?>
+            }
+            else
+            {
+                <?php
+                foreach($areas as $area)
+                {
+                ?>
+                $(jqx_grid_id).jqxGrid('hidecolumn', '<?php echo 'percentage_amount_sub_'.$area['value']; ?>');
+                <?php
+                }
+                ?>
+            }
+            $(jqx_grid_id).jqxGrid('endupdate');
+        });
 
         var url = "<?php echo site_url($CI->controller_url.'/index/get_items_list');?>";
         // prepare the data
@@ -199,8 +261,10 @@ $zone_id=$report['zone_id'];
                 { name: 'price_unit_kg_amount', type: 'number' },
                 { name: 'target_kg', type: 'number' },
                 { name: 'sales_kg', type: 'number' },
+                { name: 'percentage_kg_main', type: 'number' },
                 { name: 'target_amount', type: 'number' },
                 { name: 'sales_amount', type: 'number' },
+                { name: 'percentage_amount_main', type: 'number' },
 
                 <?php
                 foreach ($areas as $area)
@@ -208,8 +272,10 @@ $zone_id=$report['zone_id'];
                     ?>
                     { name: '<?php echo 'target_sub_'.$area['value'].'_kg'; ?>', type: 'number' },
                     { name: '<?php echo 'sales_sub_'.$area['value'].'_kg'; ?>', type: 'number' },
+                    { name: '<?php echo 'percentage_kg_sub_'.$area['value']; ?>', type: 'number' },
                     { name: '<?php echo 'target_sub_'.$area['value'].'_amount'; ?>', type: 'number' },
                     { name: '<?php echo 'sales_sub_'.$area['value'].'_amount'; ?>', type: 'number' },
+                    { name: '<?php echo 'percentage_amount_sub_'.$area['value']; ?>', type: 'number' },
                     <?php
                 }
                 ?>
@@ -291,6 +357,17 @@ $zone_id=$report['zone_id'];
                     element.html(get_string_amount(value));
                 }
             }
+            else if(column.substr(0,11)=='percentage_')
+            {
+                if(value==0)
+                {
+                    element.html('');
+                }
+                else
+                {
+                    element.html(get_string_amount(value));
+                }
+            }
 
             return element[0].outerHTML;
         };
@@ -356,16 +433,20 @@ $zone_id=$report['zone_id'];
                     { text: '<?php echo $CI->lang->line('LABEL_PRICE_UNIT_KG_AMOUNT'); ?>', dataField: 'price_unit_kg_amount',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['price_unit_kg_amount']?0:1;?>,cellsrenderer: cellsrenderer},
                     { text: '<?php echo $CI->lang->line('LABEL_TARGET_KG'); ?>', dataField: 'target_kg',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['target_kg']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
                     { text: '<?php echo $CI->lang->line('LABEL_SALES_KG'); ?>', dataField: 'sales_kg',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['sales_kg']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
+                    { text: '<?php echo $CI->lang->line('LABEL_PERCENTAGE_KG_MAIN'); ?>', dataField: 'percentage_kg_main',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['percentage_kg_main']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                     { text: '<?php echo $CI->lang->line('LABEL_TARGET_AMOUNT'); ?>', dataField: 'target_amount',width:'120',cellsAlign:'right',hidden: <?php echo $system_preference_items['target_amount']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                     { text: '<?php echo $CI->lang->line('LABEL_SALES_AMOUNT'); ?>', dataField: 'sales_amount',width:'120',cellsAlign:'right',hidden: <?php echo $system_preference_items['sales_amount']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
+                    { text: '<?php echo $CI->lang->line('LABEL_PERCENTAGE_AMOUNT_MAIN'); ?>', dataField: 'percentage_amount_main',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['percentage_amount_main']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                     <?php
                     foreach ($areas as $area)
                     {
                         ?>
                             {  text: '<?php echo 'Target-kg ('.$area['text'].')'; ?>', dataField: '<?php echo 'target_sub_'.$area['value'].'_kg'; ?>',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['target_sub_kg']?0:1;?>,renderer: header_render,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
                             {  text: '<?php echo 'Sales-kg ('.$area['text'].')'; ?>', dataField: '<?php echo 'sales_sub_'.$area['value'].'_kg'; ?>',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['sales_sub_kg']?0:1;?>,renderer: header_render,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
+                            {  text: '<?php echo '%(kg) ('.$area['text'].')'; ?>', dataField: '<?php echo 'percentage_kg_sub_'.$area['value']; ?>',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['percentage_kg_sub']?0:1;?>,renderer: header_render,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             {  text: '<?php echo 'Target-Amount ('.$area['text'].')'; ?>', dataField: '<?php echo 'target_sub_'.$area['value'].'_amount'; ?>',width:'120',cellsAlign:'right',hidden: <?php echo $system_preference_items['target_sub_amount']?0:1;?>,renderer: header_render,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             {  text: '<?php echo 'Sales-Amount ('.$area['text'].')'; ?>', dataField: '<?php echo 'sales_sub_'.$area['value'].'_amount'; ?>',width:'120',cellsAlign:'right',hidden: <?php echo $system_preference_items['sales_sub_amount']?0:1;?>,renderer: header_render,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
+                            {  text: '<?php echo '%(amount) ('.$area['text'].')'; ?>', dataField: '<?php echo 'percentage_amount_sub_'.$area['value']; ?>',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['percentage_amount_sub']?0:1;?>,renderer: header_render,cellsrenderer: cellsrenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
 
                         <?php
                     }

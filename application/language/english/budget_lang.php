@@ -26,3 +26,8 @@ $lang['LABEL_TARGET_SUB_KG'] = 'Sub Target (kg)';
 $lang['LABEL_TARGET_SUB_AMOUNT'] = 'Sub Target (Amount)';
 $lang['LABEL_SALES_SUB_KG'] = 'Sub Sales (kg)';
 $lang['LABEL_SALES_SUB_AMOUNT'] = 'Sub Sales (Amount)';
+
+$lang['LABEL_PERCENTAGE_KG_MAIN'] = '%(kg)';
+$lang['LABEL_PERCENTAGE_AMOUNT_MAIN'] = '%(amount)';
+$lang['LABEL_PERCENTAGE_KG_SUB'] = 'sub %(kg)';
+$lang['LABEL_PERCENTAGE_AMOUNT_SUB'] = 'sub %(amount)';

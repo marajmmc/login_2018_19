@@ -63,13 +63,17 @@ class Report_target_sales extends Root_Controller
 
             $data['target_kg']= 1;
             $data['sales_kg']= 1;
+            $data['percentage_kg_main']= 1;
             $data['target_amount']= 1;
             $data['sales_amount']= 1;
+            $data['percentage_amount_main']= 1;
 
             $data['target_sub_kg']= 1;
             $data['sales_sub_kg']= 1;
+            $data['percentage_kg_sub']= 1;
             $data['target_sub_amount']= 1;
             $data['sales_sub_amount']= 1;
+            $data['percentage_amount_sub']= 1;
 
         }
         return $data;
@@ -421,7 +425,8 @@ class Report_target_sales extends Root_Controller
                     $type_total['crop_name']=$prev_crop_name;
                     $type_total['crop_type_name']=$prev_type_name;
                     $crop_total['crop_name']=$prev_crop_name;
-
+                    $type_total=$this->get_percentage($type_total,$areas);
+                    $crop_total=$this->get_percentage($crop_total,$areas);
                     $items[]=$type_total;
                     $items[]=$crop_total;
                     $type_total=$this->reset_row($type_total);
@@ -434,7 +439,7 @@ class Report_target_sales extends Root_Controller
                 {
                     $type_total['crop_name']=$prev_crop_name;
                     $type_total['crop_type_name']=$prev_type_name;
-
+                    $type_total=$this->get_percentage($type_total,$areas);
                     $items[]=$type_total;
                     $type_total=$this->reset_row($type_total);
                     //$info['crop_name']='';
@@ -452,7 +457,7 @@ class Report_target_sales extends Root_Controller
                 $prev_type_name=$info['crop_type_name'];
                 $first_row=false;
             }
-            $items[]=$info;
+
 
             foreach($info  as $key=>$r)
             {
@@ -463,10 +468,15 @@ class Report_target_sales extends Root_Controller
                     $grand_total[$key]+=$info[$key];
                 }
             }
+            $info=$this->get_percentage($info,$areas);
+            $items[]=$info;
 
         }
+        $type_total=$this->get_percentage($type_total,$areas);
         $items[]=$type_total;
+        $crop_total=$this->get_percentage($crop_total,$areas);
         $items[]=$crop_total;
+        $grand_total=$this->get_percentage($grand_total,$areas);
         $items[]=$grand_total;
         $this->json_return($items);
     }
@@ -486,17 +496,29 @@ class Report_target_sales extends Root_Controller
         $row['sales_kg']=isset($info['sales_kg'])?$info['sales_kg']:0;
         $row['sales_amount']=isset($info['sales_amount'])?$info['sales_amount']:0;
 
+
         foreach($areas as $area)
         {
             $row['target_sub_'.$area['value'].'_kg']=isset($info['quantity_target_'.$area['value']])?$info['quantity_target_'.$area['value']]:0;
             $row['target_sub_'.$area['value'].'_amount']=$row['target_sub_'.$area['value'].'_kg']*$row['price_unit_kg_amount'];
-
             $row['sales_sub_'.$area['value'].'_kg']=isset($info['sales_kg_'.$area['value']])?$info['sales_kg_'.$area['value']]:0;
             $row['sales_sub_'.$area['value'].'_amount']=isset($info['sales_amount_'.$area['value']])?$info['sales_amount_'.$area['value']]:0;
 
         }
         return $row;
 
+    }
+    private function get_percentage($row,$areas)
+    {
+        $row['percentage_kg_main']=$row['target_kg']>0?  ($row['sales_kg']*100/$row['target_kg']):0;
+        $row['percentage_amount_main']=$row['target_amount']>0?  ($row['sales_amount']*100/$row['target_amount']):0;
+        foreach($areas as $area)
+        {
+            $row['percentage_kg_sub_'.$area['value']]=$row['target_sub_'.$area['value'].'_kg']>0?($row['sales_sub_'.$area['value'].'_kg']*100/$row['target_sub_'.$area['value'].'_kg']):0;
+            $row['percentage_amount_sub_'.$area['value']]=$row['target_sub_'.$area['value'].'_amount']>0?($row['sales_sub_'.$area['value'].'_amount']*100/$row['target_sub_'.$area['value'].'_amount']):0;
+
+        }
+        return $row;
     }
     private function reset_row($info)
     {
