@@ -81,7 +81,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <div class="radio-inline">
                     <label><input type="radio" value="ARM" <?php if($item['whose']=='ARM'){echo 'checked';} ?> name="item[whose]">ARM</label>
                 </div>
-                <div class="radio-inline" style="<?php if($item['id']==0){echo 'display:none';} ?>">
+                <div class="radio-inline">
                     <label><input type="radio" value="Competitor" <?php if($item['whose']=='Competitor'){echo 'checked';} ?> name="item[whose]">Competitor</label>
                 </div>
                 <div class="radio-inline">
