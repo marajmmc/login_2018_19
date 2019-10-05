@@ -53,17 +53,25 @@ class Report_farmer_balance extends Root_Controller
         {
             $this->system_get_items_list_dealers();
         }
+        elseif($action=="get_items_list_dealers_date_end")
+        {
+            $this->system_get_items_list_dealers_date_end();
+        }
         elseif($action=="get_items_list_dealer")
         {
             $this->system_get_items_list_dealer();
         }
-        elseif($action=="set_preference_list_dealer")
-        {
-            $this->system_set_preference('list_dealer');
-        }
         elseif($action=="set_preference_list_dealers")
         {
             $this->system_set_preference('list_dealers');
+        }
+        elseif($action=="set_preference_list_dealers_date_end")
+        {
+            $this->system_set_preference('list_dealers_date_end');
+        }
+        elseif($action=="set_preference_list_dealer")
+        {
+            $this->system_set_preference('list_dealer');
         }
         elseif($action=="save_preference")
         {
@@ -147,6 +155,15 @@ class Report_farmer_balance extends Root_Controller
             $data['amount_credit_due']= 1;
             $data['amount_credit_advance']= 1;
         }
+        else if($method=='list_dealers_date_end')
+        {
+            $data['barcode']= 1;
+            $data['name']= 1;
+            //$data['amount_credit_limit']= 1;
+            //$data['amount_credit_balance']= 1;
+            $data['amount_credit_due']= 1;
+            $data['amount_credit_advance']= 1;
+        }
         else if($method=='list_dealer')
         {
             $data['date']= 1;
@@ -188,18 +205,18 @@ class Report_farmer_balance extends Root_Controller
                 $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
                 $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_dealer",$data,true));
             }
+            else if($reports['outlet_id']>0)
+            {
+
+                $result=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('name text'),array('customer_id ='.$reports['outlet_id'],'revision =1'),1);
+                $data['title']='Dealers ( Showroom ::'.$result['text'].' ) Balance Report';
+                $method='list_dealers_date_end';
+                $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
+                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_dealers_date_end",$data,true));
+            }
             else
             {
-                if($reports['outlet_id']>0)
-                {
-                    $result=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('name text'),array('customer_id ='.$reports['outlet_id'],'revision =1'),1);
-                    $data['title']='Dealers ( Showroom ::'.$result['text'].' ) Balance Report';
-
-                }
-                else
-                {
-                    $data['title']='Dealers(All Showroom) Balance Report';
-                }
+                $data['title']='Dealers(All Showroom) Balance Report';
                 $method='list_dealers';
                 $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
                 $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_dealers",$data,true));
@@ -290,6 +307,90 @@ class Report_farmer_balance extends Root_Controller
                 $item['amount_credit_advance']=0-$item['amount_credit_due'];
                 $item['amount_credit_due']=0;
             }
+        }
+        $this->json_return($items);
+    }
+    private function system_get_items_list_dealers_date_end()
+    {
+        $outlet_id=$this->input->post('outlet_id');
+        $date_end=$this->input->post('date_end');
+
+        //$user=User_helper::get_user();
+        $this->db->from($this->config->item('table_pos_setup_farmer_farmer').' f');
+        $this->db->select('f.id,f.name');
+        $this->db->join($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet','farmer_outlet.farmer_id = f.id and farmer_outlet.revision =1','INNER');
+        $this->db->where('farmer_outlet.outlet_id',$outlet_id);
+        $this->db->where('f.amount_credit_limit > ',0);
+        $this->db->order_by('f.id DESC');
+        $this->db->group_by('f.id');
+        $farmers=$this->db->get()->result_array();
+        $farmer_ids[0]=0;
+        foreach($farmers as $farmer)
+        {
+            $farmer_ids[$farmer['id']]=$farmer['id'];
+        }
+
+        //sales
+
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('sale.farmer_id');
+        $this->db->select('SUM(sale.amount_payable_actual) amount_debit_total',false);
+        $this->db->select('SUM(CASE WHEN sale.sales_payment_method="Cash" then sale.amount_payable_actual ELSE 0 END) amount_sale_cash',false);
+
+        $this->db->where_in('sale.status',$this->config->item('system_status_active'));
+        $this->db->where_in('sale.farmer_id',$farmer_ids);
+        $this->db->where('sale.date_sale <=',$date_end);
+        $this->db->group_by('sale.farmer_id');
+        $results=$this->db->get()->result_array();
+        $due_sales=array();
+        foreach($results as $result)
+        {
+            $due_sales[$result['farmer_id']]=$result['amount_debit_total']-$result['amount_sale_cash'];//due
+        }
+
+        //previous payment
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' dp');
+        $this->db->select('dp.farmer_id');
+        $this->db->select('SUM(dp.amount) amount_payment_total',false);
+        $this->db->where('dp.status',$this->config->item('system_status_active'));
+        $this->db->where_in('dp.farmer_id',$farmer_ids);
+        $this->db->where('dp.date_payment <=',$date_end);
+        $this->db->group_by('dp.farmer_id');
+        $results=$this->db->get()->result_array();
+        $payments=array();
+        foreach($results as $result)
+        {
+            $payments[$result['farmer_id']]=$result['amount_payment_total'];
+        }
+        $items=array();
+        foreach($farmers as $farmer)
+        {
+            $item=array();
+            $item['barcode']=Barcode_helper::get_barcode_farmer($farmer['id']);
+            $item['name']=$farmer['name'];
+            $due=0;
+            if(isset($due_sales[$farmer['id']]))
+            {
+                $due=$due_sales[$farmer['id']];
+            }
+            $payment=0;
+            if(isset($payments[$farmer['id']]))
+            {
+                $payment=$payments[$farmer['id']];
+            }
+
+            if($due>$payment)
+            {
+                $item['amount_credit_advance']=0;
+                $item['amount_credit_due']=$due-$payment;
+            }
+            else
+            {
+                $item['amount_credit_advance']=$payment-$due;
+                $item['amount_credit_due']=0;
+            }
+
+            $items[]=$item;
         }
         $this->json_return($items);
     }

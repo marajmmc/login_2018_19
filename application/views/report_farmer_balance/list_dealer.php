@@ -63,7 +63,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <?php
                 foreach($system_preference_items as $key=>$item)
                 {
-                    if(($key=='id') || ($key=='amount_credit_limit') || ($key=='amount_credit_balance') )
+                    if(($key=='id'))
                     {
                         ?>
                         { name: '<?php echo $key ?>', type: 'number' },

@@ -37,25 +37,23 @@ $CI = & get_instance();
                 </select>
             </div>
         </div>
-        <div style="display: none;" id="date_container">
-            <div class="row show-grid">
-                <div class="col-xs-4">
-                    <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_START');?></label>
-                </div>
-                <div class="col-sm-4 col-xs-8">
-                    <input type="text" id="date_start" name="report[date_start]" class="form-control date_large" value="<?php echo System_helper::display_date(time()); ?>">
-                </div>
-
+        <div class="row show-grid" style="display: none;" id="date_start_container">
+            <div class="col-xs-4">
+                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_START');?></label>
             </div>
-            <div class="row show-grid">
-                <div class="col-xs-4">
-                    <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_END');?></label>
-                </div>
-                <div class="col-sm-4 col-xs-8">
-                    <input type="text" id="date_end" name="report[date_end]" class="form-control date_large" value="<?php echo System_helper::display_date(time()); ?>">
-                </div>
-
+            <div class="col-sm-4 col-xs-8">
+                <input type="text" id="date_start" name="report[date_start]" class="form-control date_large" value="<?php echo System_helper::display_date(time()); ?>">
             </div>
+
+        </div>
+        <div class="row show-grid" style="display: none;" id="date_end_container">
+            <div class="col-xs-4">
+                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_END');?></label>
+            </div>
+            <div class="col-sm-4 col-xs-8">
+                <input type="text" id="date_end" name="report[date_end]" class="form-control date_large" value="<?php echo System_helper::display_date(time()); ?>">
+            </div>
+
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
@@ -93,6 +91,8 @@ $CI = & get_instance();
             if(outlet_id>0)
             {
                 $('#farmer_id_container').show();
+                $('#date_end_container').show();
+                $('#date_start_container').hide();
                 $.ajax({
                     url: '<?php echo site_url($CI->controller_url.'/index/get_dealers');?>',
                     type: 'POST',
@@ -113,6 +113,8 @@ $CI = & get_instance();
             else
             {
                 $('#farmer_id_container').hide();
+                $('#date_end_container').hide();
+                $('#date_start_container').hide();
 
             }
         });
@@ -123,13 +125,13 @@ $CI = & get_instance();
             var farmer_id=$('#farmer_id').val();
             if(farmer_id>0)
             {
-                $('#date_container').show();
-
-
+                $('#date_end_container').show();
+                $('#date_start_container').show();
             }
             else
             {
-                $('#date_container').hide();
+                $('#date_end_container').show();
+                $('#date_start_container').hide();
 
             }
         });
