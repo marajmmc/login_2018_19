@@ -46,7 +46,7 @@ $CI = & get_instance();
             </div>
 
         </div>
-        <div class="row show-grid" style="display: none;" id="date_end_container">
+        <div class="row show-grid" id="date_end_container">
             <div class="col-xs-4">
                 <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_END');?></label>
             </div>
@@ -91,7 +91,7 @@ $CI = & get_instance();
             if(outlet_id>0)
             {
                 $('#farmer_id_container').show();
-                $('#date_end_container').show();
+                //$('#date_end_container').show();
                 $('#date_start_container').hide();
                 $.ajax({
                     url: '<?php echo site_url($CI->controller_url.'/index/get_dealers');?>',
@@ -113,7 +113,7 @@ $CI = & get_instance();
             else
             {
                 $('#farmer_id_container').hide();
-                $('#date_end_container').hide();
+                //$('#date_end_container').hide();
                 $('#date_start_container').hide();
 
             }
@@ -125,12 +125,12 @@ $CI = & get_instance();
             var farmer_id=$('#farmer_id').val();
             if(farmer_id>0)
             {
-                $('#date_end_container').show();
+                //$('#date_end_container').show();
                 $('#date_start_container').show();
             }
             else
             {
-                $('#date_end_container').show();
+                //$('#date_end_container').show();
                 $('#date_start_container').hide();
 
             }

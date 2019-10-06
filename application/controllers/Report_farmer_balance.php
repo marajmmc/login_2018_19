@@ -49,9 +49,13 @@ class Report_farmer_balance extends Root_Controller
         {
             $this->system_list();
         }
-        elseif($action=="get_items_list_dealers")
+        /*elseif($action=="get_items_list_dealers")
         {
             $this->system_get_items_list_dealers();
+        }*/
+        elseif($action=="get_items_list_outlets")
+        {
+            $this->system_get_items_list_outlets();
         }
         elseif($action=="get_items_list_dealers_date_end")
         {
@@ -64,6 +68,10 @@ class Report_farmer_balance extends Root_Controller
         elseif($action=="set_preference_list_dealers")
         {
             $this->system_set_preference('list_dealers');
+        }
+        elseif($action=="set_preference_list_outlets")
+        {
+            $this->system_set_preference('list_outlets');
         }
         elseif($action=="set_preference_list_dealers_date_end")
         {
@@ -146,12 +154,18 @@ class Report_farmer_balance extends Root_Controller
     private function get_preference_headers($method)
     {
         $data=array();
-        if($method=='list_dealers')
+        /*if($method=='list_dealers')
         {
             $data['barcode']= 1;
             $data['name']= 1;
             $data['amount_credit_limit']= 1;
             $data['amount_credit_balance']= 1;
+            $data['amount_credit_due']= 1;
+            $data['amount_credit_advance']= 1;
+        }*/
+        if($method=='list_outlets')
+        {
+            $data['name']= 1;
             $data['amount_credit_due']= 1;
             $data['amount_credit_advance']= 1;
         }
@@ -216,10 +230,13 @@ class Report_farmer_balance extends Root_Controller
             }
             else
             {
-                $data['title']='Dealers(All Showroom) Balance Report';
-                $method='list_dealers';
+                //$data['title']='Dealers(All Showroom) Balance Report';
+                $data['title']='All Showrooms Balance Report';
+                //$method='list_dealers';
+                $method='list_outlets';
                 $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
-                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_dealers",$data,true));
+                //$ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_dealers",$data,true));
+                $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_outlets",$data,true));
             }
             if($this->message)
             {
@@ -235,7 +252,7 @@ class Report_farmer_balance extends Root_Controller
         }
 
     }
-    private function system_get_items_list_dealers()
+    /*private function system_get_items_list_dealers()
     {
         $outlet_id=$this->input->post('outlet_id');
         $outlet_ids=array();
@@ -307,6 +324,112 @@ class Report_farmer_balance extends Root_Controller
                 $item['amount_credit_advance']=0-$item['amount_credit_due'];
                 $item['amount_credit_due']=0;
             }
+        }
+        $this->json_return($items);
+    }*/
+    private function system_get_items_list_outlets()
+    {
+        //$outlet_id=$this->input->post('outlet_id');
+        $date_end=$this->input->post('date_end');
+
+        //$user=User_helper::get_user();
+        $this->db->from($this->config->item('table_login_csetup_customer').' cus');
+        $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = cus.id','INNER');
+        $this->db->select('cus.id value, cus_info.name text');
+        $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
+        $this->db->join($this->config->item('table_login_setup_location_divisions').' division','division.id = zone.division_id','INNER');
+        if($this->locations['division_id']>0)
+        {
+            $this->db->where('division.id',$this->locations['division_id']);
+            if($this->locations['zone_id']>0)
+            {
+                $this->db->where('zone.id',$this->locations['zone_id']);
+                if($this->locations['territory_id']>0)
+                {
+                    $this->db->where('t.id',$this->locations['territory_id']);
+                    if($this->locations['district_id']>0)
+                    {
+                        $this->db->where('cus_info.district_id',$this->locations['district_id']);
+                    }
+                }
+
+            }
+        }
+        $this->db->where('cus_info.revision',1);
+        $this->db->where('cus.status !=',$this->config->item('system_status_delete'));
+
+        $this->db->where('cus.status',$this->config->item('system_status_active'));
+        $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
+        $this->db->where('cus_info.revision',1);
+
+        $this->db->order_by('division.ordering','ASC');
+        $this->db->order_by('zone.ordering','ASC');
+        $this->db->order_by('t.ordering','ASC');
+        $this->db->order_by('d.ordering','ASC');
+        $this->db->order_by('cus_info.ordering','ASC');
+        $outlets=$this->db->get()->result_array();
+        //sales
+
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('sale.outlet_id');
+        $this->db->select('SUM(sale.amount_payable_actual) amount_debit_total',false);
+        $this->db->select('SUM(CASE WHEN sale.sales_payment_method="Cash" then sale.amount_payable_actual ELSE 0 END) amount_sale_cash',false);
+        $this->db->join($this->config->item('table_pos_setup_farmer_farmer').' farmer','farmer.id = sale.farmer_id','INNER');
+
+        $this->db->where_in('sale.status',$this->config->item('system_status_active'));
+        $this->db->where('sale.date_sale <=',$date_end);
+        $this->db->where('farmer.amount_credit_limit >',0);
+        $this->db->group_by('sale.outlet_id');
+        $results=$this->db->get()->result_array();
+        $due_sales=array();
+        foreach($results as $result)
+        {
+            $due_sales[$result['outlet_id']]=$result['amount_debit_total']-$result['amount_sale_cash'];//due
+        }
+
+        //previous payment
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' dp');
+        $this->db->select('dp.outlet_id');
+        $this->db->select('SUM(dp.amount) amount_payment_total',false);
+        $this->db->where('dp.status',$this->config->item('system_status_active'));
+        $this->db->where('dp.date_payment <=',$date_end);
+        $this->db->group_by('dp.outlet_id');
+        $results=$this->db->get()->result_array();
+        $payments=array();
+        foreach($results as $result)
+        {
+            $payments[$result['outlet_id']]=$result['amount_payment_total'];
+        }
+        $items=array();
+        foreach($outlets as $outlet)
+        {
+            $item=array();
+            $item['name']=$outlet['text'];
+            $due=0;
+            if(isset($due_sales[$outlet['value']]))
+            {
+                $due=$due_sales[$outlet['value']];
+            }
+            $payment=0;
+            if(isset($payments[$outlet['value']]))
+            {
+                $payment=$payments[$outlet['value']];
+            }
+
+            if($due>$payment)
+            {
+                $item['amount_credit_advance']=0;
+                $item['amount_credit_due']=$due-$payment;
+            }
+            else
+            {
+                $item['amount_credit_advance']=$payment-$due;
+                $item['amount_credit_due']=0;
+            }
+
+            $items[]=$item;
         }
         $this->json_return($items);
     }
