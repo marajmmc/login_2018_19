@@ -127,10 +127,10 @@ class Report_farmer_balance extends Root_Controller
             $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
             $this->db->where('cus_info.revision',1);
 
-            $this->db->order_by('division.ordering','ASC');
-            $this->db->order_by('zone.ordering','ASC');
-            $this->db->order_by('t.ordering','ASC');
-            $this->db->order_by('d.ordering','ASC');
+            //$this->db->order_by('division.ordering','ASC');
+            //$this->db->order_by('zone.ordering','ASC');
+            //$this->db->order_by('t.ordering','ASC');
+            //$this->db->order_by('d.ordering','ASC');
             $this->db->order_by('cus_info.ordering','ASC');
             $data['outlets']=$this->db->get()->result_array();
 
@@ -364,10 +364,10 @@ class Report_farmer_balance extends Root_Controller
         $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
         $this->db->where('cus_info.revision',1);
 
-        $this->db->order_by('division.ordering','ASC');
-        $this->db->order_by('zone.ordering','ASC');
-        $this->db->order_by('t.ordering','ASC');
-        $this->db->order_by('d.ordering','ASC');
+        //$this->db->order_by('division.ordering','ASC');
+        //$this->db->order_by('zone.ordering','ASC');
+        //$this->db->order_by('t.ordering','ASC');
+        //$this->db->order_by('d.ordering','ASC');
         $this->db->order_by('cus_info.ordering','ASC');
         $outlets=$this->db->get()->result_array();
         //sales
