@@ -17,5 +17,5 @@ $config['table_bi_variety_cultivation_period'] = 'arm_bi_2019_20.bi_variety_cult
 $config['table_bi_variety_cultivation_period_request'] = 'arm_bi_2019_20.bi_variety_cultivation_period_request';
 
 // Major Competitor Variety
-$config['table_bi_major_competitor_variety_request'] = 'arm_bi_2019_20.bi_major_competitor_variety_request';
-$config['table_bi_major_competitor_variety'] = 'arm_bi_2019_20.bi_major_competitor_variety';
+$config['table_bi_variety_arm_upazilla_request'] = 'arm_bi_2019_20.bi_variety_arm_upazilla_request';
+$config['table_bi_variety_arm_upazilla'] = 'arm_bi_2019_20.bi_variety_arm_upazilla';
