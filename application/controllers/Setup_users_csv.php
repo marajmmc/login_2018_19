@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Csv_setup_users extends CI_Controller
+class Setup_users_csv extends CI_Controller
 {
     public function __construct()
     {

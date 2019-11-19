@@ -110,7 +110,7 @@ if(isset($CI->permissions['action5']) && ($CI->permissions['action5']==1))
     );
     $action_buttons[]=array(
         'label'=>$CI->lang->line("ACTION_CSV"),
-        'href'=>site_url('Csv_'.$CI->controller_url.'/system_list/'),
+        'href'=>site_url($CI->controller_url.'_csv/system_list/'),
         'class'=>'external',
         'target'=>'_blank'
     );
