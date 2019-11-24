@@ -23,6 +23,7 @@ $CI = & get_instance();
                                 <option value="variety_amount_quantity">Product wise Sales</option>
                                 <option value="variety_amount_quantity_sortable">Product wise Sales ordering</option>
                                 <option value="outlets_sales_cash">Outlet Sales and Cash</option>
+                                <option value="outlets_dealers_varieties">Dealer wise product</option>
                             </select>
                         </div>
                     </div>
@@ -424,7 +425,7 @@ $CI = & get_instance();
         {
             $("#system_report_container").html("");
             var report_name=$('#report_name').val();
-            if((report_name=='variety_amount_quantity')||(report_name=='variety_amount_quantity_sortable'))
+            if((report_name=='variety_amount_quantity')||(report_name=='variety_amount_quantity_sortable')||(report_name=='outlets_dealers_varieties'))
             {
                 $('#container_product').show();
             }
