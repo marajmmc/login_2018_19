@@ -159,6 +159,42 @@ $CI = & get_instance();
                     </select>
                 </div>
             </div>
+            <div style="" class="row show-grid" id="outlet_id_container">
+                <div class="col-xs-4">
+                    <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_DAY_COLOR_PAYMENT');?><span style="color:#FF0000">*</span></label>
+                </div>
+                <div class="col-sm-4 col-xs-8">
+                    <select id="co" class="form-control" name="report[day_color_payment]">
+                        <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                        <?php
+                        for($i=15;$i<=150;$i=$i+15)
+                        {
+                            ?>
+                            <option value="<?php echo $i;?>" <?php if($i==30){echo 'selected';} ?>><?php echo $i;?></option>
+                        <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+            <div style="" class="row show-grid" id="outlet_id_container">
+                <div class="col-xs-4">
+                    <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_DAY_COLOR_SALES');?><span style="color:#FF0000">*</span></label>
+                </div>
+                <div class="col-sm-4 col-xs-8">
+                    <select id="co" class="form-control" name="report[day_color_sales]">
+                        <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                        <?php
+                        for($i=15;$i<=150;$i=$i+15)
+                        {
+                            ?>
+                            <option value="<?php echo $i;?>" <?php if($i==30){echo 'selected';} ?>><?php echo $i;?></option>
+                        <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="row show-grid">

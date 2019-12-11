@@ -28,8 +28,14 @@ class Report_farmer_balance_notification extends Root_Controller
         $this->lang->language['LABEL_AMOUNT_CREDIT_LIMIT'] = 'Credit Limit';
         $this->lang->language['LABEL_AMOUNT_CREDIT_BALANCE'] = 'Available Credit';
         $this->lang->language['LABEL_AMOUNT_CREDIT_DUE'] = 'Due';
+        $this->lang->language['LABEL_AMOUNT_LAST_PAYMENT'] = 'Last payment amount';
         $this->lang->language['LABEL_DATE_LAST_PAYMENT'] = 'Last Payment Date';
         $this->lang->language['LABEL_DAY_LAST_PAYMENT'] = 'Last Payment days';
+        $this->lang->language['LABEL_AMOUNT_LAST_SALE'] = 'Last sale amount';
+        $this->lang->language['LABEL_DATE_LAST_SALE'] = 'Last sale Date';
+        $this->lang->language['LABEL_DAY_LAST_SALE'] = 'Last sale days';
+        $this->lang->language['LABEL_DAY_COLOR_PAYMENT'] = 'Payment days(for color)';
+        $this->lang->language['LABEL_DAY_COLOR_SALES'] = 'Sales days(for color)';
     }
 
     public function index($action = "search", $id = 0)
@@ -71,8 +77,14 @@ class Report_farmer_balance_notification extends Root_Controller
             $data['amount_credit_limit'] = 1;
             $data['amount_credit_balance'] = 1;
             $data['amount_credit_due'] = 1;
+
+            $data['amount_last_payment'] = 1;
             $data['date_last_payment'] = 1;
             $data['day_last_payment'] = 1;
+
+            $data['amount_last_sale'] = 1;
+            $data['date_last_sale'] = 1;
+            $data['day_last_sale'] = 1;
         }
         return $data;
     }
@@ -220,32 +232,59 @@ class Report_farmer_balance_notification extends Root_Controller
             $outlets[$result['outlet_id']]=$result['outlet_name'];
             $outlet_ids[$result['outlet_id']]=$result['outlet_id'];
         }
+        //payment
         $this->db->from($this->config->item('table_pos_farmer_credit_payment') . ' payment');
         $this->db->select('MAX( payment.date_payment ) AS date_last_payment');
         $this->db->select('payment.farmer_id');
         $this->db->where_in('payment.outlet_id', $outlet_ids);
         $this->db->group_by('payment.farmer_id');
+        $sub_query=$this->db->get_compiled_select();
+
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment') . ' payment');
+        $this->db->select('payment.farmer_id');
+        $this->db->select('payment.amount amount_last_payment');
+        $this->db->select('payment.date_payment date_last_payment');
+        $this->db->join('('.$sub_query.') payment_max','payment_max.farmer_id = payment.farmer_id AND payment_max.date_last_payment= payment.date_payment','INNER');
         $results=$this->db->get()->result_array();
         $payment=array();
         foreach($results as $result)
         {
-            $payment[$result['farmer_id']]=$result['date_last_payment'];
+            $payment[$result['farmer_id']]=$result;
+        }
+        //sales
+
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('MAX( sale.date_sale ) AS date_last_sale');
+        $this->db->select('sale.farmer_id');
+        $this->db->where_in('sale.outlet_id', $outlet_ids);
+        $this->db->where('sale.status',$this->config->item('system_status_active'));
+        $this->db->where('sale.sales_payment_method','Credit');
+        $this->db->group_by('sale.farmer_id');
+        $sub_query=$this->db->get_compiled_select();
+
+        $this->db->from($this->config->item('table_pos_sale').' sale');
+        $this->db->select('sale.farmer_id');
+        $this->db->select('sale.amount_payable_actual amount_last_sale');
+        $this->db->select('sale.date_sale date_last_sale');
+        $this->db->join('('.$sub_query.') sale_max','sale_max.farmer_id = sale.farmer_id AND sale_max.date_last_sale= sale.date_sale','INNER');
+        $this->db->where('sale.status',$this->config->item('system_status_active'));
+        $this->db->where('sale.sales_payment_method','Credit');
+        $results=$this->db->get()->result_array();
+
+        $sales=array();
+        foreach($results as $result)
+        {
+            $sales[$result['farmer_id']]=$result;
         }
 
-
-
+        //dealers
         $this->db->from($this->config->item('table_pos_setup_farmer_farmer') . ' farmer');
         $this->db->select('farmer.id, farmer.name, farmer.amount_credit_limit, farmer.amount_credit_balance');
 
         $this->db->join($this->config->item('table_pos_setup_farmer_outlet') . ' farmer_outlet', 'farmer_outlet.farmer_id = farmer.id AND farmer_outlet.revision =1', 'INNER');
         $this->db->select('farmer_outlet.outlet_id');
-
-        //$this->db->join($this->config->item('table_pos_farmer_credit_payment').' payment', 'payment.farmer_id = farmer.id AND payment.outlet_id = farmer_outlet.outlet_id', 'INNER');
-        //$this->db->select('MAX( payment.date_payment ) AS date_last_payment');
-
         $this->db->where('farmer.amount_credit_limit > ', 0);
         $this->db->where_in('farmer_outlet.outlet_id', $outlet_ids);
-        //$this->db->group_by('farmer.id');
         $this->db->order_by('farmer_outlet.id');
         $this->db->order_by('farmer.id DESC');
         $items = $this->db->get()->result_array();
@@ -256,13 +295,28 @@ class Report_farmer_balance_notification extends Root_Controller
             $item['amount_credit_due'] = $item['amount_credit_limit'] - $item['amount_credit_balance'];
             if(isset($payment[$item['id']]))
             {
-                $item['date_last_payment'] = System_helper::display_date($payment[$item['id']]);
-                $item['day_last_payment'] = intval(($time-$payment[$item['id']])/(3600*24));
+                $item['amount_last_payment'] = $payment[$item['id']]['amount_last_payment'];
+                $item['date_last_payment'] = System_helper::display_date($payment[$item['id']]['date_last_payment']);
+                $item['day_last_payment'] = intval(($time-$payment[$item['id']]['date_last_payment'])/(3600*24));
             }
             else
             {
+                $item['amount_last_payment']=0;
                 $item['date_last_payment']=0;
                 $item['day_last_payment']=0;
+            }
+
+            if(isset($sales[$item['id']]))
+            {
+                $item['amount_last_sale'] = $sales[$item['id']]['amount_last_sale'];
+                $item['date_last_sale'] = System_helper::display_date($sales[$item['id']]['date_last_sale']);
+                $item['day_last_sale'] = intval(($time-$sales[$item['id']]['date_last_sale'])/(3600*24));
+            }
+            else
+            {
+                $item['amount_last_sale']=0;
+                $item['date_last_sale']=0;
+                $item['day_last_sale']=0;
             }
 
         }

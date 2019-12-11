@@ -89,34 +89,45 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         var cellsrenderer = function(row, column, value, defaultHtml, columnSettings, record)
         {
             var element = $(defaultHtml);
+            element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+            <?php
+            if($options['day_color_payment']>0)
+            {
+            ?>
             if(record['amount_credit_due']>0)
             {
-                if(record['date_last_payment']==0)
+                if(record['day_last_payment']>=<?php echo $options['day_color_payment']; ?>)
                 {
-                    element.css({ 'background-color': '#D100C6','margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+                    if(column=='day_last_payment')
+                    {
+                        element.css({ 'background-color': '#FF0000'});
+                    }
+
                 }
-                else if(record['day_last_payment']>60)
+
+            }
+
+            <?php
+            }
+
+            if($options['day_color_sales']>0)
+            {
+            ?>
+                if(record['day_last_sale']>=<?php echo $options['day_color_sales']; ?>)
                 {
-                    element.css({ 'background-color': '#FF0000','margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
+                    if(column=='day_last_sale')
+                    {
+                        element.css({ 'background-color': '#FF0000'});
+                    }
+
                 }
+            <?php
             }
-            else
-            {
-                element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
-            }
-            if((column=='id')||(column=='outlet_name')||(column=='barcode')||(column=='name'))//overwrite for display
-            {
-                element.css({ 'background-color': '#FFFFFF','margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
-                //element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
-            }
-            if(((column=='date_last_payment')&& (record['date_last_payment']==0))||((column=='day_last_payment')&& (record['day_last_payment']==0)))
+            ?>
+            if(((column=='date_last_payment')&& (record['date_last_payment']==0))||((column=='day_last_payment')&& (record['day_last_payment']==0))||((column=='date_last_sale')&& (record['date_last_sale']==0))||((column=='day_last_sale')&& (record['day_last_sale']==0)))
             {
                 element.html('');
             }
-
-
-
-
             if(column.substr(0,6)=='amount')
             {
                 if(value==0)
@@ -170,8 +181,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT_LIMIT'); ?>', dataField: 'amount_credit_limit', width:120, cellsrenderer: cellsrenderer, cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit_limit']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT_BALANCE'); ?>', dataField: 'amount_credit_balance', width:120, cellsrenderer: cellsrenderer, cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit_balance']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT_DUE'); ?>', dataField: 'amount_credit_due', width:120, cellsrenderer: cellsrenderer, cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit_due']?0:1;?>, aggregates: ['sum'], aggregatesrenderer:aggregatesrenderer_amount},
+                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_LAST_PAYMENT'); ?>', dataField: 'amount_last_payment', width:120, cellsrenderer: cellsrenderer, cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_last_payment']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_DATE_LAST_PAYMENT'); ?>', dataField: 'date_last_payment', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['date_last_payment']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DAY_LAST_PAYMENT'); ?>', dataField: 'day_last_payment', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['day_last_payment']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('LABEL_DAY_LAST_PAYMENT'); ?>', dataField: 'day_last_payment', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['day_last_payment']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_LAST_SALE'); ?>', dataField: 'amount_last_sale', width:120, cellsrenderer: cellsrenderer, cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_last_sale']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DATE_LAST_SALE'); ?>', dataField: 'date_last_sale', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['date_last_sale']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DAY_LAST_SALE'); ?>', dataField: 'day_last_sale', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['day_last_sale']?0:1;?>}
                 ]
             });
     });
