@@ -65,7 +65,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <?php
                 foreach($system_preference_items as $key=>$item)
                 {
-                    if(($key=='id')||(substr($key,0,6)=='amount')||($key=='day_last_payment'))
+                    if(($key=='id')||(substr($key,0,6)=='amount')||($key=='day_last_payment')||($key=='day_last_sale'))
                     {
                         ?>
                         { name: '<?php echo $key ?>', type: 'number' },
@@ -91,35 +91,46 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             var element = $(defaultHtml);
             element.css({'margin': '0px','width': '100%', 'height': '100%',padding:'5px','line-height':'25px'});
             <?php
-            if($options['day_color_payment']>0)
+            if($options['day_color_payment_start']>0)
             {
             ?>
-            if(record['amount_credit_due']>0)
-            {
-                if(record['day_last_payment']>=<?php echo $options['day_color_payment']; ?>)
+                if(column=='day_last_payment')
                 {
-                    if(column=='day_last_payment')
+                    if(record['amount_credit_due']>0)
                     {
-                        element.css({ 'background-color': '#FF0000'});
+                        if(record['day_last_payment']>=<?php echo $options['day_color_payment_start'];?>)
+                        {
+                            if(record['day_last_payment']><?php echo ($options['day_color_payment_start']+$options['day_color_payment_interval']);?>)
+                            {
+                                element.css({ 'background-color': '#FF0000'});
+                            }
+                            else
+                            {
+                                element.css({ 'background-color': '#FFFF00'});
+                            }
+
+                        }
                     }
-
                 }
-
-            }
-
             <?php
             }
 
-            if($options['day_color_sales']>0)
+            if($options['day_color_sales_start']>0)
             {
             ?>
-                if(record['day_last_sale']>=<?php echo $options['day_color_sales']; ?>)
+                if(column=='day_last_sale')
                 {
-                    if(column=='day_last_sale')
+                    if(record['day_last_sale']>=<?php echo $options['day_color_sales_start']; ?>)
                     {
-                        element.css({ 'background-color': '#FF0000'});
+                        if(record['day_last_sale']><?php echo ($options['day_color_sales_start']+$options['day_color_sales_interval']);?>)
+                        {
+                            element.css({ 'background-color': '#FF0000'});
+                        }
+                        else
+                        {
+                            element.css({ 'background-color': '#FFFF00'});
+                        }
                     }
-
                 }
             <?php
             }
@@ -186,7 +197,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_DAY_LAST_PAYMENT'); ?>', dataField: 'day_last_payment', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['day_last_payment']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_LAST_SALE'); ?>', dataField: 'amount_last_sale', width:120, cellsrenderer: cellsrenderer, cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_last_sale']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_DATE_LAST_SALE'); ?>', dataField: 'date_last_sale', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['date_last_sale']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DAY_LAST_SALE'); ?>', dataField: 'day_last_sale', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['day_last_sale']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('LABEL_DAY_LAST_SALE'); ?>', dataField: 'day_last_sale', width:140, cellsrenderer: cellsrenderer, cellsalign: 'center', hidden: <?php echo $system_preference_items['day_last_sale']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_SALE_DUE_STATUS'); ?>', dataField: 'sale_due_status', width:200, filtertype: 'list', cellsrenderer: cellsrenderer, hidden: <?php echo $system_preference_items['sale_due_status']?0:1;?>}
                 ]
             });
     });

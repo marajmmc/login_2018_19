@@ -31,11 +31,16 @@ class Report_farmer_balance_notification extends Root_Controller
         $this->lang->language['LABEL_AMOUNT_LAST_PAYMENT'] = 'Last payment amount';
         $this->lang->language['LABEL_DATE_LAST_PAYMENT'] = 'Last Payment Date';
         $this->lang->language['LABEL_DAY_LAST_PAYMENT'] = 'Last Payment days';
-        $this->lang->language['LABEL_AMOUNT_LAST_SALE'] = 'Last sale amount';
-        $this->lang->language['LABEL_DATE_LAST_SALE'] = 'Last sale Date';
-        $this->lang->language['LABEL_DAY_LAST_SALE'] = 'Last sale days';
-        $this->lang->language['LABEL_DAY_COLOR_PAYMENT'] = 'Payment days(for color)';
-        $this->lang->language['LABEL_DAY_COLOR_SALES'] = 'Sales days(for color)';
+        $this->lang->language['LABEL_AMOUNT_LAST_SALE'] = 'Last Invoice amount';
+        $this->lang->language['LABEL_DATE_LAST_SALE'] = 'Last Invoice Date';
+        $this->lang->language['LABEL_DAY_LAST_SALE'] = 'Last Invoice days';
+        $this->lang->language['LABEL_DAY_COLOR_PAYMENT_START'] = 'Payment warning color start(days)';
+        $this->lang->language['LABEL_DAY_COLOR_PAYMENT_INTERVAL'] = 'Payment warning color interval(days)';
+
+        $this->lang->language['LABEL_DAY_COLOR_SALES_START'] = 'Invoice warning color start(days)';
+        $this->lang->language['LABEL_DAY_COLOR_SALES_INTERVAL'] = 'Invoice warning color interval(days)';
+
+        $this->lang->language['LABEL_SALE_DUE_STATUS'] = 'Last Invoice due status';
     }
 
     public function index($action = "search", $id = 0)
@@ -70,21 +75,22 @@ class Report_farmer_balance_notification extends Root_Controller
     {
         $data = array();
         if($method == 'search'){
-            $data['id'] = 1;
+            $data['id'] = 0;
             $data['outlet_name'] = 1;
-            $data['barcode'] = 1;
+            $data['barcode'] = 0;
             $data['name'] = 1;
-            $data['amount_credit_limit'] = 1;
-            $data['amount_credit_balance'] = 1;
+            $data['amount_credit_limit'] = 0;
+            $data['amount_credit_balance'] = 0;
             $data['amount_credit_due'] = 1;
 
-            $data['amount_last_payment'] = 1;
+            $data['amount_last_payment'] = 0;
             $data['date_last_payment'] = 1;
             $data['day_last_payment'] = 1;
 
-            $data['amount_last_sale'] = 1;
+            $data['amount_last_sale'] = 0;
             $data['date_last_sale'] = 1;
             $data['day_last_sale'] = 1;
+            $data['sale_due_status'] = 1;
         }
         return $data;
     }
@@ -317,6 +323,30 @@ class Report_farmer_balance_notification extends Root_Controller
                 $item['amount_last_sale']=0;
                 $item['date_last_sale']=0;
                 $item['day_last_sale']=0;
+            }
+            $item['sale_due_status']='--';
+            if($item['amount_credit_due']==0)
+            {
+                $item['sale_due_status']='No Due';
+            }
+            else if($item['amount_credit_due']==$item['amount_last_sale'])
+            {
+                $item['sale_due_status']='Due was Cleared';
+            }
+            else if($item['amount_credit_due']>$item['amount_last_sale'])
+            {
+                $item['sale_due_status']='Due was not Cleared';
+            }
+            else
+            {
+                if($item['date_last_payment']<=$item['date_last_sale'])
+                {
+                    $item['sale_due_status']='Due was Cleared';
+                }
+                else
+                {
+                    $item['sale_due_status']='Partial paid after invoice';
+                }
             }
 
         }
