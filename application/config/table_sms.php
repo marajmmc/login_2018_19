@@ -18,6 +18,7 @@ $config['table_sms_lc_expense_varieties'] = 'arm_sms_2018_19.sms_lc_expense_vari
 $config['table_sms_lc_open_histories'] = 'arm_sms_2018_19.sms_lc_open_histories';
 $config['table_sms_lc_release_histories'] = 'arm_sms_2018_19.sms_lc_release_histories';
 $config['table_sms_lc_receive_histories'] = 'arm_sms_2018_19.sms_lc_receive_histories';
+$config['table_sms_lc_variety_average_rates_histories'] = 'arm_sms_2018_19.sms_lc_variety_average_rates_histories';
 
 //Transfer
 /* Warehouse to warehouse*/
@@ -81,3 +82,4 @@ $config['table_sms_stock_out_raw_foil'] = 'arm_sms_2018_19.sms_stock_out_raw_foi
 
 //Convert
 $config['table_sms_convert_bulk_to_pack'] = 'arm_sms_2018_19.sms_convert_bulk_to_pack';
+
