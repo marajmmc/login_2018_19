@@ -82,6 +82,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             ],
             type: 'POST',
             url: url,
+            sortcolumn: 'day_last_payment',
+            sortdirection: 'desc',
             data:JSON.parse('<?php echo json_encode($options);?>')
         };
 

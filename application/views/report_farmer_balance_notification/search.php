@@ -13,6 +13,7 @@ $CI = & get_instance();
     <form class="form_valid" id="save_form" action="<?php echo site_url($CI->controller_url.'/index/list');?>" method="post">
         <div class="row show-grid">
             <div class="col-xs-6">
+                <div style="<?php if(!(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))){echo 'display:none';}?>">
                     <div style="" class="row show-grid">
                         <div class="col-xs-6">
                             <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_DAY_COLOR_PAYMENT_START');?><span style="color:#FF0000">*</span></label>
@@ -83,6 +84,7 @@ $CI = & get_instance();
                             </select>
                         </div>
                     </div>
+                </div>
             </div>
             <div class="col-xs-6">
                 <!-- Location Section-->
