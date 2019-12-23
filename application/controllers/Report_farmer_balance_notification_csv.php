@@ -200,6 +200,10 @@ class Report_farmer_balance_notification_csv extends CI_Controller
             }
         }
 
+        uasort($items, function($a, $b) {
+            return $b['day_last_payment'] - $a['day_last_payment'];
+        });
+
         $method = 'search';
         $preferences = System_helper::get_preference($user->user_id, $this->controller_main_url, $method, $this->get_preference_headers($method));
         $fields_price = array('amount_credit_limit', 'amount_credit_balance', 'amount_credit_due', 'amount_last_payment', 'amount_last_sale');
