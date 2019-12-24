@@ -52,6 +52,7 @@ $CI->load->view('action_buttons', array('action_buttons' => $action_buttons));
         ?>
         <div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="outlet_name" <?php if($system_preference_items['outlet_name']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_OUTLET_NAME'); ?></span></label></div></div>
         <div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="dealer_name" <?php if($system_preference_items['dealer_name']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_DEALER_NAME'); ?></span></label></div></div>
+        <div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="amount_total" <?php if($system_preference_items['amount_total']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_AMOUNT_TOTAL'); ?></span></label></div></div>
         <div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_pkt" value="quantity_pkt" <?php if($system_preference_items['quantity_pkt']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_QUANTITY_PKT'); ?></span></label></div></div>
         <div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_kg" value="quantity_kg" <?php if($system_preference_items['quantity_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_QUANTITY_KG'); ?></span></label></div></div>
         <div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" class="system_jqx_column_amount" value="amount" <?php if($system_preference_items['amount']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_AMOUNT'); ?></span></label></div></div>
@@ -133,6 +134,7 @@ $CI->load->view('action_buttons', array('action_buttons' => $action_buttons));
             dataFields: [
                     { name: 'outlet_name', type: 'string' },
                     { name: 'dealer_name', type: 'string' },
+                    { name: 'amount_total', type: 'number' },
                 <?php
                 foreach($arm_varieties as $arm_variety)
                 {
@@ -252,6 +254,7 @@ $CI->load->view('action_buttons', array('action_buttons' => $action_buttons));
             columns: [
                 { text: '<?php echo $CI->lang->line('LABEL_OUTLET_NAME'); ?>', pinned: true, dataField: 'outlet_name', width: '150', align: 'center', filtertype:'list', rendered: tooltiprenderer, hidden: <?php echo $system_preference_items['outlet_name']?0:1;?>},
                 { text: '<?php echo $CI->lang->line('LABEL_DEALER_NAME'); ?>', pinned: true, dataField: 'dealer_name', width: '180', align: 'center', rendered: tooltiprenderer, hidden: <?php echo $system_preference_items['dealer_name']?0:1;?>},
+                { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_TOTAL'); ?>', pinned: true, dataField: 'amount_total', width: '180',cellsalign: 'right', filtertype:'none', cellsrenderer: cellsrenderer, align: 'center',  rendered: tooltiprenderer, hidden: <?php echo $system_preference_items['amount_total']?0:1;?>,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_amount},
                 <?php foreach($arm_varieties as $arm_variety) { ?>
                 { text: '<?php echo $arm_variety['variety_header']; ?> <br/><br/><b> <?php echo $CI->lang->line('LABEL_QUANTITY_PKT'); ?></b>',renderer: header_render, dataField: '<?php echo 'quantity_'.$arm_variety['variety_id'].'_'.$arm_variety['pack_size_id'].'_pkt';?>',cellsalign: 'right', width: '180', cellsrenderer: cellsrenderer, align: 'center', filtertype:'none', rendered: tooltiprenderer, hidden: <?php echo $system_preference_items['quantity_pkt']?0:1;?>,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_quantity},
                 { text: '<?php echo $arm_variety['variety_header']; ?> <br/><br/><b> <?php echo $CI->lang->line('LABEL_QUANTITY_KG'); ?></b>',renderer: header_render, dataField: '<?php echo 'quantity_'.$arm_variety['variety_id'].'_'.$arm_variety['pack_size_id'].'_kg';?>',cellsalign: 'right', width: '180', cellsrenderer: cellsrenderer, align: 'center', filtertype:'none', rendered: tooltiprenderer, hidden: <?php echo $system_preference_items['quantity_kg']?0:1;?>,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_kg},

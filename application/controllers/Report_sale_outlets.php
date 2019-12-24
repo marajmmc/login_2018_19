@@ -117,6 +117,7 @@ class Report_sale_outlets extends Root_Controller
         {
             $data['outlet_name'] = 1;
             $data['dealer_name'] = 1;
+            $data['amount_total'] = 1;
             $data['quantity_pkt'] = 1;
             $data['quantity_kg'] = 1;
             $data['amount'] = 1;
@@ -1542,6 +1543,7 @@ class Report_sale_outlets extends Root_Controller
         $items=array();
         foreach($dealers as $item)
         {
+            $item['amount_total'] = 0;
             foreach($arm_varieties as $variety)
             {
                 if(isset($sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]))
@@ -1556,6 +1558,7 @@ class Report_sale_outlets extends Root_Controller
                     $item['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_kg']=0;
                     $item['amount_'.$variety['variety_id'].'_'.$variety['pack_size_id']]=0;
                 }
+                $item['amount_total'] += $item['amount_'.$variety['variety_id'].'_'.$variety['pack_size_id']];
             }
 
             $items[]=$item;
