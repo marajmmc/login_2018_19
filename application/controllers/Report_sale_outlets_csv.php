@@ -19,6 +19,7 @@ class Report_sale_outlets_csv extends CI_Controller
         }
         $this->lang->load('report_sale');
         $this->language_labels();
+        $this->load->helper('csv');
     }
 
     private function language_labels()
@@ -42,6 +43,7 @@ class Report_sale_outlets_csv extends CI_Controller
         {
             $data['outlet_name'] = 1;
             $data['dealer_name'] = 1;
+            $data['amount_total'] = 1;
             $data['quantity_pkt'] = 1;
             $data['quantity_kg'] = 1;
             $data['amount'] = 1;
@@ -65,11 +67,8 @@ class Report_sale_outlets_csv extends CI_Controller
         $variety_id=$options['variety_id'];
         $pack_size_id=$options['pack_size_id'];
 
-        $user = User_helper::get_user();
-        $method='list_outlets_dealers_varieties';
-        $preference= System_helper::get_preference($user->user_id, $this->controller_main_url, $method, $this->get_preference_headers($method));
+        //varieties
 
-        // Query: Fetch ARM Varieties (Pack Size Wise)
         $this->db->from($this->config->item('table_sms_stock_summary_variety') . ' stock');
 
         $this->db->join($this->config->item('table_login_setup_classification_pack_size') . ' pack_size', 'pack_size.id = stock.pack_size_id');
@@ -83,6 +82,8 @@ class Report_sale_outlets_csv extends CI_Controller
 
         $this->db->join($this->config->item('table_login_setup_classification_crops') . ' crop', 'crop.id = crop_type.crop_id');
         $this->db->select('crop.id crop_id, crop.name crop_name');
+
+
         if ($crop_id > 0)
         {
             $this->db->where('crop_type.crop_id', $crop_id);
@@ -102,7 +103,6 @@ class Report_sale_outlets_csv extends CI_Controller
         }
         $this->db->where('v.whose', 'ARM');
         $this->db->where('stock.pack_size_id >', 0);
-
         $this->db->order_by('crop.ordering','ASC');
         $this->db->order_by('crop.id','ASC');
         $this->db->order_by('crop_type.ordering','ASC');
@@ -112,7 +112,6 @@ class Report_sale_outlets_csv extends CI_Controller
         $this->db->group_by('stock.variety_id');
         $this->db->group_by('stock.pack_size_id');
         $arm_varieties = $this->db->get()->result_array();
-
         //dealers with initial value
         $this->db->from($this->config->item('table_pos_setup_farmer_farmer') . ' farmer');
         $this->db->select('farmer.id, farmer.name dealer_name, farmer.mobile_no');
@@ -210,18 +209,42 @@ class Report_sale_outlets_csv extends CI_Controller
         }
 
 
-        header('Content-Type: text/csv; charset = utf-8');
-        header('Content-Disposition: attachment; filename = dealer_wise_product_sales.csv');
-        $handle = fopen('php://output', 'w');
-        $row=array();
-        if($preference['outlet_name']==1)
+        $items=array();
+        foreach($dealers as $item)
         {
-            $row[]=$this->lang->line('LABEL_OUTLET_NAME');
+            $item['amount_total'] = 0;
+            foreach($arm_varieties as $variety)
+            {
+                if(isset($sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]))
+                {
+                    $item['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_pkt']=$sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]['quantity_sale_pkt'];
+                    $item['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_kg']=$sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]['quantity_sale_kg'];
+                    $item['amount_'.$variety['variety_id'].'_'.$variety['pack_size_id']]=$sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]['amount_total'];
+                }
+                else
+                {
+                    $item['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_pkt']=0;
+                    $item['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_kg']=0;
+                    $item['amount_'.$variety['variety_id'].'_'.$variety['pack_size_id']]=0;
+                }
+                $item['amount_total'] += $item['amount_'.$variety['variety_id'].'_'.$variety['pack_size_id']];
+            }
+
+            $items[]=$item;
         }
-        if($preference['dealer_name']==1)
-        {
-            $row[]=$this->lang->line('LABEL_DEALER_NAME');
-        }
+
+        $user = User_helper::get_user();
+        $method='list_outlets_dealers_varieties';
+        $preference= System_helper::get_preference($user->user_id, $this->controller_main_url, $method, $this->get_preference_headers($method));
+
+        $fields_price=array();
+        $fields_kg=array();
+
+        $preference_actual=array();
+        $preference_actual['outlet_name']=$preference['outlet_name'];
+        $preference_actual['dealer_name']=$preference['dealer_name'];
+        $preference_actual['amount_total']=$preference['amount_total'];
+
         foreach ($arm_varieties as $variety)
         {
             $header_format = '';
@@ -234,67 +257,24 @@ class Report_sale_outlets_csv extends CI_Controller
             //$row['variety_header'] = $header_format;
             if($preference['quantity_pkt']==1)
             {
-                $row[]=$header_format.'pkt';
+                $preference_actual['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_pkt']=1;
+                $this->lang->language['LABEL_' . strtoupper('quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_pkt')] = $header_format.'pkt';
             }
             if($preference['quantity_kg']==1)
             {
-                $row[]=$header_format.'kg';
+                $preference_actual['quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_kg']=1;
+                $fields_kg[]='quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_kg';
+                $this->lang->language['LABEL_' . strtoupper('quantity_'.$variety['variety_id'].'_'.$variety['pack_size_id'].'_kg')] = $header_format.'kg';
             }
             if($preference['amount']==1)
             {
-                $row[]=$header_format.'amount';
+                $preference_actual['amount_'.$variety['variety_id'].'_'.$variety['pack_size_id']]=1;
+                $fields_price[]='amount_'.$variety['variety_id'].'_'.$variety['pack_size_id'];
+                $this->lang->language['LABEL_' . strtoupper('amount_'.$variety['variety_id'].'_'.$variety['pack_size_id'])] = $header_format.'amount';
             }
         }
-        fputcsv($handle,$row);
 
-        foreach($dealers as $item)
-        {
-            $row=array();
-            if($preference['outlet_name']==1)
-            {
-                $row[]=$item['outlet_name'];
-            }
-            if($preference['dealer_name']==1)
-            {
-                $row[]=$item['dealer_name'];
-            }
-            foreach($arm_varieties as $variety)
-            {
-                if(isset($sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]))
-                {
-                    if($preference['quantity_pkt']==1)
-                    {
-                        $row[]=$sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]['quantity_sale_pkt'];
-                    }
-                    if($preference['quantity_kg']==1)
-                    {
-                        $row[]=$sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]['quantity_sale_kg'];
-                    }
-                    if($preference['amount']==1)
-                    {
-                        $row[]=$sales[$item['id']][$variety['variety_id']][$variety['pack_size_id']]['amount_total'];
-                    }
-                }
-                else
-                {
-                    if($preference['quantity_pkt']==1)
-                    {
-                        $row[]='';
-                    }
-                    if($preference['quantity_kg']==1)
-                    {
-                        $row[]='';
-                    }
-                    if($preference['amount']==1)
-                    {
-                        $row[]='';
-                    }
-                }
-            }
-            fputcsv($handle,$row);
-            $items[]=$item;
-        }
 
-        fclose($handle);
+        Csv_helper::get_csv($items, $preference_actual, 'dealer_wise_product_sales.csv', $fields_price,$fields_kg);
     }
 }
