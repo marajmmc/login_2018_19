@@ -112,7 +112,6 @@ class Report_farmer_payment extends Root_Controller
                             $data['outlets'] = $this->db->get()->result_array();
                         }
                     }
-
                 }
             }
 
@@ -143,9 +142,19 @@ class Report_farmer_payment extends Root_Controller
         if (isset($this->permissions['action0']) && ($this->permissions['action0'] == 1)) {
             $user = User_helper::get_user();
             $method = 'search';
-
             $data = array();
-            $data['options'] = $this->input->post('report');
+
+            $reports=$this->input->post('report');
+            $reports['date_end']=System_helper::get_time($reports['date_end']);
+            $reports['date_end']=$reports['date_end']+3600*24-1;
+            $reports['date_start']=System_helper::get_time($reports['date_start']);
+            if($reports['date_start']>=$reports['date_end'])
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Starting Date should be less than End date';
+                $this->json_return($ajax);
+            }
+            $data['options']=$reports;
 
             $data['title'] = "Dealers Payment Report";
             $ajax['status'] = true;
@@ -167,8 +176,8 @@ class Report_farmer_payment extends Root_Controller
     {
         // Post Input
         // $fiscal_year_id = $this->input->post('fiscal_year_id');
-        $date_start = System_helper::get_time($this->input->post('date_start'));
-        $date_end = System_helper::get_time($this->input->post('date_end'));
+        $date_end=$this->input->post('date_end');
+        $date_start=$this->input->post('date_start');
 
         $division_id = $this->input->post('division_id');
         $zone_id = $this->input->post('zone_id');
