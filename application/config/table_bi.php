@@ -9,7 +9,6 @@ $config['table_bi_setup_variety_focused'] = 'arm_bi_2019_20.bi_setup_variety_foc
 $config['table_bi_setup_variety_cultivation_period'] = 'arm_bi_2019_20.bi_setup_variety_cultivation_period';
 $config['table_bi_setup_variety_arm_outlet_wise'] = 'arm_bi_2019_20.bi_setup_variety_arm_outlet_wise';
 $config['table_bi_target_outlet_wise'] = 'arm_bi_2019_20.bi_target_outlet_wise';
-$config['table_bi_target_outlet_wise_details'] = 'arm_bi_2019_20.bi_target_outlet_wise_details';
 $config['table_bi_setup_season'] = 'arm_bi_2019_20.bi_setup_season';
 
 /* ------------- Variety Info ------------- */
