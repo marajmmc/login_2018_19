@@ -6,6 +6,7 @@ $config['table_bi_setup_competitor_variety'] = 'arm_bi_2019_20.bi_setup_competit
 $config['table_bi_setup_competitor_variety_characteristics'] = 'arm_bi_2019_20.bi_setup_competitor_variety_characteristics';
 $config['table_bi_setup_competitor_variety_files'] = 'arm_bi_2019_20.bi_setup_competitor_variety_files';
 $config['table_bi_setup_variety_focused'] = 'arm_bi_2019_20.bi_setup_variety_focused';
+$config['table_bi_setup_variety_focused_details'] = 'arm_bi_2019_20.bi_setup_variety_focused_details';
 $config['table_bi_setup_variety_cultivation_period'] = 'arm_bi_2019_20.bi_setup_variety_cultivation_period';
 $config['table_bi_setup_variety_arm_outlet_wise'] = 'arm_bi_2019_20.bi_setup_variety_arm_outlet_wise';
 $config['table_bi_target_outlet_wise'] = 'arm_bi_2019_20.bi_target_outlet_wise';
