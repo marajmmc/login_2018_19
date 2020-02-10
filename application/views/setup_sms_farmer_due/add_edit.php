@@ -49,9 +49,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-sm-4 col-xs-8">
                 <select id="days" name="item[days]" class="form-control">
-                    <option value=""><?php echo $CI->lang->line('SELECT');?></option>
                     <?php
-                    for($i=1; $i<101; $i++)
+                    for($i=5; $i<=100; $i+=5)
                     {
                         ?>
                         <option value="<?php echo $i?>" <?php if ($item['days'] == $i) { echo "selected='selected'"; } ?> ><?php echo $i?></option>
@@ -63,7 +62,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_SMS_BODY');?> </label>
+                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_SMS_BODY');?> <span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
                 <textarea name="item[sms_body]" id="sms_body" class="form-control" ><?php echo $item['sms_body'];?></textarea>
