@@ -12,7 +12,7 @@
             <form action="<?php echo site_url('home/login');?>" class="form-horizontal" method="post">
                 <div class="login_header">
                     <h3>
-                        AR Malik
+                        A R MALIK SEEDS
                         <img alt="Logo" height="40" class="pull-right" src="<?php echo base_url('images/logo.png'); ?>">
                     </h3>
                     <p>Fill out the form below to login.</p>

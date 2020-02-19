@@ -162,7 +162,7 @@ if($result)
         <header class="hidden-print">
 
             <img alt="Logo" height="40" class="site_logo pull-left" src="<?php echo base_url('images/logo.png'); ?>">
-            <div class="site_title pull-left">A.R. Malik Seeds (Pvt.) Ltd.</div>
+            <div class="site_title pull-left">A R MALIK SEEDS PVT. LTD.</div>
 
         </header>
 
