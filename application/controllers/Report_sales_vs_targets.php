@@ -338,18 +338,11 @@ class Report_sales_vs_targets extends Root_Controller
         $this->db->where('sale.date_sale >=',$date_start);
         $this->db->where('sale.date_sale <=',$date_end);
         $this->db->where('sale.status',$this->config->item('system_status_active'));
-        //$this->db->group_by('sales_payment_method');
+        $this->db->group_by($location_type);
         $results=$this->db->get()->result_array();
         foreach($results as $result)
         {
-            if(isset($area_initial[$result[$location_type]]['sale_amount']))
-            {
-                $area_initial[$result[$location_type]]['amount_sales']+=$result['sale_amount'];
-            }
-            else
-            {
-                $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
-            }
+            $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
         }
 
         $grand_total=$this->initialize_row_area_amount('Grand Total');
