@@ -356,7 +356,7 @@ class Report_sales_vs_targets extends Root_Controller
         $headers=$this->get_preference_headers($method);
         foreach($area_initial as $info)
         {
-            $info['amount_deference']=($info['amount_sales']-($info['amount_target']?$info['amount_target']:0));
+            $info['amount_deference']=($info['amount_sales']-(isset($info['amount_target'])?$info['amount_target']:0));
             if($info['amount_target'])
             {
                 $info['amount_average']=($info['amount_sales']/$info['amount_target'])*100;
