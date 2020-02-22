@@ -82,4 +82,6 @@ $config['table_sms_stock_out_raw_foil'] = 'arm_sms_2018_19.sms_stock_out_raw_foi
 
 //Convert
 $config['table_sms_convert_bulk_to_pack'] = 'arm_sms_2018_19.sms_convert_bulk_to_pack';
+//LC Variety Initial Average Rate Setup
+$config['table_sms_lc_variety_initial_average_rate_setup'] = 'arm_sms_2018_19.sms_lc_variety_initial_average_rate_setup';
 
