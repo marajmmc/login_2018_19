@@ -289,6 +289,7 @@ class Report_sales_vs_targets extends Root_Controller
         {
             $area_initial[$area['value']]=$this->initialize_row_area_amount($area['text']);
         }
+
         foreach($queries as $result)
         {
             if(isset($area_initial[$result[$location_type]]['amount_target']))
@@ -356,10 +357,11 @@ class Report_sales_vs_targets extends Root_Controller
         $headers=$this->get_preference_headers($method);
         foreach($area_initial as $info)
         {
-            $info['amount_deference']=($info['amount_sales']-(isset($info['amount_target'])?$info['amount_target']:0));
-            if(isset($info['amount_target']))
+            $amount_target=isset($info['amount_target'])?$info['amount_target']:0;
+            $info['amount_deference']=($info['amount_sales']-$amount_target);
+            if($amount_target)
             {
-                $info['amount_average']=($info['amount_sales']/$info['amount_target'])*100;
+                $info['amount_average']=($info['amount_sales']/$amount_target)*100;
             }
             foreach($headers  as $key=>$r)
             {
