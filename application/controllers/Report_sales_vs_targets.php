@@ -27,9 +27,13 @@ class Report_sales_vs_targets extends Root_Controller
     private function language_labels()
     {
         $this->lang->language['LABEL_AMOUNT_TARGET']='Target Amount (bdt)';
+        $this->lang->language['LABEL_AMOUNT_SALES_CASH']='Cash (bdt)';
+        $this->lang->language['LABEL_AMOUNT_SALES_CREDIT']='Credit (bdt)';
         $this->lang->language['LABEL_AMOUNT_SALES']='Total Sales (bdt)';
-        $this->lang->language['LABEL_AMOUNT_DEFERENCE']='Deference (bdt)';
-        $this->lang->language['LABEL_AMOUNT_AVERAGE']='Average (%)';
+        $this->lang->language['LABEL_AMOUNT_SALES_CASH_AVERAGE']='Cash (%)';
+        $this->lang->language['LABEL_AMOUNT_SALES_CREDIT_AVERAGE']='Credit (%)';
+        $this->lang->language['LABEL_AMOUNT_DEFERENCE']='Variance (bdt)';
+        $this->lang->language['LABEL_AMOUNT_AVERAGE']='Achievement (%)';
     }
 
     public function index($action="search",$id=0)
@@ -67,7 +71,11 @@ class Report_sales_vs_targets extends Root_Controller
             $data['sl_no']= 1;
             $data['area']= 1;
             $data['amount_target']= 1;
+            $data['amount_sales_cash']= 1;
+            $data['amount_sales_credit']= 1;
             $data['amount_sales']= 1;
+            $data['amount_sales_cash_average']= 1;
+            $data['amount_sales_credit_average']= 1;
             $data['amount_deference']= 1;
             $data['amount_average']= 1;
         }
@@ -338,11 +346,28 @@ class Report_sales_vs_targets extends Root_Controller
         $this->db->where('sale.date_sale >=',$date_start);
         $this->db->where('sale.date_sale <=',$date_end);
         $this->db->where('sale.status',$this->config->item('system_status_active'));
+        $this->db->group_by('sales_payment_method');
         $this->db->group_by($location_type);
         $results=$this->db->get()->result_array();
         foreach($results as $result)
         {
-            $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
+            if(isset($area_initial[$result[$location_type]][$result['sales_payment_method']]))
+            {
+                $area_initial[$result[$location_type]][$result['sales_payment_method']]+=$result['sale_amount'];
+            }
+            else
+            {
+                $area_initial[$result[$location_type]][$result['sales_payment_method']]=$result['sale_amount'];
+            }
+            if(isset($area_initial[$result[$location_type]]['amount_sales']))
+            {
+                $area_initial[$result[$location_type]]['amount_sales']+=$result['sale_amount'];
+            }
+            else
+            {
+                $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
+            }
+            //$area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
         }
 
         $grand_total=$this->initialize_row_area_amount('Grand Total');
@@ -356,6 +381,23 @@ class Report_sales_vs_targets extends Root_Controller
             {
                 $info['amount_average']=($info['amount_sales']/$amount_target)*100;
             }
+            if(isset($info['Cash']))
+            {
+                $info['amount_sales_cash']=$info['Cash'];
+                if($amount_target)
+                {
+                    $info['amount_sales_cash_average']=($info['amount_sales_cash']/$amount_target)*100;
+                }
+            }
+            if(isset($info['Credit']))
+            {
+                $info['amount_sales_credit']=$info['Credit'];
+                if($amount_target)
+                {
+                    $info['amount_sales_credit_average']=($info['amount_sales_credit']/$amount_target)*100;
+                }
+            }
+
             foreach($headers  as $key=>$r)
             {
                 if(!(($key=='area')||($key=='sl_no')))
