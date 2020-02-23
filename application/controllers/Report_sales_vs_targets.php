@@ -351,22 +351,26 @@ class Report_sales_vs_targets extends Root_Controller
         $results=$this->db->get()->result_array();
         foreach($results as $result)
         {
-            if(isset($area_initial[$result[$location_type]][$result['sales_payment_method']]))
+            if(isset($area_initial[$result[$location_type]]['amount_target']) && $area_initial[$result[$location_type]]['amount_target'])
             {
-                $area_initial[$result[$location_type]][$result['sales_payment_method']]+=$result['sale_amount'];
+                if(isset($area_initial[$result[$location_type]][$result['sales_payment_method']]))
+                {
+                    $area_initial[$result[$location_type]][$result['sales_payment_method']]+=$result['sale_amount'];
+                }
+                else
+                {
+                    $area_initial[$result[$location_type]][$result['sales_payment_method']]=$result['sale_amount'];
+                }
+                if(isset($area_initial[$result[$location_type]]['amount_sales']))
+                {
+                    $area_initial[$result[$location_type]]['amount_sales']+=$result['sale_amount'];
+                }
+                else
+                {
+                    $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
+                }
             }
-            else
-            {
-                $area_initial[$result[$location_type]][$result['sales_payment_method']]=$result['sale_amount'];
-            }
-            if(isset($area_initial[$result[$location_type]]['amount_sales']))
-            {
-                $area_initial[$result[$location_type]]['amount_sales']+=$result['sale_amount'];
-            }
-            else
-            {
-                $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
-            }
+
             //$area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
         }
 
@@ -376,27 +380,23 @@ class Report_sales_vs_targets extends Root_Controller
         foreach($area_initial as $info)
         {
             $amount_target=isset($info['amount_target'])?$info['amount_target']:0;
-            $info['amount_deference']=($info['amount_sales']-$amount_target);
+
             if($amount_target)
             {
+                $info['amount_deference']=($info['amount_sales']-$amount_target);
                 $info['amount_average']=($info['amount_sales']/$amount_target)*100;
-            }
-            if(isset($info['Cash']))
-            {
-                $info['amount_sales_cash']=$info['Cash'];
-                if($amount_target)
+                if(isset($info['Cash']))
                 {
+                    $info['amount_sales_cash']=$info['Cash'];
                     $info['amount_sales_cash_average']=($info['amount_sales_cash']/$amount_target)*100;
                 }
-            }
-            if(isset($info['Credit']))
-            {
-                $info['amount_sales_credit']=$info['Credit'];
-                if($amount_target)
+                if(isset($info['Credit']))
                 {
+                    $info['amount_sales_credit']=$info['Credit'];
                     $info['amount_sales_credit_average']=($info['amount_sales_credit']/$amount_target)*100;
                 }
             }
+
 
             foreach($headers  as $key=>$r)
             {
