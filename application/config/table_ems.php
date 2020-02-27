@@ -63,3 +63,6 @@ $config['table_ems_da_tmpo_setup_growing_area_visit_details'] = 'arm_ems_2018_19
 // farmer survey
 $config['table_ems_survey_farmers'] = 'arm_ems_2018_19.ems_survey_farmers';
 $config['table_ems_survey_farmers_details'] = 'arm_ems_2018_19.ems_survey_farmers_details';
+$config['table_ems_survey_farmers_districts'] = 'arm_ems_2018_19.ems_survey_farmers_districts';
+$config['table_ems_survey_farmers_upazilas'] = 'arm_ems_2018_19.ems_survey_farmers_upazilas';
+$config['table_ems_survey_farmers_unions'] = 'arm_ems_2018_19.ems_survey_farmers_unions';
