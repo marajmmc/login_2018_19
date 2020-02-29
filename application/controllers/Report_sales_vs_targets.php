@@ -26,13 +26,13 @@ class Report_sales_vs_targets extends Root_Controller
     }
     private function language_labels()
     {
-        $this->lang->language['LABEL_AMOUNT_TARGET']='Target Amount (bdt)';
-        $this->lang->language['LABEL_AMOUNT_SALES_CASH']='Cash (bdt)';
-        $this->lang->language['LABEL_AMOUNT_SALES_CREDIT']='Credit (bdt)';
-        $this->lang->language['LABEL_AMOUNT_SALES']='Total Sales (bdt)';
+        $this->lang->language['LABEL_AMOUNT_TARGET']='Target Amount';
+        $this->lang->language['LABEL_AMOUNT_SALES_CASH']='Cash Sale';
+        $this->lang->language['LABEL_AMOUNT_SALES_CREDIT']='Credit Sale';
+        $this->lang->language['LABEL_AMOUNT_SALES']='Total Sales';
         $this->lang->language['LABEL_AMOUNT_SALES_CASH_AVERAGE']='Cash (%)';
         $this->lang->language['LABEL_AMOUNT_SALES_CREDIT_AVERAGE']='Credit (%)';
-        $this->lang->language['LABEL_AMOUNT_DEFERENCE']='Variance (bdt)';
+        $this->lang->language['LABEL_AMOUNT_DEFERENCE']='Variance';
         $this->lang->language['LABEL_AMOUNT_AVERAGE']='Achievement (%)';
     }
 
@@ -234,8 +234,13 @@ class Report_sales_vs_targets extends Root_Controller
         $territory_id=$this->input->post('territory_id');
         $district_id=$this->input->post('district_id');
         $outlet_id=$this->input->post('outlet_id');
+
         $date_end=$this->input->post('date_end');
         $date_start=$this->input->post('date_start');
+
+        $date_start_target=System_helper::get_time('01-'.date('m-Y',$date_start));
+        $date_end_target=System_helper::get_time(date('t-m-Y',$date_end));
+
         if($outlet_id>0)
         {
             $areas=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$outlet_id,'revision =1'));
@@ -261,7 +266,7 @@ class Report_sales_vs_targets extends Root_Controller
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             $this->db->join($this->config->item('table_bms_target_ams').' zone_target','zone_target.id = items.ams_id','INNER');
             $this->db->where('zone_target.zone_id', $zone_id);
-            $this->db->having(array('date_target >=' => $date_start, 'date_target <=' => $date_end));
+            $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
         }
         elseif($division_id>0)
@@ -274,7 +279,7 @@ class Report_sales_vs_targets extends Root_Controller
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             $this->db->join($this->config->item('table_bms_target_dsm').' division_target','division_target.id = items.dsm_id','INNER');
             $this->db->where('division_target.division_id', $division_id);
-            $this->db->having(array('date_target >=' => $date_start, 'date_target <=' => $date_end));
+            $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
         }
         else
@@ -287,12 +292,10 @@ class Report_sales_vs_targets extends Root_Controller
             //$this->db->select('SUM(amount_target) amount_target',false);
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             //$this->db->group_by(array($location_type));
-            $this->db->having(array('date_target >=' => $date_start, 'date_target <=' => $date_end));
+            $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
-
         }
         $area_initial=array();
-        //setting 0
         foreach($areas as $area)
         {
             $area_initial[$area['value']]=$this->initialize_row_area_amount($area['text']);
@@ -370,8 +373,6 @@ class Report_sales_vs_targets extends Root_Controller
                     $area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
                 }
             }
-
-            //$area_initial[$result[$location_type]]['amount_sales']=$result['sale_amount'];
         }
 
         $grand_total=$this->initialize_row_area_amount('Grand Total');
@@ -403,6 +404,24 @@ class Report_sales_vs_targets extends Root_Controller
                 if(!(($key=='area')||($key=='sl_no')))
                 {
                     $grand_total[$key]+=$info[$key];
+                    if($key=='amount_sales_cash_average' || $key=='amount_sales_credit_average' || $key=='amount_average')
+                    {
+                        $amount_target_total=isset($grand_total['amount_target'])?$grand_total['amount_target']:0;
+                        if($amount_target_total)
+                        {
+                            $grand_total['amount_average']=($grand_total['amount_sales']/$amount_target_total)*100;
+                            if(isset($grand_total['amount_sales_cash']))
+                            {
+                                $grand_total['amount_sales_cash_average']=($grand_total['amount_sales_cash']/$amount_target_total)*100;
+                            }
+                            if(isset($grand_total['amount_sales_credit']))
+                            {
+                                $grand_total['amount_sales_credit_average']=($grand_total['amount_sales_credit']/$amount_target_total)*100;
+                            }
+
+                        }
+                    }
+
                 }
             }
 
