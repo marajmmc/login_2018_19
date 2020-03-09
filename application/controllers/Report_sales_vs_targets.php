@@ -30,8 +30,8 @@ class Report_sales_vs_targets extends Root_Controller
         $this->lang->language['LABEL_AMOUNT_SALES_CASH']='Cash Sale';
         $this->lang->language['LABEL_AMOUNT_SALES_CREDIT']='Credit Sale';
         $this->lang->language['LABEL_AMOUNT_SALES']='Total Sales';
-        $this->lang->language['LABEL_AMOUNT_SALES_CASH_AVERAGE']='Cash (%)';
-        $this->lang->language['LABEL_AMOUNT_SALES_CREDIT_AVERAGE']='Credit (%)';
+        $this->lang->language['LABEL_AMOUNT_SALES_CASH_AVERAGE']='Cash Sale (%)';
+        $this->lang->language['LABEL_AMOUNT_SALES_CREDIT_AVERAGE']='Credit Sale (%)';
         $this->lang->language['LABEL_AMOUNT_DEFERENCE']='Variance';
         $this->lang->language['LABEL_AMOUNT_AVERAGE']='Achievement (%)';
     }
@@ -183,15 +183,7 @@ class Report_sales_vs_targets extends Root_Controller
 
             $ajax['status']=true;
             $data['system_preference_items']=System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
-            if($reports['outlet_id']>0)
-            {
-                $data['areas']='Outlet';
-            }
-            elseif($reports['district_id']>0)
-            {
-                $data['areas']='Outlets';
-            }
-            elseif($reports['territory_id']>0)
+            if($reports['territory_id']>0)
             {
                 $data['areas']='Districts';
             }
@@ -232,8 +224,6 @@ class Report_sales_vs_targets extends Root_Controller
         $division_id=$this->input->post('division_id');
         $zone_id=$this->input->post('zone_id');
         $territory_id=$this->input->post('territory_id');
-        $district_id=$this->input->post('district_id');
-        $outlet_id=$this->input->post('outlet_id');
 
         $date_end=$this->input->post('date_end');
         $date_start=$this->input->post('date_start');
@@ -241,20 +231,20 @@ class Report_sales_vs_targets extends Root_Controller
         $date_start_target=System_helper::get_time('01-'.date('m-Y',$date_start));
         $date_end_target=System_helper::get_time(date('t-m-Y',$date_end));
 
-        if($outlet_id>0)
+        if($territory_id>0)
         {
-            $areas=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('customer_id ='.$outlet_id,'revision =1'));
-            $location_type='outlet_id';
-        }
-        elseif($district_id>0)
-        {
-            $areas=Query_helper::get_info($this->config->item('table_login_csetup_cus_info'),array('customer_id value','name text'),array('district_id ='.$district_id,'revision =1','type ="'.$this->config->item('system_customer_type_outlet_id').'"'));
-            $location_type='outlet_id';
-        }
-        elseif($territory_id>0)
-        {
-            $areas=Query_helper::get_info($this->config->item('table_login_setup_location_districts'),array('id value','name text'),array('territory_id ='.$territory_id,'status ="'.$this->config->item('system_status_active').'"'));
-            $location_type='district_id';
+            /*$areas=Query_helper::get_info($this->config->item('table_login_setup_location_districts'),array('id value','name text'),array('territory_id ='.$territory_id,'status ="'.$this->config->item('system_status_active').'"'));
+            $location_type='district_id';*/
+            $areas=Query_helper::get_info($this->config->item('table_login_setup_location_territories'),array('id value','name text'),array('id ='.$territory_id,'status ="'.$this->config->item('system_status_active').'"'));
+            $location_type='territory_id';
+
+            $this->db->from($this->config->item('table_bms_target_tsme').' items');
+            $this->db->select($location_type.', items.amount_target');
+            $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
+            $this->db->join($this->config->item('table_bms_target_ams').' zone_target','zone_target.id = items.ams_id','INNER');
+            $this->db->where('items.territory_id', $territory_id);
+            $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
+            $queries=$this->db->get()->result_array();
         }
         elseif($zone_id>0)
         {
@@ -335,14 +325,6 @@ class Report_sales_vs_targets extends Root_Controller
                 if($territory_id>0)
                 {
                     $this->db->where('t.id',$territory_id);
-                    if($district_id>0)
-                    {
-                        $this->db->where('d.id',$district_id);
-                        if($outlet_id>0)
-                        {
-                            $this->db->where('outlet_info.customer_id',$outlet_id);
-                        }
-                    }
                 }
             }
         }
