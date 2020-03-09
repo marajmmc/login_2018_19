@@ -243,6 +243,7 @@ class Report_sales_vs_targets extends Root_Controller
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             $this->db->join($this->config->item('table_bms_target_ams').' zone_target','zone_target.id = items.ams_id','INNER');
             $this->db->where('items.territory_id', $territory_id);
+            $this->db->where('items.status', $this->config->item('system_status_active'));
             $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
         }
@@ -256,6 +257,7 @@ class Report_sales_vs_targets extends Root_Controller
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             $this->db->join($this->config->item('table_bms_target_ams').' zone_target','zone_target.id = items.ams_id','INNER');
             $this->db->where('zone_target.zone_id', $zone_id);
+            $this->db->where('items.status', $this->config->item('system_status_active'));
             $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
         }
@@ -269,6 +271,7 @@ class Report_sales_vs_targets extends Root_Controller
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             $this->db->join($this->config->item('table_bms_target_dsm').' division_target','division_target.id = items.dsm_id','INNER');
             $this->db->where('division_target.division_id', $division_id);
+            $this->db->where('items.status', $this->config->item('system_status_active'));
             $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
         }
@@ -282,6 +285,7 @@ class Report_sales_vs_targets extends Root_Controller
             //$this->db->select('SUM(amount_target) amount_target',false);
             $this->db->select("TIMESTAMPDIFF(SECOND, '1970-01-01', CONCAT_WS('-', items.year, lpad(items.month,2,'0'), '01')) AS date_target ");
             //$this->db->group_by(array($location_type));
+            $this->db->where('items.status', $this->config->item('system_status_active'));
             $this->db->having(array('date_target >=' => $date_start_target, 'date_target <=' => $date_end_target));
             $queries=$this->db->get()->result_array();
         }
