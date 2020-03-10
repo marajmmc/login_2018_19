@@ -21,7 +21,7 @@ class Report_sales_vs_targets extends Root_Controller
         }
         $this->controller_url = strtolower(get_class($this));
         $this->lang->load('report_sale');
-        $this->config->load('table_bms');
+        //$this->config->load('table_bms');
         $this->language_labels();
     }
     private function language_labels()
