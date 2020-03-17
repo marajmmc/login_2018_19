@@ -16,7 +16,14 @@ $CI = & get_instance();
             </div>
             <div class="col-sm-4 col-xs-8">
                 <select id="outlet_id" name="report[outlet_id]" class="form-control">
-                    <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                    <?php
+                    if(sizeof($outlets)>1)
+                    {
+                        ?>
+                        <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                        <?php
+                    }
+                    ?>
                     <?php
                     foreach($outlets as $outlet)
                     {?>
