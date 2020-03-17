@@ -370,37 +370,68 @@ class Report_farmer_balance extends Root_Controller
         //$this->db->order_by('d.ordering','ASC');
         $this->db->order_by('cus_info.ordering','ASC');
         $outlets=$this->db->get()->result_array();
+        $outlet_ids[0]=0;
+        foreach($outlets as $outlet)
+        {
+            $outlet_ids[$outlet['value']]=$outlet['value'];
+        }
+
+        //farmers
+        $this->db->from($this->config->item('table_pos_setup_farmer_farmer').' f');
+        $this->db->select('f.id,f.name');
+        $this->db->join($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet','farmer_outlet.farmer_id = f.id and farmer_outlet.revision =1','INNER');
+        $this->db->select('farmer_outlet.outlet_id outlet_id');
+        $this->db->where_in('farmer_outlet.outlet_id',$outlet_ids);
+        $this->db->where('f.amount_credit_limit > ',0);
+        $this->db->order_by('f.id DESC');
+        $this->db->group_by('f.id');
+        $farmers=$this->db->get()->result_array();
+        $farmer_ids[0]=0;
+        $farmer_outlet_ids[0]=0;
+        foreach($farmers as $farmer)
+        {
+            $farmer_ids[$farmer['id']]=$farmer['id'];
+            $farmer_outlet_ids[$farmer['id']]=$farmer['outlet_id'];
+        }
         //sales
 
         $this->db->from($this->config->item('table_pos_sale').' sale');
-        $this->db->select('sale.outlet_id');
+        $this->db->select('sale.farmer_id');
         $this->db->select('SUM(sale.amount_payable_actual) amount_debit_total',false);
         $this->db->select('SUM(CASE WHEN sale.sales_payment_method="Cash" then sale.amount_payable_actual ELSE 0 END) amount_sale_cash',false);
-        $this->db->join($this->config->item('table_pos_setup_farmer_farmer').' farmer','farmer.id = sale.farmer_id','INNER');
-
         $this->db->where_in('sale.status',$this->config->item('system_status_active'));
         $this->db->where('sale.date_sale <=',$date_end);
-        $this->db->where('farmer.amount_credit_limit >',0);
-        $this->db->group_by('sale.outlet_id');
+
+        $this->db->where_in('sale.farmer_id',$farmer_ids);
+        $this->db->group_by('sale.farmer_id');
         $results=$this->db->get()->result_array();
         $due_sales=array();
         foreach($results as $result)
         {
-            $due_sales[$result['outlet_id']]=$result['amount_debit_total']-$result['amount_sale_cash'];//due
+            if(!(isset($due_sales[$farmer_outlet_ids[$result['farmer_id']]])))
+            {
+                $due_sales[$farmer_outlet_ids[$result['farmer_id']]]=0;
+            }
+            $due_sales[$farmer_outlet_ids[$result['farmer_id']]]+=($result['amount_debit_total']-$result['amount_sale_cash']);//due
         }
 
         //previous payment
         $this->db->from($this->config->item('table_pos_farmer_credit_payment').' dp');
-        $this->db->select('dp.outlet_id');
+        $this->db->select('dp.farmer_id');
         $this->db->select('SUM(dp.amount) amount_payment_total',false);
         $this->db->where('dp.status',$this->config->item('system_status_active'));
+        $this->db->where_in('dp.farmer_id',$farmer_ids);
         $this->db->where('dp.date_payment <=',$date_end);
-        $this->db->group_by('dp.outlet_id');
+        $this->db->group_by('dp.farmer_id');
         $results=$this->db->get()->result_array();
         $payments=array();
         foreach($results as $result)
         {
-            $payments[$result['outlet_id']]=$result['amount_payment_total'];
+            if(!(isset($payments[$farmer_outlet_ids[$result['farmer_id']]])))
+            {
+                $payments[$farmer_outlet_ids[$result['farmer_id']]]=0;
+            }
+            $payments[$farmer_outlet_ids[$result['farmer_id']]]+=$result['amount_payment_total'];
         }
         $items=array();
         foreach($outlets as $outlet)
