@@ -23,12 +23,6 @@ $config['table_bi_variety_cultivation_period'] = 'arm_bi_2019_20.bi_variety_cult
 // Crop Type Preference Tables
 $config['table_bi_crop_type_preference'] = 'arm_bi_2019_20.bi_crop_type_preference';
 
-// Target Tables
-$config['table_bi_target_hosm'] = 'arm_bi_2019_20.bi_target_hosm';
-$config['table_bi_target_dsm'] = 'arm_bi_2019_20.bi_target_dsm';
-$config['table_bi_target_ams'] = 'arm_bi_2019_20.bi_target_ams';
-$config['table_bi_target_tsme'] = 'arm_bi_2019_20.bi_target_tsme';
-
 // Upazilla wise ARM Variety
 $config['table_bi_variety_arm_upazilla_request'] = 'arm_bi_2019_20.bi_variety_arm_upazilla_request';
 $config['table_bi_variety_arm_upazilla'] = 'arm_bi_2019_20.bi_variety_arm_upazilla';
