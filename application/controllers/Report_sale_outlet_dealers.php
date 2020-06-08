@@ -106,6 +106,7 @@ class Report_sale_outlet_dealers extends Root_Controller
             {
                 $data['fiscal_years'][]=array('text'=>$year['name'],'value'=>System_helper::display_date($year['date_start']).'/'.System_helper::display_date($year['date_end']));
             }
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/search",$data,true));
             $ajax['system_page_url']=site_url($this->controller_url);
 
@@ -165,7 +166,7 @@ class Report_sale_outlet_dealers extends Root_Controller
                 $this->json_return($ajax);
             }
             $data['options']=$reports;
-            $data['dealers']=$this->get_dealers($reports['outlet_id']);
+            $data['dealers']=$this->get_dealers($reports['outlet_id'],$reports['farmer_type_id']);
             $ajax['status']=true;
             $data['title']="Outlets Payment Sales Report";
             $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
@@ -198,7 +199,8 @@ class Report_sale_outlet_dealers extends Root_Controller
         $crop_type_id=$this->input->post('crop_type_id');
         $variety_id=$this->input->post('variety_id');
         $pack_size_id=$this->input->post('pack_size_id');
-        $dealers=$this->get_dealers($outlet_id);
+        $farmer_type_id=$this->input->post('farmer_type_id');
+        $dealers=$this->get_dealers($outlet_id,$farmer_type_id);
         $dealer_ids=array();
         $dealer_ids[0]=0;
         foreach($dealers as $dealer)
@@ -235,7 +237,8 @@ class Report_sale_outlet_dealers extends Root_Controller
         $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id=crop_type.crop_id','INNER');
         $this->db->select('crop.id crop_id, crop.name crop_name');
 
-        $this->db->where('sale.outlet_id',$outlet_id);
+        //$this->db->where('sale.outlet_id',$outlet_id);
+        $this->db->where_in('sale.farmer_id',$dealer_ids);
 
         if($crop_id>0)
         {
@@ -433,7 +436,7 @@ class Report_sale_outlet_dealers extends Root_Controller
             $this->json_return($ajax);
         }
     }
-    private function get_dealers($outlet_id)
+    private function get_dealers($outlet_id,$dealer_type)
     {
         $this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
         $this->db->select('farmer_outlet.farmer_id');
@@ -443,6 +446,10 @@ class Report_sale_outlet_dealers extends Root_Controller
         $this->db->where('farmer.farmer_type_id > ',1);
         $this->db->where('farmer_outlet.revision',1);
         $this->db->where('farmer_outlet.outlet_id',$outlet_id);
+        if($dealer_type>1)
+        {
+            $this->db->where('farmer.farmer_type_id',$dealer_type);
+        }
         return $this->db->get()->result_array();
     }
 }

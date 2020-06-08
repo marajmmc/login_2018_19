@@ -99,7 +99,23 @@ $CI = & get_instance();
                 </div>
                 <div class="col-xs-6">
                     <!-- Location Section-->
-
+                    <div class="row show-grid" id="container_farmer_type">
+                        <div class="col-xs-6">
+                            <select name="report[farmer_type_id]" id="farmer_type_id" class="form-control">
+                                <option value=""><?php echo $CI->lang->line('SELECT');?></option>
+                                <?php
+                                foreach($farmer_types as $row)
+                                {?>
+                                    <option value="<?php echo $row['value']?>"><?php echo $row['text'];?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="control-label">Dealer Type</label>
+                        </div>
+                    </div>
                     <div style="<?php if(!(sizeof($outlets)>0)){echo 'display:none';} ?>" class="row show-grid" id="outlet_id_container">
                         <div class="col-xs-6">
                             <select id="outlet_id" name="report[outlet_id]" class="form-control">

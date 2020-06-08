@@ -296,7 +296,27 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             return '<div style="position: relative; margin: 0px;padding: 5px;width: 100%;height: 100%; overflow: hidden;background-color:'+system_report_color_grand+';">' +text+'</div>';
 
         };
+        var header_render=function (text, align)
+        {
+            var words = text.split(" ");
+            var label=words[0];
+            var count=words[0].length;
+            for (i = 1; i < words.length; i++)
+            {
+                if((count+words[i].length)>10)
+                {
+                    label=label+'</br>'+words[i];
+                    count=words[i].length;
+                }
+                else
+                {
+                    label=label+' '+words[i];
+                    count=count+words[i].length;
+                }
 
+            }
+            return '<div style="margin: 5px;">'+label+'</div>';
+        };
         var dataAdapter = new $.jqx.dataAdapter(source);
         // create jqxgrid.
         $("#system_jqx_container").jqxGrid(
@@ -310,35 +330,26 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 enabletooltips: true,
                 showaggregates: true,
                 showstatusbar: true,
+                columnsheight: 110,
                 rowsheight: 40,
                 columns: [
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['crop_name']?0:1;?>,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE_NAME'); ?>', dataField: 'crop_type_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
                     { text: '<?php echo $CI->lang->line('LABEL_VARIETY_NAME'); ?>', dataField: 'variety_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['variety_name']?0:1;?>,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
                     { text: '<?php echo $CI->lang->line('LABEL_PACK_SIZE'); ?>', dataField: 'pack_size',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['pack_size']?0:1;?>,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer},
-                    { columngroup: 'Total',text: 'pkt',dataField: '<?php echo 'quantity_total_pkt';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_total_pkt']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_pkt},
-                    { columngroup: 'Total',text: 'kg', dataField: '<?php echo 'quantity_total_kg';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_total_kg']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
-                    { columngroup: 'Total',text: 'Amount', dataField: '<?php echo 'amount_total';?>',align:'center',cellsalign: 'right',width:'120',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['amount_total']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
+                    { text: 'Total</br><b>pkt</b>',dataField: '<?php echo 'quantity_total_pkt';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_total_pkt']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_pkt},
+                    { text: 'Total</br><b>kg</b>', dataField: '<?php echo 'quantity_total_kg';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_total_kg']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
+                    { text: 'Total</br><b>Amount</b>', dataField: '<?php echo 'amount_total';?>',align:'center',cellsalign: 'right',width:'120',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['amount_total']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                     <?php
                         foreach($dealers as $dealer)
-                        {   ?>{ columngroup: 'farmer_<?php echo $dealer['farmer_id']; ?>',text: 'pkt',dataField: '<?php echo 'quantity_'.$dealer['farmer_id'].'_pkt';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_pkt']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_pkt},
-                            { columngroup: 'farmer_<?php echo $dealer['farmer_id']; ?>',text: 'kg', dataField: '<?php echo 'quantity_'.$dealer['farmer_id'].'_kg';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_kg']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
-                            { columngroup: 'farmer_<?php echo $dealer['farmer_id']; ?>',text: 'Amount', dataField: '<?php echo 'amount_'.$dealer['farmer_id'];?>',align:'center',cellsalign: 'right',width:'120',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['amount']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
+                        {   ?>{ text: '<?php echo $dealer['farmer_name']; ?></br><b>pkt</b>',dataField: '<?php echo 'quantity_'.$dealer['farmer_id'].'_pkt';?>',renderer: header_render,align:'center',cellsalign: 'right',width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_pkt']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_pkt},
+                            { text: '<?php echo $dealer['farmer_name']; ?></br><b>kg</b>', dataField: '<?php echo 'quantity_'.$dealer['farmer_id'].'_kg';?>',renderer: header_render,align:'center',cellsalign: 'right',width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_kg']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_kg},
+                            { text: '<?php echo $dealer['farmer_name']; ?></br><b>Amount</b>', dataField: '<?php echo 'amount_'.$dealer['farmer_id'];?>',renderer: header_render,align:'center',cellsalign: 'right',width:'150',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['amount']?0:1;?>,rendered: tooltiprenderer,aggregates: [{ 'total':aggregates}],aggregatesrenderer:aggregatesrenderer_amount},
                             <?php
                         }
                     ?>
 
-                ],
-                columngroups:
-                    [
-                            <?php
-                                foreach($dealers as $dealer)
-                                {?>{ text: '<?php echo $dealer['farmer_name']; ?>', align: 'center', name: 'farmer_<?php echo $dealer['farmer_id']; ?>' },
-                        <?php
-                            }
-                        ?>
-                        { text: 'Total', align: 'center', name: 'Total' }
-                    ]
+                ]
             });
     });
 </script>
