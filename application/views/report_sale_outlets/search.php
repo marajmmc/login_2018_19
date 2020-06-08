@@ -114,6 +114,23 @@ $CI = & get_instance();
                 </div>
                 <div class="col-xs-6">
                     <!-- Location Section-->
+                    <div style="display: none;" class="row show-grid" id="container_farmer_type">
+                        <div class="col-xs-6">
+                            <select name="report[farmer_type_id]" id="farmer_type_id" class="form-control">
+                                <option value=""><?php echo $CI->lang->line('SELECT');?></option>
+                                <?php
+                                foreach($farmer_types as $row)
+                                {?>
+                                    <option value="<?php echo $row['value']?>"><?php echo $row['text'];?></option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="control-label">Dealer Type</label>
+                        </div>
+                    </div>
                     <div class="row show-grid">
                         <div class="col-xs-6">
                             <?php
@@ -432,6 +449,14 @@ $CI = & get_instance();
             else
             {
                 $('#container_product').hide();
+            }
+            if((report_name=='outlets_dealers_varieties'))
+            {
+                $('#container_farmer_type').show();
+            }
+            else
+            {
+                $('#container_farmer_type').hide();
             }
 
         });

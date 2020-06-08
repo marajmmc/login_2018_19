@@ -186,6 +186,7 @@ class Report_sale_outlets extends Root_Controller
             {
                 $data['fiscal_years'][]=array('text'=>$year['name'],'value'=>System_helper::display_date($year['date_start']).'/'.System_helper::display_date($year['date_end']));
             }
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/search",$data,true));
             $ajax['system_page_url']=site_url($this->controller_url);
 
@@ -1408,6 +1409,7 @@ class Report_sale_outlets extends Root_Controller
         $crop_type_id=$this->input->post('crop_type_id');
         $variety_id=$this->input->post('variety_id');
         $pack_size_id=$this->input->post('pack_size_id');
+        $farmer_type_id=$this->input->post('farmer_type_id');
 
         //varieties
 
@@ -1486,7 +1488,15 @@ class Report_sale_outlets extends Root_Controller
         $this->db->where('outlet_info.type',$this->config->item('system_customer_type_outlet_id'));
 
         $this->db->where('farmer.status', $this->config->item('system_status_active'));
-        $this->db->where('farmer.farmer_type_id > ', 1);
+
+        if($farmer_type_id>1)
+        {
+            $this->db->where('farmer.farmer_type_id',$farmer_type_id);
+        }
+        else
+        {
+            $this->db->where('farmer.farmer_type_id > ', 1);
+        }
         $this->db->where('farmer_outlet.revision', 1);
         $this->db->order_by('outlet_info.ordering');
         $this->db->order_by('farmer.id','DESC');

@@ -66,6 +66,7 @@ class Report_sale_outlets_csv extends CI_Controller
         $crop_type_id=$options['crop_type_id'];
         $variety_id=$options['variety_id'];
         $pack_size_id=$options['pack_size_id'];
+        $farmer_type_id=$options['farmer_type_id'];
 
         //varieties
 
@@ -155,7 +156,14 @@ class Report_sale_outlets_csv extends CI_Controller
         $this->db->where('outlet_info.type',$this->config->item('system_customer_type_outlet_id'));
 
         $this->db->where('farmer.status', $this->config->item('system_status_active'));
-        $this->db->where('farmer.farmer_type_id > ', 1);
+        if($farmer_type_id>1)
+        {
+            $this->db->where('farmer.farmer_type_id',$farmer_type_id);
+        }
+        else
+        {
+            $this->db->where('farmer.farmer_type_id > ', 1);
+        }
         $this->db->where('farmer_outlet.revision', 1);
         $this->db->order_by('outlet_info.ordering');
         $this->db->order_by('farmer.id','DESC');
