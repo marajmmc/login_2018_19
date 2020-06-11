@@ -2,16 +2,28 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 $CI=& get_instance();
 $action_buttons=array();
-$action_buttons[]=array(
+$action_buttons[]=array
+(
     'label'=>$CI->lang->line("ACTION_BACK"),
-    'href'=>site_url($CI->controller_url.'/index/pricing/'.$item['id'])
+    'href'=>site_url($CI->controller_url)
 );
-$action_buttons[]=array(
-    'type'=>'button',
-    'label'=>$CI->lang->line("ACTION_SAVE"),
-    'id'=>'button_action_save',
-    'data-form'=>'#save_form'
-);
+if((isset($CI->permissions['action1']) && ($CI->permissions['action1']==1)) || (isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
+{
+    $action_buttons[]=array
+    (
+        'type'=>'button',
+        'label'=>$CI->lang->line("ACTION_SAVE"),
+        'id'=>'button_action_save',
+        'data-form'=>'#save_form'
+    );
+    $action_buttons[]=array
+    (
+        'type'=>'button',
+        'label'=>$CI->lang->line("ACTION_SAVE_NEW"),
+        'id'=>'button_action_save_new',
+        'data-form'=>'#save_form'
+    );
+}
 $action_buttons[]=array(
     'type'=>'button',
     'label'=>$CI->lang->line("ACTION_CLEAR"),
@@ -19,9 +31,11 @@ $action_buttons[]=array(
     'data-form'=>'#save_form'
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
+
 ?>
-<form id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save_offer');?>" method="post">
-    <input type="hidden" id="id" name="id" value="<?php echo $item['id']; ?>" />
+<form id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save');?>" method="post">
+    <input type="hidden" id="id" name="id" value="<?php echo $item['id']?>" />
+    <input type="hidden" id="system_save_new_status" name="system_save_new_status" value="0" />
     <div class="row widget">
         <div class="widget-header">
             <div class="title">
@@ -29,30 +43,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="clearfix"></div>
         </div>
-
-        <div style="" class="row show-grid">
-            <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_CROP_NAME');?></label>
-            </div>
-            <div class="col-sm-4 col-xs-8">
-                <label class="control-label"><?php echo $item['crop_name'];;?></label>
-            </div>
-        </div>
-
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_CROP_TYPE');?></label>
+                <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_NAME');?><span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
-                <label class="control-label"><?php echo $item['crop_type_name'];;?></label>
-            </div>
-        </div>
-        <div class="row show-grid">
-            <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_VARIETY');?></label>
-            </div>
-            <div class="col-sm-4 col-xs-8">
-                <label class="control-label"><?php echo $item['name'];;?></label>
+                <input type="text" name="item[name]" id="name" class="form-control " value="<?php echo $item['name'];?>" />
             </div>
         </div>
         <div class="row show-grid">
@@ -83,12 +79,41 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 </select>
             </div>
         </div>
+        <div class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Ordering<span style="color:#FF0000">*</span></label>
+            </div>
+            <div class="col-sm-4 col-xs-8">
+                <input type="text" name="item[ordering]" id="ordering" class="form-control float_type_positive " value="<?php echo $item['ordering'];?>"/>
+            </div>
+        </div>
+        <?php
+        foreach($crops as $crop_id=>$crop)
+        {
+            ?>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><a class="accordion-toggle external" data-toggle="collapse" data-target="#collapse_<?php echo $crop_id; ?>" href="#"><?php echo $crop['crop_name'];?></a></h4>
+                </div>
+                <div id="collapse_<?php echo $crop_id; ?>" class="panel-collapse collapse">
+                    <div class="row show-grid">
+                    <?php
+                    foreach($crop['varieties'] as $variety)
+                    {
+                        ?>
+                        <div class="col-xs-3">
+                            <div class="checkbox"><label><input type="checkbox" name="variety_ids[]" <?php if(strpos($item['variety_ids'], ','.$variety['variety_id'].',') !== FALSE){echo 'checked';}?> value="<?php echo $variety['variety_id']; ?>"><?php echo $variety['variety_name']; ?></label></div>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
+
     </div>
     <div class="clearfix"></div>
 </form>
-<script type="text/javascript">
-    jQuery(document).ready(function()
-    {
-        system_preset({controller:'<?php echo $CI->router->class; ?>'});
-    });
-</script>

@@ -3,14 +3,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $CI=& get_instance();
 $action_buttons=array();
 
+if(isset($CI->permissions['action1']) && ($CI->permissions['action1']==1))
+{
+    $action_buttons[]=array(
+        'label'=>$CI->lang->line("ACTION_NEW"),
+        'href'=>site_url($CI->controller_url.'/index/add')
+    );
+}
 if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
 {
-    $action_buttons[]=array
-    (
+    $action_buttons[]=array(
         'type'=>'button',
-        'label'=>'Edit Offer',
+        'label'=>$CI->lang->line("ACTION_EDIT"),
         'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/edit_offer')
+        'data-action-link'=>site_url($CI->controller_url.'/index/edit')
     );
 }
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
@@ -103,6 +109,39 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         };
 
         var dataAdapter = new $.jqx.dataAdapter(source);
+        var cellsrenderer = function(row, column, value, defaultHtml, columnSettings, record)
+        {
+            var element = $(defaultHtml);
+
+
+           if(column=='quantity_minimum')
+            {
+                if(value==0)
+                {
+                    element.html('');
+                }
+                else
+                {
+                    element.html(get_string_kg(value));
+                }
+            }
+            else if(column=='amount_per_kg')
+            {
+                if(value==0)
+                {
+                    element.html('');
+                }
+                else
+                {
+                    element.html(get_string_amount(value));
+                }
+            }
+
+            return element[0].outerHTML;
+
+
+
+        };
         // create jqxgrid.
         $("#system_jqx_container").jqxGrid(
             {
@@ -121,14 +160,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',pinned:true,width:'40',cellsalign: 'right', hidden: <?php echo $system_preference_items['id']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_VARIETY_NAME'); ?>', dataField: 'variety_name',pinned:true,width:'130', hidden: <?php echo $system_preference_items['variety_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',width:'110',filtertype: 'list', hidden: <?php echo $system_preference_items['crop_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', width:'100',hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM'); ?>', dataField: 'quantity_minimum', width:'100',hidden: <?php echo $system_preference_items['quantity_minimum']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_PER_KG'); ?>', dataField: 'amount_per_kg', width:'100',hidden: <?php echo $system_preference_items['amount_per_kg']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_STATUS_OFFER'); ?>', dataField: 'status_offer',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $system_preference_items['status_offer']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_STATUS_VARIETY'); ?>', dataField: 'status_variety',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $system_preference_items['status_variety']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('ID'); ?>', dataField: 'id',width:'40',cellsalign: 'right', hidden: <?php echo $system_preference_items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_NAME'); ?>', dataField: 'name',width:'130', hidden: <?php echo $system_preference_items['name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM'); ?>', dataField: 'quantity_minimum',cellsalign: 'right',cellsrenderer: cellsrenderer, width:'100',hidden: <?php echo $system_preference_items['quantity_minimum']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_PER_KG'); ?>', dataField: 'amount_per_kg',cellsalign: 'right',cellsrenderer: cellsrenderer, width:'100',hidden: <?php echo $system_preference_items['amount_per_kg']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_VARIETIES'); ?>', dataField: 'varieties',hidden: <?php echo $system_preference_items['varieties']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $system_preference_items['status']?0:1;?>}
 
                 ]
             });
