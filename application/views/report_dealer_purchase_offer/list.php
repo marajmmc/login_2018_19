@@ -253,6 +253,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 showstatusbar: true,
                 columnsheight: 110,
                 rowsheight: 40,
+                enablebrowserselection: true,
                 columns: [
                     { text: '<?php echo $CI->lang->line('LABEL_OFFER_NAME'); ?>', dataField: 'offer_name',filtertype: 'checkedlist',pinned:true,width:'300',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['offer_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM_KG'); ?>', dataField: 'quantity_minimum_kg',pinned:true,width:'100',cellsalign: 'right',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_minimum_kg']?0:1;?>},
