@@ -43,9 +43,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     {
 
         ?>
-        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="crop_name" <?php if($system_preference_items['crop_name']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></span></label></div></div>
-        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="crop_type_name" <?php if($system_preference_items['crop_type_name']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_CROP_TYPE_NAME'); ?></span></label></div></div>
-        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="variety_name" <?php if($system_preference_items['variety_name']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_VARIETY_NAME'); ?></span></label></div></div>
+        <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="offer_name" <?php if($system_preference_items['offer_name']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_OFFER_NAME'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="quantity_minimum_kg" <?php if($system_preference_items['quantity_minimum_kg']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM_KG'); ?></span></label></div></div>
         <div class="col-xs-2 "><div class="checkbox"><label><input type="checkbox" class="system_jqx_column" value="amount_minimum" <?php if($system_preference_items['amount_minimum']){echo 'checked';}?>><span class=""><?php echo $CI->lang->line('LABEL_AMOUNT_MINIMUM'); ?></span></label></div></div>
 
@@ -132,9 +130,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         {
             dataType: "json",
             dataFields: [
-                { name: 'crop_name', type: 'string' },
-                { name: 'crop_type_name', type: 'string' },
-                { name: 'variety_name', type: 'string' },
+                { name: 'offer_name', type: 'string' },
                 { name: 'quantity_minimum_kg', type: 'number' },
                 { name: 'amount_minimum', type: 'number' },
                     <?php
@@ -258,11 +254,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columnsheight: 110,
                 rowsheight: 40,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',filtertype: 'list',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['crop_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE_NAME'); ?>', dataField: 'crop_type_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_VARIETY_NAME'); ?>', dataField: 'variety_name',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['variety_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM_KG'); ?>', dataField: 'quantity_minimum_kg',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_minimum_kg']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_MINIMUM'); ?>', dataField: 'amount_minimum',pinned:true,width:'100',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['amount_minimum']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_OFFER_NAME'); ?>', dataField: 'offer_name',filtertype: 'checkedlist',pinned:true,width:'300',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['offer_name']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM_KG'); ?>', dataField: 'quantity_minimum_kg',pinned:true,width:'100',cellsalign: 'right',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_minimum_kg']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_MINIMUM'); ?>', dataField: 'amount_minimum',pinned:true,width:'100',cellsalign: 'right',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['amount_minimum']?0:1;?>},
 
 
                     { text: 'Total</br><b>kg</b>', dataField: '<?php echo 'quantity_total_kg';?>',align:'center',cellsalign: 'right',width:'80',cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['quantity_total_kg']?0:1;?>,rendered: tooltiprenderer,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_kg},

@@ -27,6 +27,7 @@ class Report_dealer_purchase_offer extends Root_Controller
     {
         $this->lang->language['LABEL_QUANTITY_MINIMUM_KG']='Minimum quantity(kg)';
         $this->lang->language['LABEL_AMOUNT_MINIMUM']='Amount per Kg';
+        $this->lang->language['LABEL_OFFER_NAME']='Offer';
     }
 
     public function index($action="search",$id=0)
@@ -134,9 +135,7 @@ class Report_dealer_purchase_offer extends Root_Controller
         $data=array();
         if($method=='search_list')
         {
-            $data['crop_name']= 1;
-            $data['crop_type_name']= 1;
-            $data['variety_name']= 1;
+            $data['offer_name']= 1;
             $data['quantity_minimum_kg']= 1;
             $data['amount_minimum']= 1;
             $data['quantity_total_kg']=1;
@@ -212,12 +211,8 @@ class Report_dealer_purchase_offer extends Root_Controller
             $dealer_ids[$dealer['farmer_id']]=$dealer['farmer_id'];
         }
 
-        $results=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),'*',array('status ="'.$this->config->item('system_status_active').'"'));
-        $offers=array();
-        foreach($results as $result)
-        {
-            $offers[$result['variety_id']]=$result;
-        }
+        $offers=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),'*',array('status ="'.$this->config->item('system_status_active').'"'),0,0,array('ordering ASC','id ASC'));
+
 
         $this->db->from($this->config->item('table_pos_sale_details').' details');
         $this->db->select('details.variety_id,details.pack_size_id,details.pack_size');
@@ -231,11 +226,11 @@ class Report_dealer_purchase_offer extends Root_Controller
         $this->db->select('sale.farmer_id');
 
         $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id = details.variety_id','INNER');
-        $this->db->select('v.id variety_id,v.name variety_name');
+        //$this->db->select('v.id variety_id,v.name variety_name');
         $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id=v.crop_type_id','INNER');
-        $this->db->select('crop_type.id crop_type_id, crop_type.name crop_type_name');
+        //$this->db->select('crop_type.id crop_type_id, crop_type.name crop_type_name');
         $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id=crop_type.crop_id','INNER');
-        $this->db->select('crop.id crop_id, crop.name crop_name');
+        //$this->db->select('crop.id crop_id, crop.name crop_name');
 
         //$this->db->where('sale.outlet_id',$outlet_id);
         $this->db->where_in('sale.farmer_id',$dealer_ids);
@@ -256,26 +251,57 @@ class Report_dealer_purchase_offer extends Root_Controller
         $this->db->group_by('details.variety_id');
         //$this->db->group_by('details.pack_size_id');
 
-        $this->db->order_by('crop.ordering','ASC');
-        $this->db->order_by('crop.id','ASC');
-        $this->db->order_by('crop_type.ordering','ASC');
-        $this->db->order_by('crop_type.id','ASC');
-        $this->db->order_by('v.ordering','ASC');
-        $this->db->order_by('v.id','ASC');
+        //$this->db->order_by('crop.ordering','ASC');
+        //$this->db->order_by('crop.id','ASC');
+        //$this->db->order_by('crop_type.ordering','ASC');
+        //$this->db->order_by('crop_type.id','ASC');
+        //$this->db->order_by('v.ordering','ASC');
+        //$this->db->order_by('v.id','ASC');
         $results=$this->db->get()->result_array();
 
         $sales=array();
         foreach($results as $result)
         {
-            $sales[$result['variety_id']]['crop_name']=$result['crop_name'];
-            $sales[$result['variety_id']]['crop_type_name']=$result['crop_type_name'];
-            $sales[$result['variety_id']]['variety_name']=$result['variety_name'];
-            $sales[$result['variety_id']]['dealers'][$result['farmer_id']]=$result;
+            $sales[$result['farmer_id']][$result['variety_id']]=$result;
+
+        }
+        foreach($offers as $offer)
+        {
+            $item=array();
+            $item['offer_name']=$offer['name'];
+            $item['quantity_minimum_kg']=$offer['quantity_minimum'];
+            $item['amount_minimum']=$offer['amount_per_kg'];
+            $item['quantity_total_kg']=0;
+            $item['amount_total']=0;
+            $offer_variety_ids=explode(',',trim($offer['variety_ids'], ","));
+            foreach($dealers as $dealer)
+            {
+                $item['quantity_'.$dealer['farmer_id'].'_kg']=0;
+                $item['amount_'.$dealer['farmer_id']]=0;
+                if(isset($sales[$dealer['farmer_id']]))
+                {
+                    foreach($offer_variety_ids as $variety_id)
+                    {
+                        if(isset($sales[$dealer['farmer_id']][$variety_id]))
+                        {
+                            $item['quantity_'.$dealer['farmer_id'].'_kg']+=(($sales[$dealer['farmer_id']][$variety_id]['quantity_total_gm']-$sales[$dealer['farmer_id']][$variety_id]['quantity_cancel_gm'])/1000);
+                        }
+                    }
+                }
+                $item['quantity_total_kg']+=$item['quantity_'.$dealer['farmer_id'].'_kg'];
+                if($item['quantity_'.$dealer['farmer_id'].'_kg']>=$item['quantity_minimum_kg'])
+                {
+                    $item['amount_'.$dealer['farmer_id']]=$item['quantity_'.$dealer['farmer_id'].'_kg']*$item['amount_minimum'];
+                    $item['amount_total']+=$item['amount_'.$dealer['farmer_id']];
+                }
+            }
+
+            $items[]=$item;
 
         }
         foreach($sales as $variety_id=>$variety_sale)
         {
-            $item=$this->initialize_row($variety_sale['crop_name'],$variety_sale['crop_type_name'],$variety_sale['variety_name'],$dealers);
+            /*$item=$this->initialize_row($variety_sale['crop_name'],$variety_sale['crop_type_name'],$variety_sale['variety_name'],$dealers);
             if(isset($offers[$variety_id]))
             {
                 $item['quantity_minimum_kg']=$offers[$variety_id]['quantity_minimum'];
@@ -304,19 +330,14 @@ class Report_dealer_purchase_offer extends Root_Controller
                 continue;
                 //exclude 0 values;
             }
-            $items[]=$item;
+            $items[]=$item;*/
         }
         $this->json_return($items);
-
-
-
     }
     private function initialize_row($crop_name,$crop_type_name,$variety_name,$dealers)
     {
         $row=array();
-        $row['crop_name']=$crop_name;
-        $row['crop_type_name']=$crop_type_name;
-        $row['variety_name']=$variety_name;
+        $row['offer_name']=$crop_name;
         $row['quantity_total_kg']=0;
         $row['amount_total']=0;
         foreach($dealers  as $dealer)
