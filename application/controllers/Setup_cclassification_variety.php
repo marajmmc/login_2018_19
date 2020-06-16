@@ -468,7 +468,7 @@ class Setup_cclassification_variety extends Root_Controller
         $id=$this->input->post('id');
 
         $this->db->select('ps.name,ps.id');
-        $this->db->select('price.price,price.price_net');
+        $this->db->select('price.price,price.price_net,price.number_of_seeds');
         $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
         $this->db->join($this->config->item('table_login_setup_classification_pack_size').' ps','ps.id=price.pack_size_id','INNER');
         $this->db->where('price.variety_id',$id);
@@ -540,7 +540,8 @@ class Setup_cclassification_variety extends Root_Controller
                 'id'=>'',
                 'pack_size_id'=>'',
                 'price'=>'',
-                'price_net'=>''
+                'price_net'=>'',
+                'number_of_seeds'=>0
             );
 
             $data['title']="Assign Price to Pack Size of Variety (".$data['info']['name'].')';
@@ -1298,6 +1299,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $data=array();
                 $data['price']=$item['price'];
                 $data['price_net']=$item['price_net'];
+                $data['number_of_seeds']=$item['number_of_seeds'];
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
                 $this->db->set('revision_count', 'revision_count+1', FALSE);
@@ -1327,6 +1329,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $data['pack_size_id']=$item['pack_size_id'];
                 $data['price']=$item['price'];
                 $data['price_net']=$item['price_net'];
+                $data['number_of_seeds']=$item['number_of_seeds'];
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
                 $data['revision_count']=1;
@@ -1338,6 +1341,7 @@ class Setup_cclassification_variety extends Root_Controller
             $history_data['variety_id']=$item['variety_id'];
             $history_data['price']=$item['price'];
             $history_data['price_net']=$item['price_net'];
+            $history_data['number_of_seeds']=$item['number_of_seeds'];
             $history_data['user_created']=$user->user_id;
             $history_data['date_created']=$time;
             $history_data['revision']=1;

@@ -152,7 +152,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 { name: 'id', type: 'int' },
                 { name: 'name', type: 'string' },
                 { name: 'price', type: 'string' },
-                { name: 'price_net', type: 'string' }
+                { name: 'price_net', type: 'string' },
+                { name: 'number_of_seeds', type: 'string' }
             ],
             id: 'id',
             type: 'POST',
@@ -164,7 +165,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         // create jqxgrid.
         $("#system_jqx_container").jqxGrid(
             {
-                width: '60%',
+                width: '100%',
                 source: dataAdapter,
                 pageable: true,
                 filterable: true,
@@ -179,9 +180,10 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 altrows: true,
                 autoheight: true,
                 columns: [
-                    { text: '<?php echo $CI->lang->line('LABEL_PACK_NAME'); ?>', dataField: 'name',width:'20%'},
-                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_TRADE'); ?>', dataField: 'price',width:'40%',cellsalign:'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_NET'); ?>', dataField: 'price_net',width:'40%',cellsalign:'right'}
+                    { text: '<?php echo $CI->lang->line('LABEL_PACK_NAME'); ?>', dataField: 'name',width:'100'},
+                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_TRADE'); ?>', dataField: 'price',width:'100',cellsalign:'right'},
+                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_NET'); ?>', dataField: 'price_net',width:'100',cellsalign:'right'},
+                    { text: '<?php echo $CI->lang->line('Number Of seeds'); ?>', dataField: 'number_of_seeds',width:'100',cellsalign:'right'}
                 ]
             });
     });

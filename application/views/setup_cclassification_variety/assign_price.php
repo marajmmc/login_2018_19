@@ -110,6 +110,14 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <input type="text" name="item[price_net]" id="price_net" class="form-control float_type_positive" value="<?php echo $item['price_net'];?>"/>
             </div>
         </div>
+        <div class="row show-grid">
+            <div class="col-xs-4">
+                <label for="number_of_seeds" class="control-label pull-right"><?php echo $this->lang->line('Number of Seeds');?><span style="color:#FF0000">*</span></label>
+            </div>
+            <div class="col-sm-4 col-xs-8">
+                <input type="text" name="item[number_of_seeds]" id="number_of_seeds" class="form-control integer_type_positive" value="<?php echo $item['number_of_seeds'];?>"/>
+            </div>
+        </div>
     </div>
     <div class="clearfix"></div>
 </form>
