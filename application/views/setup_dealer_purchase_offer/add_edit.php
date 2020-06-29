@@ -5,7 +5,7 @@ $action_buttons=array();
 $action_buttons[]=array
 (
     'label'=>$CI->lang->line("ACTION_BACK"),
-    'href'=>site_url($CI->controller_url)
+    'href'=>site_url($CI->controller_url.'/index/list/'.$item['fiscal_year_id'])
 );
 if((isset($CI->permissions['action1']) && ($CI->permissions['action1']==1)) || (isset($CI->permissions['action2']) && ($CI->permissions['action2']==1)))
 {
@@ -31,10 +31,10 @@ $action_buttons[]=array(
     'data-form'=>'#save_form'
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
-
 ?>
 <form id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save');?>" method="post">
     <input type="hidden" id="id" name="id" value="<?php echo $item['id']?>" />
+    <input type="hidden" name="fiscal_year_id" value="<?php echo $item['fiscal_year_id'];?>" />
     <input type="hidden" id="system_save_new_status" name="system_save_new_status" value="0" />
     <div class="row widget">
         <div class="widget-header">
@@ -65,6 +65,17 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-sm-4 col-xs-8">
                 <input type="text" name="item[amount_per_kg]" id="amount_per_kg" class="form-control float_type_positive" value="<?php echo $item['amount_per_kg'];?>"/>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label for="status" class="control-label pull-right"><?php echo $CI->lang->line('LABEL_IS_FLOOR');?><span style="color:#FF0000">*</span></label>
+            </div>
+            <div class="col-sm-4 col-xs-8">
+                <select id="is_floor" name="item[is_floor]" class="form-control">
+                    <option value="<?php echo $CI->config->item('system_status_no'); ?>"<?php if($item['is_floor']==$CI->config->item('system_status_no')){echo ' selected';}?> ><?php echo $CI->lang->line('LABEL_NO');?></option>
+                    <option value="<?php echo $CI->config->item('system_status_yes'); ?>"<?php if($item['is_floor']==$CI->config->item('system_status_yes')){echo ' selected';}?> ><?php echo $CI->lang->line('LABEL_YES');?></option>
+                </select>
             </div>
         </div>
         <div style="" class="row show-grid">

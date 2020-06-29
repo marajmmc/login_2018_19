@@ -7,7 +7,7 @@ if(isset($CI->permissions['action1']) && ($CI->permissions['action1']==1))
 {
     $action_buttons[]=array(
         'label'=>$CI->lang->line("ACTION_NEW"),
-        'href'=>site_url($CI->controller_url.'/index/add')
+        'href'=>site_url($CI->controller_url.'/index/add/'.$fiscal_year_id)
     );
 }
 if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
@@ -16,7 +16,7 @@ if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
         'type'=>'button',
         'label'=>$CI->lang->line("ACTION_EDIT"),
         'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/edit')
+        'data-action-link'=>site_url($CI->controller_url.'/index/edit/'.$fiscal_year_id)
     );
 }
 if(isset($CI->permissions['action4']) && ($CI->permissions['action4']==1))
@@ -49,7 +49,7 @@ if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
 $action_buttons[]=array
 (
     'label'=>$CI->lang->line("ACTION_REFRESH"),
-    'href'=>site_url($CI->controller_url.'/index/list')
+    'href'=>site_url($CI->controller_url.'/index/list/'.$fiscal_year_id)
 
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
@@ -61,6 +61,23 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             <?php echo $title; ?>
         </div>
         <div class="clearfix"></div>
+    </div>
+    <div class="row show-grid">
+        <div class="col-xs-4">
+            <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_FISCAL_YEAR');?></label>
+        </div>
+        <div class="col-xs-8 col-sm-4">
+            <select id="fiscal_year_id" name="report[fiscal_year_id]" class="form-control">
+                <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                <?php
+                foreach($fiscal_years as $year)
+                {?>
+                    <option value="<?php echo $year['value']?>" <?php if($year['value']==$fiscal_year_id){echo 'selected';} ?>><?php echo $year['text'];?></option>
+                <?php
+                }
+                ?>
+            </select>
+        </div>
     </div>
     <?php
     if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
@@ -78,7 +95,29 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     {
         system_preset({controller:'<?php echo $CI->router->class; ?>'});
 
-        var url = "<?php echo site_url($CI->controller_url.'/index/get_items');?>";
+        $(document).off('change','#fiscal_year_id');
+        $(document).on("change","#fiscal_year_id",function()
+        {
+            var fiscal_year_id=$('#fiscal_year_id').val();
+            $.ajax({
+                url: '<?php echo site_url($CI->controller_url.'/index/list'); ?>',
+                type: 'POST',
+                datatype: "JSON",
+                data:{fiscal_year_id:fiscal_year_id},
+                success: function (data, status)
+                {
+
+                },
+                error: function (xhr, desc, err)
+                {
+                    console.log("error");
+
+                }
+            });
+
+        });
+
+        var url = "<?php echo site_url($CI->controller_url.'/index/get_items/'.$fiscal_year_id);?>";
 
         // prepare the data
         var source =
@@ -165,6 +204,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_QUANTITY_MINIMUM'); ?>', dataField: 'quantity_minimum',cellsalign: 'right',cellsrenderer: cellsrenderer, width:'100',hidden: <?php echo $system_preference_items['quantity_minimum']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_PER_KG'); ?>', dataField: 'amount_per_kg',cellsalign: 'right',cellsrenderer: cellsrenderer, width:'100',hidden: <?php echo $system_preference_items['amount_per_kg']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_VARIETIES'); ?>', dataField: 'varieties',hidden: <?php echo $system_preference_items['varieties']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_IS_FLOOR'); ?>', dataField: 'is_floor',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $system_preference_items['is_floor']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_STATUS'); ?>', dataField: 'status',filtertype: 'list',width:'150',cellsalign: 'right', hidden: <?php echo $system_preference_items['status']?0:1;?>}
 
                 ]

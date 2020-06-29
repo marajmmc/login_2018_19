@@ -19,25 +19,26 @@ class Setup_dealer_purchase_offer extends Root_Controller
         $this->lang->language['LABEL_QUANTITY_MINIMUM']='Minimum quantity(kg)';
         $this->lang->language['LABEL_AMOUNT_PER_KG']='Amount per Kg';
         $this->lang->language['LABEL_VARIETIES']='Varieties';
+        $this->lang->language['LABEL_IS_FLOOR']='Floor Quantity';
     }
 
-    public function index($action = "list", $id = 0)
+    public function index($action = "list", $id = 0,$id1=0)
     {
         if ($action == "list")
         {
-            $this->system_list();
+            $this->system_list($id);
         }
         elseif ($action == "get_items")
         {
-            $this->system_get_items();
+            $this->system_get_items($id);
         }
         elseif ($action == "add")
         {
-            $this->system_add();
+            $this->system_add($id);
         }
         elseif ($action == "edit")
         {
-            $this->system_edit($id);
+            $this->system_edit($id,$id1);
         }
         elseif ($action == "save")
         {
@@ -65,6 +66,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
             $data['varieties']= 1;
             $data['quantity_minimum']= 1;
             $data['amount_per_kg']= 1;
+            $data['is_floor']= 1;
             $data['status']= 1;
 
         }
@@ -92,12 +94,30 @@ class Setup_dealer_purchase_offer extends Root_Controller
         }
     }
 
-    private function system_list()
+    private function system_list($fiscal_year_id=0)
     {
         $user = User_helper::get_user();
         $method = 'list';
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
+            if(!($fiscal_year_id>0))
+            {
+                $fiscal_year_id=$this->input->post('fiscal_year_id');
+            }
+            $data['fiscal_years']=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),array('id value','name text','date_start','date_end'),array());
+            if(!$fiscal_year_id)
+            {
+                $date=time();
+                foreach($data['fiscal_years'] as $fiscal_year)
+                {
+                    if($fiscal_year['date_start']<$date && $fiscal_year['date_end']>=$date)
+                    {
+                        $fiscal_year_id=$fiscal_year['value'];
+                    }
+                }
+            }
+            $data['fiscal_year_id']=$fiscal_year_id;
+
             $data['system_preference_items'] = System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
             $data['title']="Varieties";
             $ajax['status']=true;
@@ -106,7 +126,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url);
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/list/'.$fiscal_year_id);
             $this->json_return($ajax);
         }
         else
@@ -117,7 +137,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
         }
 
     }
-    private function system_get_items()
+    private function system_get_items($fiscal_year_id)
     {
         $results=Query_helper::get_info($this->config->item('table_login_setup_classification_varieties'),array('id value','name text'),array());
         $varieties=array();
@@ -125,7 +145,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
         {
             $varieties[$result['value']]=$result['text'];
         }
-        $results=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),'*',array());
+        $results=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),'*',array('fiscal_year_id ='.$fiscal_year_id));
         $items=array();
         foreach($results as $result)
         {
@@ -134,6 +154,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
             $item['name']=$result['name'];
             $item['quantity_minimum']=$result['quantity_minimum'];
             $item['amount_per_kg']=$result['amount_per_kg'];
+            $item['is_floor']=$result['is_floor'];
             $item['status']=$result['status'];
             $offer_varieties=explode(',',trim($result['variety_ids'], ","));
             $item['varieties']=',';
@@ -170,7 +191,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
         }
         return $crops;
     }
-    private function system_add()
+    private function system_add($fiscal_year_id)
     {
         if(isset($this->permissions['action1'])&&($this->permissions['action1']==1))
         {
@@ -182,7 +203,9 @@ class Setup_dealer_purchase_offer extends Root_Controller
             {
                 $data['item'][$field->name]=$field->default;
             }
+            $data['item']['fiscal_year_id']=$fiscal_year_id;
             $data['crops']=$this->get_crops_varieties();
+            $data['fiscal_year_id']=$fiscal_year_id;
 
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
@@ -190,7 +213,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url.'/index/add');
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/add/'.$fiscal_year_id);
             $this->json_return($ajax);
         }
         else
@@ -200,7 +223,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
             $this->json_return($ajax);
         }
     }
-    private function system_edit($id)
+    private function system_edit($fiscal_year_id,$id)
     {
         if(isset($this->permissions['action2'])&&($this->permissions['action2']==1))
         {
@@ -212,7 +235,6 @@ class Setup_dealer_purchase_offer extends Root_Controller
             {
                 $item_id=$this->input->post('id');
             }
-
             $data['item']=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),array('*'),array('id ='.$item_id,'status !="'.$this->config->item('system_status_delete').'"'),1,0,array('id ASC'));
             if(!$data['item'])
             {
@@ -229,7 +251,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url.'/index/edit/'.$item_id);
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/edit/'.$fiscal_year_id.'/'.$item_id);
             $this->json_return($ajax);
         }
         else
@@ -243,6 +265,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
     private function system_save()
     {
         $id = $this->input->post("id");
+        $fiscal_year_id = $this->input->post("fiscal_year_id");
         $user = User_helper::get_user();
         $time=time();
         $item=$this->input->post('item');
@@ -297,6 +320,7 @@ class Setup_dealer_purchase_offer extends Root_Controller
         }
         else
         {
+            $item['fiscal_year_id']=$fiscal_year_id;
             $item['date_created']=$time;
             $item['user_created']=$user->user_id;
             Query_helper::add($this->config->item('table_login_setup_dealer_purchase_offer'),$item);
@@ -309,11 +333,11 @@ class Setup_dealer_purchase_offer extends Root_Controller
             $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
             if($save_and_new==1)
             {
-                $this->system_add();
+                $this->system_add($fiscal_year_id);
             }
             else
             {
-                $this->system_list();
+                $this->system_list($fiscal_year_id);
             }
         }
         else
