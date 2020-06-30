@@ -107,10 +107,23 @@ class Report_dealer_purchase_offer extends Root_Controller
             $data['outlets']=$this->db->get()->result_array();
 
             $fiscal_years=Query_helper::get_info($this->config->item('table_login_basic_setup_fiscal_year'),'*',array());
+
+            $time=time();
+            $data['fiscal_year_id']=0;
             $data['fiscal_years']=array();
+            $data['date_start']=System_helper::display_date($time);
+            $data['date_end']=System_helper::display_date($time);
+
+
             foreach($fiscal_years as $year)
             {
-                $data['fiscal_years'][]=array('text'=>$year['name'],'value'=>System_helper::display_date($year['date_start']).'/'.System_helper::display_date($year['date_end']));
+                $data['fiscal_years'][]=array('text'=>$year['name'],'value'=>System_helper::display_date($year['date_start']).'/'.System_helper::display_date($year['date_end']).'/'.$year['id'],'id'=>$year['id']);
+                if($time>$year['date_start']&& $time<=$year['date_end'])
+                {
+                    $data['fiscal_year_id']=$year['id'];
+                    $data['date_start']=System_helper::display_date($year['date_start']);
+                    $data['date_end']=System_helper::display_date($year['date_end']);
+                }
             }
             $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/search",$data,true));
@@ -168,6 +181,20 @@ class Report_dealer_purchase_offer extends Root_Controller
                 $ajax['system_message']='Select a showroom';
                 $this->json_return($ajax);
             }
+            if(!($reports['outlet_id']>0))
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Select a showroom';
+                $this->json_return($ajax);
+            }
+
+            if(!($reports['fiscal_year_id']>0))
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Select a Fiscal year';
+                $this->json_return($ajax);
+            }
+            $reports['fiscal_year_id'] = substr($reports['fiscal_year_id'],strrpos($reports['fiscal_year_id'], "/")+1);
             $data['options']=$reports;
             $data['dealers']=$this->get_dealers($reports['outlet_id'],$reports['farmer_type_id']);
             $ajax['status']=true;
@@ -197,7 +224,7 @@ class Report_dealer_purchase_offer extends Root_Controller
         $outlet_id=$this->input->post('outlet_id');
         $date_end=$this->input->post('date_end');
         $date_start=$this->input->post('date_start');
-
+        $fiscal_year_id=$this->input->post('fiscal_year_id');
         $crop_id=$this->input->post('crop_id');
         $crop_type_id=$this->input->post('crop_type_id');
         $variety_id=$this->input->post('variety_id');
@@ -211,7 +238,7 @@ class Report_dealer_purchase_offer extends Root_Controller
             $dealer_ids[$dealer['farmer_id']]=$dealer['farmer_id'];
         }
 
-        $offers=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),'*',array('status ="'.$this->config->item('system_status_active').'"'),0,0,array('ordering ASC','id ASC'));
+        $offers=Query_helper::get_info($this->config->item('table_login_setup_dealer_purchase_offer'),'*',array('status ="'.$this->config->item('system_status_active').'"','fiscal_year_id ='.$fiscal_year_id),0,0,array('ordering ASC','id ASC'));
 
 
         $this->db->from($this->config->item('table_pos_sale_details').' details');

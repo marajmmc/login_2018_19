@@ -22,7 +22,7 @@ $CI = & get_instance();
                                 <?php
                                 foreach($fiscal_years as $year)
                                 {?>
-                                    <option value="<?php echo $year['value']?>"><?php echo $year['text'];?></option>
+                                    <option value="<?php echo $year['value']?>" <?php if($year['id']==$fiscal_year_id){echo 'selected';} ?>><?php echo $year['text'];?></option>
                                 <?php
                                 }
                                 ?>
@@ -34,7 +34,7 @@ $CI = & get_instance();
                             <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_START');?></label>
                         </div>
                         <div class="col-xs-6">
-                            <input type="text" id="date_start" name="report[date_start]" class="form-control date_large" value="<?php echo System_helper::display_date(time()); ?>">
+                            <input type="text" id="date_start" name="report[date_start]" class="form-control date_large" value="<?php echo $date_start; ?>">
                         </div>
 
                     </div>
@@ -43,7 +43,7 @@ $CI = & get_instance();
                             <label class="control-label pull-right"><?php echo $this->lang->line('LABEL_DATE_END');?></label>
                         </div>
                         <div class="col-xs-6">
-                            <input type="text" id="date_end" name="report[date_end]" class="form-control date_large" value="<?php echo System_helper::display_date(time()); ?>">
+                            <input type="text" id="date_end" name="report[date_end]" class="form-control date_large" value="<?php echo $date_end; ?>">
                         </div>
 
                     </div>
