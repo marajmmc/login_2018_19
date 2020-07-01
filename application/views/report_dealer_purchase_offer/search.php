@@ -115,6 +115,17 @@ $CI = & get_instance();
                             <label class="control-label"><?php echo $CI->lang->line('LABEL_OUTLET_NAME');?><span style="color:#FF0000">*</span></label>
                         </div>
                     </div>
+                    <div style="display: none;" class="row show-grid" id="farmer_id_container">
+
+                        <div class="col-xs-6">
+                            <select id="farmer_id" name="report[farmer_id]" class="form-control">
+                                <option value=""><?php echo $this->lang->line('SELECT');?></option>
+                            </select>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="control-label">Dealer</label>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -195,6 +206,82 @@ $CI = & get_instance();
                 var dates = fiscal_year_ranges.split("/");
                 $("#date_start").val(dates[0]);
                 $("#date_end").val(dates[1]);
+
+            }
+        });
+        $(document).off("change", "#outlet_id");
+        $(document).on("change","#outlet_id",function()
+        {
+            $("#system_report_container").html("");
+            $('#date_container').hide();
+            $("#farmer_id").val("");
+            var outlet_id=$('#outlet_id').val();
+            var farmer_type_id=$('#farmer_type_id').val();
+            if(outlet_id>0 && farmer_type_id>0)
+            {
+                $('#farmer_id_container').show();
+                //$('#date_end_container').show();
+                $('#date_start_container').hide();
+                $.ajax({
+                    url: '<?php echo site_url($CI->controller_url.'/index/get_dealers');?>',
+                    type: 'POST',
+                    datatype: "JSON",
+                    data:{outlet_id:outlet_id,farmer_type_id:farmer_type_id},
+                    success: function (data, status)
+                    {
+
+                    },
+                    error: function (xhr, desc, err)
+                    {
+                        console.log("error");
+
+                    }
+                });
+
+            }
+            else
+            {
+                $('#farmer_id_container').hide();
+                //$('#date_end_container').hide();
+                $('#date_start_container').hide();
+
+            }
+        });
+        $(document).off("change", "#farmer_type_id");
+        $(document).on("change","#farmer_type_id",function()
+        {
+            $("#system_report_container").html("");
+            $('#date_container').hide();
+            $("#farmer_id").val("");
+            var outlet_id=$('#outlet_id').val();
+            var farmer_type_id=$('#farmer_type_id').val();
+            if(outlet_id>0 && farmer_type_id>0)
+            {
+                $('#farmer_id_container').show();
+                //$('#date_end_container').show();
+                $('#date_start_container').hide();
+                $.ajax({
+                    url: '<?php echo site_url($CI->controller_url.'/index/get_dealers');?>',
+                    type: 'POST',
+                    datatype: "JSON",
+                    data:{outlet_id:outlet_id,farmer_type_id:farmer_type_id},
+                    success: function (data, status)
+                    {
+
+                    },
+                    error: function (xhr, desc, err)
+                    {
+                        console.log("error");
+
+                    }
+                });
+
+            }
+            else
+            {
+                $('#farmer_id_container').hide();
+                //$('#date_end_container').hide();
+                $('#date_start_container').hide();
 
             }
         });

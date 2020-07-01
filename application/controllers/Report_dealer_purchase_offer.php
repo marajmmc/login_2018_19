@@ -52,6 +52,10 @@ class Report_dealer_purchase_offer extends Root_Controller
         {
             System_helper::save_preference();
         }
+        elseif($action=="get_dealers")
+        {
+            $this->system_get_dealers();
+        }
         else
         {
             $this->system_search();
@@ -196,7 +200,7 @@ class Report_dealer_purchase_offer extends Root_Controller
             }
             $reports['fiscal_year_id'] = substr($reports['fiscal_year_id'],strrpos($reports['fiscal_year_id'], "/")+1);
             $data['options']=$reports;
-            $data['dealers']=$this->get_dealers($reports['outlet_id'],$reports['farmer_type_id']);
+            $data['dealers']=$this->get_dealers($reports['outlet_id'],$reports['farmer_type_id'],$reports['farmer_id']);
             $ajax['status']=true;
             $data['title']="Dealer Offer Report";
             $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
@@ -230,7 +234,8 @@ class Report_dealer_purchase_offer extends Root_Controller
         $variety_id=$this->input->post('variety_id');
 
         $farmer_type_id=$this->input->post('farmer_type_id');
-        $dealers=$this->get_dealers($outlet_id,$farmer_type_id);
+        $farmer_id=$this->input->post('farmer_id');
+        $dealers=$this->get_dealers($outlet_id,$farmer_type_id,$farmer_id);
         $dealer_ids=array();
         $dealer_ids[0]=0;
         foreach($dealers as $dealer)
@@ -326,65 +331,10 @@ class Report_dealer_purchase_offer extends Root_Controller
             $items[]=$item;
 
         }
-        foreach($sales as $variety_id=>$variety_sale)
-        {
-            /*$item=$this->initialize_row($variety_sale['crop_name'],$variety_sale['crop_type_name'],$variety_sale['variety_name'],$dealers);
-            if(isset($offers[$variety_id]))
-            {
-                $item['quantity_minimum_kg']=$offers[$variety_id]['quantity_minimum'];
-                $item['amount_minimum']=$offers[$variety_id]['amount_per_kg'];
-            }
-            else
-            {
-                $item['quantity_minimum_kg']=0;
-                $item['amount_minimum']=0;
-            }
-            foreach($variety_sale['dealers'] as $dealer_id=>$dealer_sale)
-            {
-                if(in_array($dealer_id,$dealer_ids))
-                {
-                    $item['quantity_'.$dealer_id.'_kg']=($dealer_sale['quantity_total_gm']-$dealer_sale['quantity_cancel_gm'])/1000;
-                    $item['quantity_total_kg']+=$item['quantity_'.$dealer_id.'_kg'];
-                    if($item['quantity_'.$dealer_id.'_kg']>=$item['quantity_minimum_kg'])
-                    {
-                        $item['amount_'.$dealer_id]=$item['quantity_'.$dealer_id.'_kg']*$item['amount_minimum'];
-                        $item['amount_total']+=$item['amount_'.$dealer_id];
-                    }
-                }
-            }
-            if($item['quantity_total_kg']==0)
-            {
-                continue;
-                //exclude 0 values;
-            }
-            $items[]=$item;*/
-        }
+
         $this->json_return($items);
     }
-    private function initialize_row($crop_name,$crop_type_name,$variety_name,$dealers)
-    {
-        $row=array();
-        $row['offer_name']=$crop_name;
-        $row['quantity_total_kg']=0;
-        $row['amount_total']=0;
-        foreach($dealers  as $dealer)
-        {
-            $row['quantity_'.$dealer['farmer_id'].'_kg']=0;
-            $row['amount_'.$dealer['farmer_id']]=0;
-        }
-        return $row;
-    }
-    private function reset_row($info)
-    {
-        foreach($info  as $key=>$r)
-        {
-            if(!(($key=='crop_name')||($key=='crop_type_name')||($key=='variety_name')||($key=='pack_size')))
-            {
-                $info[$key]=0;
-            }
-        }
-        return $info;
-    }
+
     private function system_set_preference()
     {
         $user = User_helper::get_user();
@@ -405,7 +355,7 @@ class Report_dealer_purchase_offer extends Root_Controller
             $this->json_return($ajax);
         }
     }
-    private function get_dealers($outlet_id,$dealer_type)
+    private function get_dealers($outlet_id,$dealer_type,$farmer_id=0)
     {
         $this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
         $this->db->select('farmer_outlet.farmer_id');
@@ -419,6 +369,35 @@ class Report_dealer_purchase_offer extends Root_Controller
         {
             $this->db->where('farmer.farmer_type_id',$dealer_type);
         }
+        if($farmer_id>0)
+        {
+            $this->db->where('farmer.id',$farmer_id);
+        }
         return $this->db->get()->result_array();
+    }
+    private function system_get_dealers()
+    {
+        $outlet_id=$this->input->post('outlet_id');
+        $farmer_type_id=$this->input->post('farmer_type_id');
+        $dealers=$this->get_dealers($outlet_id,$farmer_type_id);
+        $data['items']=array();
+        foreach($dealers as $dealer)
+        {
+            $data['items'][]=array('text'=> $dealer['farmer_name'],'value'=>$dealer['farmer_id']);
+        }
+
+        /*$this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
+        $this->db->select('farmer_outlet.farmer_id value');
+        $this->db->join($this->config->item('table_pos_setup_farmer_farmer').' farmer','farmer.id=farmer_outlet.farmer_id','INNER');
+        $this->db->select('farmer.name text');
+        $this->db->where('farmer.status',$this->config->item('system_status_active'));
+        $this->db->where('farmer.farmer_type_id',$farmer_type_id);
+        $this->db->where('farmer_outlet.revision',1);
+        $this->db->where('farmer_outlet.outlet_id',$outlet_id);
+        //$this->db->where('farmer.amount_credit_limit > ',0);
+        $data['items']=$this->db->get()->result_array();*/
+        $ajax['status']=true;
+        $ajax['system_content'][]=array("id"=>'#farmer_id',"html"=>$this->load->view("dropdown_with_select",$data,true));
+        $this->json_return($ajax);
     }
 }
