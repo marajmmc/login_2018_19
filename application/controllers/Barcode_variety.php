@@ -11,6 +11,11 @@ class Barcode_variety extends Root_Controller
         $this->message="";
         $this->permissions=User_helper::get_permission('Barcode_variety');
         $this->controller_url='barcode_variety';
+        $this->language_labels();
+    }
+    private function language_labels()
+    {
+        $this->lang->language['LABEL_PRICE']='Dealer Price';
     }
 
     public function index($action="list",$id=0)
@@ -227,7 +232,7 @@ class Barcode_variety extends Root_Controller
         $data['crop_name']= 1;
         $data['crop_type_name']= 1;
         $data['price']= 1;
-        $data['price_net']= 1;
+        //$data['price_net']= 1;
         $data['barcode']= 1;
         $data['remarks']= 1;
         if($result)

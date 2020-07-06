@@ -110,7 +110,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_NAME'); ?>', dataField: 'crop_name',width:'110',filtertype: 'list', hidden: <?php echo $system_preference_items['crop_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_CROP_TYPE'); ?>', dataField: 'crop_type_name', width:'100',hidden: <?php echo $system_preference_items['crop_type_name']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_PRICE'); ?>', dataField: 'price', width:'100',cellsalign: 'right',hidden: <?php echo $system_preference_items['price']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_NET'); ?>', dataField: 'price_net', width:'100',cellsalign: 'right',hidden: <?php echo $system_preference_items['price_net']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_BARCODE'); ?>', dataField: 'barcode', width:'100',cellsalign: 'right',hidden: <?php echo $system_preference_items['barcode']?0:1;?>}
                 ]
             });
