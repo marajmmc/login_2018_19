@@ -90,3 +90,6 @@ $config['table_login_setup_user_app'] = 'arm_login_2018_19.login_setup_user_app'
 
 // sms farmer due setup table
 $config['table_login_setup_sms_farmer_due'] = 'arm_login_2018_19.login_setup_sms_farmer_due';
+
+//offer
+$config['table_login_offer_setup_variety'] = 'arm_login_2018_19.login_offer_setup_variety';
