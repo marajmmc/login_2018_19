@@ -287,7 +287,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     {
         var invoice_offer = parseFloat($('#total_offer').html().replace(/,/g,''));
         $('#offer_balance').html(number_format(offer_balance,2));
-        $('#offer_balance_new').html(number_format(invoice_offer+offer_balance,2));
+        $('#offer_balance_new').html(number_format(invoice_offer+parseFloat(offer_balance),2));
     }
     jQuery(document).ready(function()
     {
