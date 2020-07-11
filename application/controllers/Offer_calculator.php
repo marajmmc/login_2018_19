@@ -28,22 +28,51 @@ class Offer_calculator extends Root_Controller
     {
         if($action=="list")
         {
-            $this->system_list();
+            $this->system_list($id);
         }
         else
         {
-            $this->system_list();
+            $this->system_list($id);
         }
     }
-    private function system_list()
+    private function system_list($id)
     {
         $user = User_helper::get_user();
         $method='list';
         if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
+            if($id>0)
+            {
+                $farmer_type_id=$id;
+            }
+            else
+            {
+                $farmer_type_id=$this->input->post('farmer_type_id');
+            }
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1','allow_offer ="'.$this->config->item('system_status_yes').'"'),0,0,array('ordering ASC'));
+            if(sizeof($data['farmer_types'])==0)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']="No dealer is allowed for offer.<br>".$this->lang->line('MSG_CONTACT_ADMIN');
+                $this->json_return($ajax);
+            }
+            if(!($farmer_type_id>1))
+            {
+                $farmer_type_id=$data['farmer_types'][0]['value'];
+            }
+            $data['farmer_type_id']=$farmer_type_id;
+            $result=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),'*',array('status ="'.$this->config->item('system_status_active').'"','id ='.$farmer_type_id,'allow_offer ="'.$this->config->item('system_status_yes').'"'),1);
+            if(!$result)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']="Invalid access";
+                $this->json_return($ajax);
+            }
+            $price_multiplier=$result['price_multiplier'];
+
             //variety price and offers
             $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
-            $this->db->select('price.id,price.variety_id,price.pack_size_id,price.price price_unit_pack');
+            $this->db->select('price.id,price.variety_id,price.pack_size_id,ROUND(price.price *'.$price_multiplier.',2) price_unit_pack');
             $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=price.variety_id','INNER');
             $this->db->select('v.name variety_name');
             $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id = v.crop_type_id','INNER');
@@ -55,6 +84,8 @@ class Offer_calculator extends Root_Controller
 
             $this->db->join($this->config->item('table_login_offer_setup_variety').' offer','offer.variety_id=price.variety_id AND offer.pack_size_id=price.pack_size_id AND offer.revision=1 AND offer.status="'.$this->config->item('system_status_active').'"','LEFT');
             $this->db->select('offer.status,offer.quantity_minimum,offer.amount_per_kg');
+
+            $this->db->where('v.status',$this->config->item('system_status_active'));
 
             $this->db->order_by('crop.ordering ASC');
             $this->db->order_by('crop.id ASC');
@@ -108,7 +139,7 @@ class Offer_calculator extends Root_Controller
             $this->db->order_by('cus_info.ordering','ASC');
             $data['outlets']=$this->db->get()->result_array();
 
-            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
+
 
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/calculator",$data,true));
@@ -116,7 +147,7 @@ class Offer_calculator extends Root_Controller
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url);
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/list/'.$farmer_type_id);
             $this->json_return($ajax);
         }
         else

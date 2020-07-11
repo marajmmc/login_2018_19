@@ -5,7 +5,7 @@ $CI=& get_instance();
 $action_buttons=array();
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
-    'href'=>site_url($CI->controller_url)
+    'href'=>site_url($CI->controller_url.'/index/list/'.$farmer_type_id)
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 ?>
@@ -16,6 +16,23 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="clearfix"></div>
     </div>
+    <div style="" class="row show-grid" id="crop_id_container">
+        <div class="col-xs-4">
+            <label class="control-label pull-right">Dealer type</label>
+        </div>
+        <div class="col-sm-4 col-xs-4">
+            <select id="farmer_type_id" class="form-control">
+                <?php
+                foreach($farmer_types as $row)
+                {?>
+                    <option value="<?php echo $row['value']?>" <?php if($farmer_type_id==$row['value']){echo 'selected';}?>><?php echo $row['text'];?></option>
+                <?php
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+
     <div style="" class="row show-grid" id="crop_id_container">
         <div class="col-xs-4">
             <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_CROP_NAME');?></label>
@@ -81,7 +98,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="2">&nbsp;</td>
+                <td colspan="4">&nbsp;</td>
+
                 <td colspan="2">
                     <select id="outlet_id" class="form-control">
                         <option value="">Select Outlet</option>
@@ -89,18 +107,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                         foreach($outlets as $outlet)
                         {?>
                             <option value="<?php echo $outlet['value']?>"><?php echo $outlet['text'];?></option>
-                        <?php
-                        }
-                        ?>
-                    </select>
-                </td>
-                <td colspan="2">
-                    <select id="farmer_type_id" class="form-control">
-                        <option value="">Select Dealer type</option>
-                        <?php
-                        foreach($farmer_types as $row)
-                        {?>
-                            <option value="<?php echo $row['value']?>"><?php echo $row['text'];?></option>
                         <?php
                         }
                         ?>
@@ -291,6 +297,40 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     }
     jQuery(document).ready(function()
     {
+        $(document).off("change", "#farmer_type_id");
+        $(document).on("change","#farmer_type_id",function()
+        {
+            $("#farmer_id").val("");
+            var farmer_type_id=$('#farmer_type_id').val();
+            var outlet_id=$('#outlet_id').val();
+            if(farmer_type_id>0)
+            {
+                $('#farmer_id_container').show();
+                $.ajax({
+                    url:'<?php echo site_url($CI->controller_url.'/index/list') ?>',
+                    type: 'POST',
+                    datatype: "JSON",
+                    data:{farmer_type_id:farmer_type_id},
+                    success: function (data, status)
+                    {
+
+                    },
+                    error: function (xhr, desc, err)
+                    {
+                        console.log("error");
+
+                    }
+                });
+
+            }
+            else
+            {
+                $('#farmer_id_container').hide();
+
+            }
+            add_farmer_offer_balance(0);
+        });
+
         $('#crop_id').html(get_dropdown_with_select(system_crops));
         $(document).off('change','#crop_id');
         $(document).on("change","#crop_id",function()
@@ -355,14 +395,6 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         $(document).off("change", "#outlet_id");
         $(document).on("change","#outlet_id",function()
         {
-            $("#farmer_type_id").val("");
-            $("#farmer_id").val("");
-            $('#farmer_id_container').hide();
-            add_farmer_offer_balance(0);
-        });
-        $(document).off("change", "#farmer_type_id");
-        $(document).on("change","#farmer_type_id",function()
-        {
             $("#farmer_id").val("");
             var farmer_type_id=$('#farmer_type_id').val();
             var outlet_id=$('#outlet_id').val();
@@ -405,6 +437,5 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             }
             add_farmer_offer_balance(offer_balance);
         });
-
     });
 </script>
