@@ -420,4 +420,42 @@ class User_helper
         }
         return $assigned_area;
     }
+    public static function get_assigned_outlets($location)
+    {
+        $CI = & get_instance();
+        //user outlets
+        $CI->db->from($CI->config->item('table_login_csetup_cus_info').' outlet_info');
+        $CI->db->select('outlet_info.customer_id outlet_id, outlet_info.name outlet_name');
+
+        $CI->db->join($CI->config->item('table_login_setup_location_districts').' districts','districts.id = outlet_info.district_id','INNER');
+        $CI->db->join($CI->config->item('table_login_setup_location_territories').' territories','territories.id = districts.territory_id','INNER');
+        $CI->db->join($CI->config->item('table_login_setup_location_zones').' zones','zones.id = territories.zone_id','INNER');
+
+        $CI->db->where('outlet_info.revision',1);
+        $CI->db->where('outlet_info.type',$CI->config->item('system_customer_type_outlet_id'));
+        if($location['division_id']>0)
+        {
+            $CI->db->where('zones.division_id',$location['division_id']);
+            if($location['zone_id']>0)
+            {
+                $CI->db->where('zones.id',$location['zone_id']);
+                if($location['territory_id']>0)
+                {
+                    $CI->db->where('territories.id',$location['territory_id']);
+                    if($location['district_id']>0)
+                    {
+                        $CI->db->where('districts.id',$location['district_id']);
+                    }
+                }
+            }
+        }
+        $CI->db->order_by('outlet_info.ordering');
+        $results=$CI->db->get()->result_array();
+        $outlets=array();
+        foreach($results as $result)
+        {
+            $outlets[$result['outlet_id']]=$result;
+        }
+        return $outlets;
+    }
 }

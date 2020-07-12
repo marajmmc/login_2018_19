@@ -10,9 +10,6 @@ class Offer_adjust extends Root_Controller
     public function __construct()
     {
         parent::__construct();
-        $ajax['status']=false;
-        $ajax['system_message']='Under construction';
-        $this->json_return($ajax);
         $this->message="";
         $this->permissions=User_helper::get_permission(get_class());
         $this->controller_url=strtolower(get_class());
@@ -24,102 +21,136 @@ class Offer_adjust extends Root_Controller
             $ajax['system_message']=$this->lang->line('MSG_LOCATION_NOT_ASSIGNED_OR_INVALID');
             $this->json_return($ajax);
         }
-        $this->load->helper('offer');
-    }
+        $this->user_outlet_ids=array();
+        $this->user_outlets=User_helper::get_assigned_outlets($this->locations);
 
-    public function index($action="list",$id=0)
-    {
-        if($action=="list")
+        if(sizeof($this->user_outlets)>0)
         {
-            $this->system_list();
+            foreach($this->user_outlets as $row)
+            {
+                $this->user_outlet_ids[]=$row['outlet_id'];
+            }
         }
         else
         {
-            $this->system_list();
+            $ajax['status']=false;
+            $ajax['system_message']='No Outlet Found.<br>'.$this->lang->line('MSG_CONTACT_ADMIN');
+            $this->json_return($ajax);
+        }
+
+        $this->load->helper('offer');
+        $this->language_labels();
+    }
+    private function language_labels()
+    {
+        $this->lang->language['LABEL_OFFER_OFFERED']='Offer Offered';
+        $this->lang->language['LABEL_OFFER_GIVEN']='Offer Given';
+        $this->lang->language['LABEL_OFFER_ADJUSTED']='Offer Adjusted';
+        $this->lang->language['LABEL_OFFER_BALANCE']='Offer Remains';
+        $this->lang->language['LABEL_DELETE']='Delete';
+        $this->lang->language['LABEL_REMARKS_DELETE']='Delete Reason';
+    }
+    public function index($action="list",$id=0,$id1=0)
+    {
+        if($action=="list")
+        {
+            $this->system_list($id);
+        }
+        elseif($action=="get_items")
+        {
+            $this->system_get_items($id);
+        }
+        elseif($action=="list_offer_adjust")
+        {
+            $this->system_list_offer_adjust($id);
+        }
+        elseif($action=="get_items_offer_adjust")
+        {
+            $this->system_get_items_offer_adjust($id);
+        }
+        elseif($action=="add")
+        {
+            $this->system_add($id);
+        }
+        elseif($action=="edit")
+        {
+            $this->system_edit($id,$id1);
+        }
+        elseif($action=="save")
+        {
+            $this->system_save();
+        }
+        elseif ($action == "delete")
+        {
+            $this->system_delete($id,$id1);
+        }
+        elseif ($action == "save_delete")
+        {
+            $this->system_save_delete();
+        }
+        elseif($action=="details")
+        {
+            $this->system_details($id,$id1);
+        }
+        elseif($action=="set_preference")
+        {
+            $this->system_set_preference('list');
+        }
+        elseif($action=="set_preference_list_offer_adjust")
+        {
+            $this->system_set_preference('list_offer_adjust');
+        }
+        elseif($action=="save_preference")
+        {
+            System_helper::save_preference();
+        }
+        else
+        {
+            $this->system_list($id);
         }
     }
-    private function system_list()
+    private function get_preference_headers($method)
+    {
+        $data=array();
+        if($method=='list')
+        {
+            $data['id']= 1;
+            $data['barcode']= 1;
+            $data['name']= 1;
+            $data['mobile_no']= 1;
+            $data['outlet_name']= 1;
+            $data['offer_offered']= 1;
+            $data['offer_given']= 1;
+            $data['offer_adjusted']= 1;
+            $data['offer_balance']= 1;
+        }
+        else if($method=='list_offer_adjust')
+        {
+            $data['id']= 1;
+            $data['outlet_name']= 1;
+            $data['date_payment']= 1;
+            $data['amount']= 1;
+            $data['reference_no']= 1;
+            $data['remarks']= 1;
+            $data['revision_count']= 1;
+        }
+        else
+        {
+
+        }
+
+        return $data;
+    }
+    private function system_set_preference($method)
     {
         $user = User_helper::get_user();
-        $method='list';
-        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
+        if(isset($this->permissions['action6']) && ($this->permissions['action6']==1))
         {
-            //variety price and offers
-            $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
-            $this->db->select('price.id,price.variety_id,price.pack_size_id,price.price price_unit_pack');
-            $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=price.variety_id','INNER');
-            $this->db->select('v.name variety_name');
-            $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id = v.crop_type_id','INNER');
-            $this->db->select('crop_type.name crop_type_name');
-            $this->db->join($this->config->item('table_login_setup_classification_crops').' crop','crop.id = crop_type.crop_id','INNER');
-            $this->db->select('crop.name crop_name,crop.id crop_id');
-            $this->db->join($this->config->item('table_login_setup_classification_pack_size').' pack','pack.id=price.pack_size_id','INNER');
-            $this->db->select('pack.name pack_size');
-
-            $this->db->join($this->config->item('table_login_offer_setup_variety').' offer','offer.variety_id=price.variety_id AND offer.pack_size_id=price.pack_size_id AND offer.revision=1 AND offer.status="'.$this->config->item('system_status_active').'"','LEFT');
-            $this->db->select('offer.status,offer.quantity_minimum,offer.amount_per_kg');
-
-            $this->db->order_by('crop.ordering ASC');
-            $this->db->order_by('crop.id ASC');
-            $this->db->order_by('crop_type.ordering ASC');
-            $this->db->order_by('crop_type.id ASC');
-            $this->db->order_by('v.ordering ASC');
-            $this->db->order_by('v.id ASC');
-            $results=$this->db->get()->result_array();
-
-            $data['sale_varieties_info']=array();
-            foreach($results as $result)
-            {
-                $data['sale_varieties_info'][Barcode_helper::get_barcode_variety('000',$result['variety_id'],$result['pack_size_id'])]=$result;
-            }
-            //assign outlets
-            $this->db->from($this->config->item('table_login_csetup_customer').' cus');
-            $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = cus.id','INNER');
-            $this->db->select('cus.id value, cus_info.name text');
-            $this->db->join($this->config->item('table_login_setup_location_districts').' d','d.id = cus_info.district_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_territories').' t','t.id = d.territory_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_zones').' zone','zone.id = t.zone_id','INNER');
-            $this->db->join($this->config->item('table_login_setup_location_divisions').' division','division.id = zone.division_id','INNER');
-            if($this->locations['division_id']>0)
-            {
-                $this->db->where('division.id',$this->locations['division_id']);
-                if($this->locations['zone_id']>0)
-                {
-                    $this->db->where('zone.id',$this->locations['zone_id']);
-                    if($this->locations['territory_id']>0)
-                    {
-                        $this->db->where('t.id',$this->locations['territory_id']);
-                        if($this->locations['district_id']>0)
-                        {
-                            $this->db->where('cus_info.district_id',$this->locations['district_id']);
-                        }
-                    }
-
-                }
-            }
-            $this->db->where('cus_info.revision',1);
-            $this->db->where('cus.status !=',$this->config->item('system_status_delete'));
-
-            $this->db->where('cus.status',$this->config->item('system_status_active'));
-            $this->db->where('cus_info.type',$this->config->item('system_customer_type_outlet_id'));
-            $this->db->where('cus_info.revision',1);
-
-            $this->db->order_by('division.ordering','ASC');
-            $this->db->order_by('zone.ordering','ASC');
-            $this->db->order_by('t.ordering','ASC');
-            $this->db->order_by('d.ordering','ASC');
-            $this->db->order_by('cus_info.ordering','ASC');
-            $data['outlets']=$this->db->get()->result_array();
-
-            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
-
+            $data['system_preference_items']=System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
+            $data['preference_method_name']=$method;
             $ajax['status']=true;
-            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/calculator",$data,true));
-            if($this->message)
-            {
-                $ajax['system_message']=$this->message;
-            }
-            $ajax['system_page_url']=site_url($this->controller_url);
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view("preference_add_edit",$data,true));
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/set_preference_'.$method);
             $this->json_return($ajax);
         }
         else
@@ -129,32 +160,72 @@ class Offer_adjust extends Root_Controller
             $this->json_return($ajax);
         }
     }
-    public function get_dropdown_farmers_by_outlet_farmer_type_id()
+    private function system_list($id)
     {
-        $html_container_id='#farmer_id';
-        if($this->input->post('html_container_id'))
+        $user = User_helper::get_user();
+        $method='list';
+        if(isset($this->permissions['action0']) && ($this->permissions['action0']==1))
         {
-            $html_container_id=$this->input->post('html_container_id');
+            if($id>0)
+            {
+                $farmer_type_id=$id;
+            }
+            else
+            {
+                $farmer_type_id=$this->input->post('farmer_type_id');
+            }
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1','allow_offer ="'.$this->config->item('system_status_yes').'"'),0,0,array('ordering ASC'));
+            if(sizeof($data['farmer_types'])==0)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']="No dealer is allowed for offer.<br>".$this->lang->line('MSG_CONTACT_ADMIN');
+                $this->json_return($ajax);
+            }
+            if(!($farmer_type_id>1))
+            {
+                $farmer_type_id=$data['farmer_types'][0]['value'];
+            }
+            $data['farmer_type_id']=$farmer_type_id;
+            $result=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),'*',array('status ="'.$this->config->item('system_status_active').'"','id ='.$farmer_type_id,'allow_offer ="'.$this->config->item('system_status_yes').'"'),1);
+            if(!$result)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']="Invalid access";
+                $this->json_return($ajax);
+            }
+            $data['system_preference_items']= System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list",$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/list/'.$farmer_type_id);
+            $this->json_return($ajax);
         }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_get_items($farmer_type_id)
+    {
+        $user=User_helper::get_user();
 
-        $farmer_type_id = $this->input->post('farmer_type_id');
-        $outlet_id = $this->input->post('outlet_id');
 
-        $this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
-        $this->db->where('farmer_outlet.outlet_id',$outlet_id);
 
-        $this->db->join($this->config->item('table_pos_setup_farmer_farmer').' farmer','farmer.id = farmer_outlet.farmer_id','INNER');
-
-        $this->db->select('farmer.mobile_no,farmer.name,farmer.id');
-
-        $this->db->where('farmer.farmer_type_id',$farmer_type_id);
-        $this->db->where('farmer.status',$this->config->item('system_status_active'));
-        $this->db->where('farmer_outlet.revision',1);
-
-        $this->db->order_by('farmer.ordering DESC');
+        //dealers
+        $this->db->from($this->config->item('table_pos_setup_farmer_farmer') . ' farmer');
+        $this->db->select('farmer.*');
+        $this->db->join($this->config->item('table_pos_setup_farmer_outlet') . ' farmer_outlet', 'farmer_outlet.farmer_id = farmer.id AND farmer_outlet.revision =1', 'INNER');
+        $this->db->select('farmer_outlet.outlet_id outlet_id');
+        $this->db->where('farmer.farmer_type_id', $farmer_type_id);
+        $this->db->where_in('farmer_outlet.outlet_id', $this->user_outlet_ids);
+        $this->db->order_by('farmer_outlet.outlet_id');
         $this->db->order_by('farmer.id DESC');
-        $farmers=$this->db->get()->result_array();
-        $farmer_ids=array();
+        $farmers = $this->db->get()->result_array();
         $farmer_ids[0]=0;
         foreach($farmers as $farmer)
         {
@@ -162,17 +233,82 @@ class Offer_adjust extends Root_Controller
         }
         $offers=Offer_helper::get_offer_stats($farmer_ids);
 
-        $data['items']=array();
-        foreach($farmers as $farmer)
+        $items=array();
+        foreach($farmers as $item)
         {
-            $item=array();
-            $item['text']=$farmer['name'];
-            $item['value']=$farmer['id'].'/'.$offers[$farmer['id']]['offer_balance'];
-            $data['items'][]=$item;
+            $item['barcode']=Barcode_helper::get_barcode_farmer($item['id']);
+            $item['outlet_name']=$this->user_outlets[$item['outlet_id']]['outlet_name'];
+            $item['offer_offered']=$offers[$item['id']]['offer_offered'];
+            $item['offer_given']=$offers[$item['id']]['offer_given'];
+            $item['offer_adjusted']=$offers[$item['id']]['offer_adjusted'];
+            $item['offer_balance']=$offers[$item['id']]['offer_balance'];
+            $items[]=$item;
         }
-        $ajax['status']=true;
-        $ajax['system_content'][]=array("id"=>$html_container_id,"html"=>$this->load->view("dropdown_with_select",$data,true));
-        $this->json_return($ajax);
+        $this->json_return($items);
+    }
+    private function system_list_offer_adjust($id)
+    {
+        if($id>0)
+        {
+            $data['item_id']=$id;
+        }
+        else
+        {
+            $data['item_id']=$this->input->post('id');
+        }
+        //for fixing back button of preference
+        if(!($data['item_id']>0))
+        {
+            $this->system_list(0);
+        }
+        $user = User_helper::get_user();
+
+        if((isset($this->permissions['action0']) && ($this->permissions['action0']==1)) ||(isset($this->permissions['action1']) && ($this->permissions['action1']==1)) || (isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
+        {
+            $this->check_validation_farmer($data['item_id'],__FUNCTION__);
+            $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$data['item_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
+            $data['amount_credit_limit']=$farmer_info['amount_credit_limit'];
+            $data['amount_credit_balance']=$farmer_info['amount_credit_balance'];
+
+
+            $result=Query_helper::get_info($this->config->item('table_pos_farmer_credit_payment'),array('SUM(amount) amount_total'),array('farmer_id ='.$data['item_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
+            $data['amount_total']=$result['amount_total']?$result['amount_total']:0;
+
+            $data['info_basic']=$this->get_farmer_info($data['item_id']);
+            $method='list_payment';
+            $data['system_preference_items']= System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
+            $data['title']='Payment List ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list_payment",$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/list_payment/'.$data['item_id']);
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_get_items_offer_adjust($item_id)
+    {
+        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' payment');
+        $this->db->select('payment.*');
+        $this->db->where('payment.farmer_id',$item_id);
+        $this->db->where('payment.status !=',$this->config->item('system_status_delete'));
+        $this->db->order_by('payment.id','DESC');
+        $this->db->join($this->config->item('table_login_csetup_cus_info').' customer_info','customer_info.customer_id = payment.outlet_id AND customer_info.revision =1','LEFT');
+        $this->db->select('customer_info.name outlet_name');
+        $items=$this->db->get()->result_array();
+        foreach($items as &$item)
+        {
+            $item['date_payment']=System_helper::display_date($item['date_payment']);
+        }
+        $this->json_return($items);
     }
 
 }
