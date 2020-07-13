@@ -6,7 +6,7 @@ if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
 {
     $action_buttons[]=array(
         'label'=>'Back',
-        'href'=>site_url($CI->controller_url)
+        'href'=>site_url($CI->controller_url.'/index/list/'.$farmer_info['farmer_type_id'])
     );
 }
 if(isset($CI->permissions['action1']) && ($CI->permissions['action1']==1))
@@ -14,16 +14,6 @@ if(isset($CI->permissions['action1']) && ($CI->permissions['action1']==1))
     $action_buttons[]=array(
         'label'=>$CI->lang->line("ACTION_NEW"),
         'href'=>site_url($CI->controller_url.'/index/add/'.$item_id)
-    );
-}
-if(isset($CI->permissions['action2']) && ($CI->permissions['action2']==1))
-{
-    $action_buttons[]=array
-    (
-        'type'=>'button',
-        'label'=>$CI->lang->line('ACTION_EDIT'),
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/edit/'.$item_id)
     );
 }
 if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
@@ -70,12 +60,12 @@ if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
     $action_buttons[]=array
     (
         'label'=>'Preference',
-        'href'=>site_url($CI->controller_url.'/index/set_preference_list_payment')
+        'href'=>site_url($CI->controller_url.'/index/set_preference_list_offer_adjust')
     );
 }
 $action_buttons[]=array(
     'label'=>$CI->lang->line("ACTION_REFRESH"),
-    'href'=>site_url($CI->controller_url.'/index/list_payment/'.$item_id)
+    'href'=>site_url($CI->controller_url.'/index/list_offer_adjust/'.$item_id)
 );
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 
@@ -88,9 +78,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="clearfix"></div>
     </div>
-    <?php
-        echo $CI->load->view("info_basic", $info_basic, true);
-    ?>
+
     <?php
     if(isset($CI->permissions['action6']) && ($CI->permissions['action6']==1))
     {
@@ -99,10 +87,11 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     ?>
     <div class="row">
         <div class="col-xs-12">
-            <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow">Credit Limit: <?php echo System_helper::get_string_amount($amount_credit_limit);?></button>
-            <button type="button" class="btn btn-warning btn-md" style="font-weight: bold;color: #000000;background-color: lightblue">Balance: <?php echo System_helper::get_string_amount($amount_credit_balance);?></button>
-            <button type="button" class="btn btn-danger btn-md" style="font-weight: bold;color: #000000;background-color: lightgreen">Total Payment: <?php echo System_helper::get_string_amount($amount_total);?></button>
-            <button type="button" class="btn btn-primary btn-md" style="font-weight: bold;color: #000000;background-color: lightcoral">Total Due: <?php echo System_helper::get_string_amount($amount_credit_limit-$amount_credit_balance);?></button>
+            <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_OFFERED'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_offered']);?></button>
+            <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_GIVEN'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_given']);?></button>
+            <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_ADJUSTED'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_adjusted']);?></button>
+            <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_BALANCE'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_balance']);?></button>
+
         </div>
     </div>
 
@@ -117,7 +106,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     {
         system_off_events();
         system_preset({controller:'<?php echo $CI->router->class; ?>'});
-        var url = "<?php echo site_url($CI->controller_url.'/index/get_items_payment/'.$item_id);?>";
+        var url = "<?php echo site_url($CI->controller_url.'/index/get_items_offer_adjust/'.$item_id);?>";
 
         // prepare the data
         var source =
@@ -213,12 +202,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columns:
                 [
                     { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['id']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_OUTLET_NAME'); ?>', dataField: 'outlet_name',width:'200',cellsrenderer: cellsrenderer,filtertype: 'list', hidden: <?php echo $system_preference_items['outlet_name']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_DATE_PAYMENT'); ?>', dataField: 'date_payment',width:'100', hidden: <?php echo $system_preference_items['date_payment']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT'); ?>', dataField: 'amount',width:'120',cellsAlign:'right', hidden: <?php echo $system_preference_items['amount']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_amount},
-                    { text: '<?php echo $CI->lang->line('LABEL_REFERENCE_NO'); ?>', dataField: 'reference_no',width:'100', hidden: <?php echo $system_preference_items['reference_no']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_REMARKS'); ?>', dataField: 'remarks',width:'300', hidden: <?php echo $system_preference_items['remarks']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_REVISION_COUNT'); ?>', dataField: 'revision_count',width:'50', hidden: <?php echo $system_preference_items['revision_count']?0:1;?>}
+                    { text: '<?php echo $CI->lang->line('LABEL_REMARKS'); ?>', dataField: 'remarks',hidden: <?php echo $system_preference_items['remarks']?0:1;?>}
+
                 ]
             });
     });

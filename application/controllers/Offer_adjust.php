@@ -49,6 +49,8 @@ class Offer_adjust extends Root_Controller
         $this->lang->language['LABEL_OFFER_BALANCE']='Offer Remains';
         $this->lang->language['LABEL_DELETE']='Delete';
         $this->lang->language['LABEL_REMARKS_DELETE']='Delete Reason';
+        $this->lang->language['LABEL_DATE_ADJUST']='Adjust Date';
+        $this->lang->language['LABEL_AMOUNT']='Amount';
     }
     public function index($action="list",$id=0,$id1=0)
     {
@@ -127,12 +129,9 @@ class Offer_adjust extends Root_Controller
         else if($method=='list_offer_adjust')
         {
             $data['id']= 1;
-            $data['outlet_name']= 1;
-            $data['date_payment']= 1;
+            $data['date_adjust']= 1;
             $data['amount']= 1;
-            $data['reference_no']= 1;
             $data['remarks']= 1;
-            $data['revision_count']= 1;
         }
         else
         {
@@ -265,26 +264,42 @@ class Offer_adjust extends Root_Controller
 
         if((isset($this->permissions['action0']) && ($this->permissions['action0']==1)) ||(isset($this->permissions['action1']) && ($this->permissions['action1']==1)) || (isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
         {
-            $this->check_validation_farmer($data['item_id'],__FUNCTION__);
             $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$data['item_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
-            $data['amount_credit_limit']=$farmer_info['amount_credit_limit'];
-            $data['amount_credit_balance']=$farmer_info['amount_credit_balance'];
+            if(!$farmer_info)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Dealer';
+                $this->json_return($ajax);
+            }
+            $data['farmer_info']=$farmer_info;
+            $this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
+            $this->db->select('farmer_outlet.outlet_id');
+            $this->db->where('farmer_outlet.farmer_id',$data['item_id']);
+            $this->db->where('farmer_outlet.revision',1);
+            $this->db->where_in('farmer_outlet.outlet_id',$this->user_outlet_ids);
+            $results=$this->db->get()->result_array();
+            if(!$results)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+                $this->json_return($ajax);
+            }
+
+            $offers=Offer_helper::get_offer_stats(array($data['item_id']));
+
+            $data['offer_info']=$offers[$data['item_id']];
 
 
-            $result=Query_helper::get_info($this->config->item('table_pos_farmer_credit_payment'),array('SUM(amount) amount_total'),array('farmer_id ='.$data['item_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
-            $data['amount_total']=$result['amount_total']?$result['amount_total']:0;
-
-            $data['info_basic']=$this->get_farmer_info($data['item_id']);
-            $method='list_payment';
+            $method='list_offer_adjust';
             $data['system_preference_items']= System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
-            $data['title']='Payment List ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
+            $data['title']='Offer Adjust List ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
             $ajax['status']=true;
-            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list_payment",$data,true));
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list_offer_adjust",$data,true));
             if($this->message)
             {
                 $ajax['system_message']=$this->message;
             }
-            $ajax['system_page_url']=site_url($this->controller_url.'/index/list_payment/'.$data['item_id']);
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/list_offer_adjust/'.$data['item_id']);
             $this->json_return($ajax);
         }
         else
@@ -296,17 +311,15 @@ class Offer_adjust extends Root_Controller
     }
     private function system_get_items_offer_adjust($item_id)
     {
-        $this->db->from($this->config->item('table_pos_farmer_credit_payment').' payment');
-        $this->db->select('payment.*');
-        $this->db->where('payment.farmer_id',$item_id);
-        $this->db->where('payment.status !=',$this->config->item('system_status_delete'));
-        $this->db->order_by('payment.id','DESC');
-        $this->db->join($this->config->item('table_login_csetup_cus_info').' customer_info','customer_info.customer_id = payment.outlet_id AND customer_info.revision =1','LEFT');
-        $this->db->select('customer_info.name outlet_name');
+        $this->db->from($this->config->item('table_login_offer_adjust_farmer').' offer_adjust');
+        $this->db->select('offer_adjust.*');
+        $this->db->where('offer_adjust.farmer_id',$item_id);
+        $this->db->where('offer_adjust.status !=',$this->config->item('system_status_delete'));
+        $this->db->order_by('offer_adjust.id','DESC');
         $items=$this->db->get()->result_array();
         foreach($items as &$item)
         {
-            $item['date_payment']=System_helper::display_date($item['date_payment']);
+            $item['date_adjust']=System_helper::display_date($item['date_adjust']);
         }
         $this->json_return($items);
     }

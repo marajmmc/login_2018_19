@@ -93,3 +93,4 @@ $config['table_login_setup_sms_farmer_due'] = 'arm_login_2018_19.login_setup_sms
 
 //offer
 $config['table_login_offer_setup_variety'] = 'arm_login_2018_19.login_offer_setup_variety';
+$config['table_login_offer_adjust_farmer'] = 'arm_login_2018_19.login_offer_adjust_farmer';
