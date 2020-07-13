@@ -11,6 +11,7 @@ $lang['MSG_CONFIRM_SAVE'] = 'Are You Sure to save?';
 $lang['MSG_SELECT_ONE'] = 'Please Select At least one item';
 $lang['MSG_SESSION_TIME_OUT'] = 'Your session expired.Please login again';
 $lang['MSG_CONTACT_ADMIN'] = 'Please contact with admin(01713090956).';
+$lang['MSG_SAVE_ALREADY'] = "This Data Already Saved.\nTry another one.";
 
 $lang['MSG_LOGIN_FAIL_0'] = 'Invalid username';
 $lang['MSG_LOGIN_FAIL_100'] = 'Wrong password';

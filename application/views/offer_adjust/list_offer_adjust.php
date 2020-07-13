@@ -16,16 +16,6 @@ if(isset($CI->permissions['action1']) && ($CI->permissions['action1']==1))
         'href'=>site_url($CI->controller_url.'/index/add/'.$item_id)
     );
 }
-if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
-{
-    $action_buttons[]=array
-    (
-        'type'=>'button',
-        'label'=>$CI->lang->line('ACTION_DETAILS'),
-        'class'=>'button_jqx_action',
-        'data-action-link'=>site_url($CI->controller_url.'/index/details/'.$item_id)
-    );
-}
 if(isset($CI->permissions['action3']) && ($CI->permissions['action3']==1))
 {
     $action_buttons[]=array
@@ -202,6 +192,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columns:
                 [
                     { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_DATE_ADJUST'); ?>', dataField: 'date_adjust',width:'200', hidden: <?php echo $system_preference_items['date_adjust']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT'); ?>', dataField: 'amount',width:'120',cellsAlign:'right', hidden: <?php echo $system_preference_items['amount']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_amount},
                     { text: '<?php echo $CI->lang->line('LABEL_REMARKS'); ?>', dataField: 'remarks',hidden: <?php echo $system_preference_items['remarks']?0:1;?>}
 

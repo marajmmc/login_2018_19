@@ -74,10 +74,6 @@ class Offer_adjust extends Root_Controller
         {
             $this->system_add($id);
         }
-        elseif($action=="edit")
-        {
-            $this->system_edit($id,$id1);
-        }
         elseif($action=="save")
         {
             $this->system_save();
@@ -245,6 +241,27 @@ class Offer_adjust extends Root_Controller
         }
         $this->json_return($items);
     }
+    protected function check_validation_farmer($farmer_info)
+    {
+        if(!$farmer_info)
+        {
+            $ajax['status']=false;
+            $ajax['system_message']='Invalid Dealer';
+            $this->json_return($ajax);
+        }
+        $this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
+        $this->db->select('farmer_outlet.outlet_id');
+        $this->db->where('farmer_outlet.farmer_id',$farmer_info['id']);
+        $this->db->where('farmer_outlet.revision',1);
+        $this->db->where_in('farmer_outlet.outlet_id',$this->user_outlet_ids);
+        $results=$this->db->get()->result_array();
+        if(!$results)
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
     private function system_list_offer_adjust($id)
     {
         if($id>0)
@@ -265,26 +282,8 @@ class Offer_adjust extends Root_Controller
         if((isset($this->permissions['action0']) && ($this->permissions['action0']==1)) ||(isset($this->permissions['action1']) && ($this->permissions['action1']==1)) || (isset($this->permissions['action2']) && ($this->permissions['action2']==1)))
         {
             $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$data['item_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
-            if(!$farmer_info)
-            {
-                $ajax['status']=false;
-                $ajax['system_message']='Invalid Dealer';
-                $this->json_return($ajax);
-            }
+            $this->check_validation_farmer($farmer_info);
             $data['farmer_info']=$farmer_info;
-            $this->db->from($this->config->item('table_pos_setup_farmer_outlet').' farmer_outlet');
-            $this->db->select('farmer_outlet.outlet_id');
-            $this->db->where('farmer_outlet.farmer_id',$data['item_id']);
-            $this->db->where('farmer_outlet.revision',1);
-            $this->db->where_in('farmer_outlet.outlet_id',$this->user_outlet_ids);
-            $results=$this->db->get()->result_array();
-            if(!$results)
-            {
-                $ajax['status']=false;
-                $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
-                $this->json_return($ajax);
-            }
-
             $offers=Offer_helper::get_offer_stats(array($data['item_id']));
 
             $data['offer_info']=$offers[$data['item_id']];
@@ -319,9 +318,105 @@ class Offer_adjust extends Root_Controller
         $items=$this->db->get()->result_array();
         foreach($items as &$item)
         {
-            $item['date_adjust']=System_helper::display_date($item['date_adjust']);
+            $item['date_adjust']=System_helper::display_date_time($item['date_adjust']);
         }
         $this->json_return($items);
+    }
+    private function system_add($farmer_id)
+    {
+        if(isset($this->permissions['action1'])&&($this->permissions['action1']==1))
+        {
+            $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$farmer_id,'status!="'.$this->config->item('system_status_delete').'"'),1);
+            $this->check_validation_farmer($farmer_info);
+            $data['farmer_info']=$farmer_info;
+            $offers=Offer_helper::get_offer_stats(array($farmer_id));
+            $data['offer_info']=$offers[$farmer_id];
+
+            $data['title']='New Offer Adjustment ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
+            $data['item']['id']=0;
+            $data['item']['amount']='';
+            $data['item']['reference_no']='';
+            $data['item']['remarks']='';
+            $ajax['status']=true;
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/add_edit",$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/add/'.$farmer_id);
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_save()
+    {
+        $user = User_helper::get_user();
+        $time=time();
+        $item=$this->input->post('item');
+        $farmer_id = $this->input->post("farmer_id");
+        $system_user_token = $this->input->post("system_user_token");
+        $system_user_token_info = Token_helper::get_token($system_user_token);
+        if($system_user_token_info['status'])
+        {
+            $this->message=$this->lang->line('MSG_SAVE_ALREADY');
+            $this->system_list_offer_adjust($farmer_id);
+        }
+        //Token_helper::update_token($system_user_token_info['id'], $system_user_token);
+
+
+
+        $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$farmer_id,'status!="'.$this->config->item('system_status_delete').'"'),1);
+        $this->check_validation_farmer($farmer_info);
+        if(!$this->check_validation_save())
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->message;
+            $this->json_return($ajax);
+        }
+
+
+        $this->db->trans_start();  //DB Transaction Handle START
+        $data=array();
+        $data['farmer_id'] = $farmer_id;
+        $data['date_adjust'] = $time;
+        $data['amount'] =strlen($item['amount'])>0?$item['amount']:0;
+        $data['remarks'] = $item['remarks'];
+        $data['status'] = $this->config->item('system_status_active');
+        $data['date_created'] = $time;
+        $data['user_created'] = $user->user_id;
+        Query_helper::add($this->config->item('table_login_offer_adjust_farmer'),$data);
+        Token_helper::update_token($system_user_token_info['id'], $system_user_token);
+
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status() === TRUE)
+        {
+            $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+            $this->system_list_offer_adjust($farmer_id);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+            $this->json_return($ajax);
+        }
+    }
+    private function check_validation_save()
+    {
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('item[amount]',$this->lang->line('LABEL_AMOUNT'),'required');
+        $this->form_validation->set_rules('item[remarks]',$this->lang->line('LABEL_REMARKS'),'required');
+
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->message=validation_errors();
+            return false;
+        }
+        return true;
     }
 
 }

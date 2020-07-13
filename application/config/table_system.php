@@ -29,3 +29,4 @@ $config['table_system_bms_user_group'] = 'arm_bms_2018_19.system_user_group';
 $config['table_system_bms_assigned_group'] = 'arm_bms_2018_19.system_assigned_group';
 $config['table_system_bms_user_group_role'] = 'arm_bms_2018_19.system_user_group_role';
 $config['table_system_bms_task'] = 'arm_bms_2018_19.system_task';
+CONST TABLE_SYSTEM_TOKEN=  'arm_beeztola_2018_19.system_token';//duplicate save checking
