@@ -80,15 +80,11 @@ class Offer_adjust extends Root_Controller
         }
         elseif ($action == "delete")
         {
-            $this->system_delete($id,$id1);
+            $this->system_delete($id);
         }
         elseif ($action == "save_delete")
         {
             $this->system_save_delete();
-        }
-        elseif($action=="details")
-        {
-            $this->system_details($id,$id1);
         }
         elseif($action=="set_preference")
         {
@@ -410,6 +406,125 @@ class Offer_adjust extends Root_Controller
         $this->load->library('form_validation');
         $this->form_validation->set_rules('item[amount]',$this->lang->line('LABEL_AMOUNT'),'required');
         $this->form_validation->set_rules('item[remarks]',$this->lang->line('LABEL_REMARKS'),'required');
+
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->message=validation_errors();
+            return false;
+        }
+        return true;
+    }
+    private function system_delete($id)
+    {
+        if(isset($this->permissions['action3'])&&($this->permissions['action3']==1))
+        {
+            if ($id > 0)
+            {
+                $item_id = $id;
+            }
+            else
+            {
+                $item_id = $this->input->post('id');
+            }
+
+            $data['item']=Query_helper::get_info($this->config->item('table_login_offer_adjust_farmer'),array('*'),array('id ='.$item_id,'status ="'.$this->config->item('system_status_active').'"'),1);
+            if(!$data['item'])
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='Invalid Offer';
+                $this->json_return($ajax);
+            }
+
+            $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$data['item']['farmer_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
+            $this->check_validation_farmer($farmer_info);
+            $data['farmer_info']=$farmer_info;
+            $offers=Offer_helper::get_offer_stats(array($farmer_info['id']));
+            $data['offer_info']=$offers[$farmer_info['id']];
+
+            $data['title']='Delete Offer Adjustment ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
+
+            $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/delete",$data,true));
+            if($this->message)
+            {
+                $ajax['system_message']=$this->message;
+            }
+            $ajax['system_page_url']=site_url($this->controller_url.'/index/delete/'.$item_id);
+            $this->json_return($ajax);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+    }
+    private function system_save_delete()
+    {
+        $user = User_helper::get_user();
+        $time=time();
+        $item_id = $this->input->post('id');
+        $item_info=Query_helper::get_info($this->config->item('table_login_offer_adjust_farmer'),array('*'),array('id ='.$item_id),1);
+        if(!$item_info)
+        {
+            $ajax['status']=false;
+            $ajax['system_message']='Invalid offer';
+            $this->json_return($ajax);
+        }
+        $item=$this->input->post('item');
+        $system_user_token = $this->input->post("system_user_token");
+        $system_user_token_info = Token_helper::get_token($system_user_token);
+        if($system_user_token_info['status'])
+        {
+            $this->message=$this->lang->line('MSG_SAVE_ALREADY');
+            $this->system_list_offer_adjust($item_info['farmer_id']);
+        }
+        if (!(isset($this->permissions['action3']) && ($this->permissions['action3'] == 1)))
+        {
+            $ajax['status'] = false;
+            $ajax['system_message'] = $this->lang->line("YOU_DONT_HAVE_ACCESS");
+            $this->json_return($ajax);
+        }
+
+        //Token_helper::update_token($system_user_token_info['id'], $system_user_token);
+
+
+
+        $farmer_info=Query_helper::get_info($this->config->item('table_pos_setup_farmer_farmer'),array('*'),array('id ='.$item_info['farmer_id'],'status!="'.$this->config->item('system_status_delete').'"'),1);
+        $this->check_validation_farmer($farmer_info);
+        if(!$this->check_validation_save_delete())
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->message;
+            $this->json_return($ajax);
+        }
+
+
+        $this->db->trans_start();  //DB Transaction Handle START
+        $data=array();
+        $data['remarks_delete'] = $item['remarks_delete'];
+        $data['status'] = $this->config->item('system_status_delete');
+        $data['date_deleted'] = $time;
+        $data['user_deleted'] = $user->user_id;
+        Query_helper::update($this->config->item('table_login_offer_adjust_farmer'),$data, array('id='.$item_id), true);
+        Token_helper::update_token($system_user_token_info['id'], $system_user_token);
+
+        $this->db->trans_complete();   //DB Transaction Handle END
+        if ($this->db->trans_status() === TRUE)
+        {
+            $this->message=$this->lang->line("MSG_SAVED_SUCCESS");
+            $this->system_list_offer_adjust($item_info['farmer_id']);
+        }
+        else
+        {
+            $ajax['status']=false;
+            $ajax['system_message']=$this->lang->line("MSG_SAVED_FAIL");
+            $this->json_return($ajax);
+        }
+    }
+    private function check_validation_save_delete()
+    {
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('item[remarks_delete]',$this->lang->line('LABEL_REMARKS_DELETE'),'required');
 
         if($this->form_validation->run() == FALSE)
         {

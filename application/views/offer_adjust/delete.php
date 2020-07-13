@@ -27,8 +27,8 @@ $action_buttons[]=array(
 $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
 
 ?>
-<form id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save');?>" method="post">
-    <input type="hidden" id="farmer_id" name="farmer_id" value="<?php echo $farmer_info['id']?>" />
+<form id="save_form" action="<?php echo site_url($CI->controller_url.'/index/save_delete');?>" method="post">
+    <input type="hidden" id="id" name="id" value="<?php echo $item['id']?>" />
     <input type="hidden" id="system_save_new_status" name="system_save_new_status" value="0" />
     <input type="hidden" id="system_user_token" name="system_user_token" value="<?php echo time().'_'.$user->id; ?>" />
     <div class="row widget">
@@ -48,18 +48,18 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_AMOUNT');?><span style="color:#FF0000">*</span></label>
+                <label class="control-label pull-right"><?php echo 'Delete '.$CI->lang->line('LABEL_AMOUNT');?></label>
             </div>
             <div class="col-sm-4 col-xs-8">
-                <input type="text" name="item[amount]" id="amount" class="form-control float_type_all" value="" />
+                <label class="control-label"><?php echo System_helper::get_string_amount($item['amount']);?></label>
             </div>
         </div>
         <div class="row show-grid">
             <div class="col-xs-4">
-                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_REMARKS');?> <span style="color:#FF0000">*</span></label>
+                <label class="control-label pull-right"><?php echo $CI->lang->line('LABEL_REMARKS_DELETE');?> <span style="color:#FF0000">*</span></label>
             </div>
             <div class="col-sm-4 col-xs-8">
-                <textarea name="item[remarks]" id="remarks" class="form-control" ><?php echo $item['remarks'];?></textarea>
+                <textarea name="item[remarks_delete]" id="remarks_delete" class="form-control" ></textarea>
             </div>
         </div>
     </div>
