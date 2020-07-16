@@ -68,11 +68,9 @@ class Offer_calculator extends Root_Controller
                 $ajax['system_message']="Invalid access";
                 $this->json_return($ajax);
             }
-            $price_multiplier=$result['price_multiplier'];
-
             //variety price and offers
             $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
-            $this->db->select('price.id,price.variety_id,price.pack_size_id,ROUND(price.price *'.$price_multiplier.',2) price_unit_pack');
+            $this->db->select('price.id,price.variety_id,price.pack_size_id,price.price price,price.price_farmers');
             $this->db->join($this->config->item('table_login_setup_classification_varieties').' v','v.id=price.variety_id','INNER');
             $this->db->select('v.name variety_name');
             $this->db->join($this->config->item('table_login_setup_classification_crop_types').' crop_type','crop_type.id = v.crop_type_id','INNER');
@@ -98,6 +96,13 @@ class Offer_calculator extends Root_Controller
             $data['sale_varieties_info']=array();
             foreach($results as $result)
             {
+                $result['price_unit_pack']=$result['price'];
+                $price_farmers=(json_decode($result['price_farmers'],true));
+                if(isset($price_farmers[$farmer_type_id]))
+                {
+                    $result['price_unit_pack']=$price_farmers[$farmer_type_id];
+                }
+                unset($result['price_farmers']);
                 $data['sale_varieties_info'][Barcode_helper::get_barcode_variety('000',$result['variety_id'],$result['pack_size_id'])]=$result;
             }
             //assign outlets
