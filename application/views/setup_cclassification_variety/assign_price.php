@@ -110,6 +110,27 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <input type="text" name="item[price_net]" id="price_net" class="form-control float_type_positive" value="<?php echo $item['price_net'];?>"/>
             </div>
         </div>
+        <?php
+        foreach($farmer_types as $farmer_type)
+        {
+            $price_farmer='';
+            $price_farmers=(json_decode($item['price_farmers'],true));
+            if(isset($price_farmers[$farmer_type['value']]))
+            {
+                $price_farmer=$price_farmers[$farmer_type['value']];
+            }
+            ?>
+            <div class="row show-grid">
+                <div class="col-xs-4">
+                    <label for="price_net" class="control-label pull-right">Price <?php echo$farmer_type['text'];?><br><small>Keep Blank for same as trade price</small></label>
+                </div>
+                <div class="col-sm-4 col-xs-8">
+                    <input type="text" name="price_farmers[<?php echo $farmer_type['value']; ?>]" placeholder="Same as trade price" class="form-control float_type_positive" value="<?php echo $price_farmer;?>"/>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
         <div class="row show-grid">
             <div class="col-xs-4">
                 <label for="number_of_seeds" class="control-label pull-right"><?php echo $this->lang->line('Number of Seeds');?><span style="color:#FF0000">*</span></label>

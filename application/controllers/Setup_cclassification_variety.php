@@ -401,6 +401,7 @@ class Setup_cclassification_variety extends Root_Controller
             }
 
             $data['title']="Pack Size Price List of Variety (".$data['item']['name'].')';
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/pricing",$data,true));
             if($this->message)
@@ -466,15 +467,37 @@ class Setup_cclassification_variety extends Root_Controller
     private function system_get_pricing_items()
     {
         $id=$this->input->post('id');
+        $farmer_types=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
 
-        $this->db->select('ps.name,ps.id');
-        $this->db->select('price.price,price.price_net,price.number_of_seeds');
         $this->db->from($this->config->item('table_login_setup_classification_variety_price').' price');
+        $this->db->select('ps.name,ps.id');
+        $this->db->select('price.price,price.price_net,price.number_of_seeds,price.price_farmers');
+
         $this->db->join($this->config->item('table_login_setup_classification_pack_size').' ps','ps.id=price.pack_size_id','INNER');
         $this->db->where('price.variety_id',$id);
         $this->db->order_by('price.pack_size_id','ASC');
         $results=$this->db->get()->result_array();
-        $this->json_return($results);
+        $items=array();
+        foreach($results as $result)
+        {
+            $item=array();
+            $item['id']=$result['id'];
+            $item['name']=$result['name'];
+            $item['price']=$result['price'];
+            $item['price_net']=$result['price_net'];
+            $item['number_of_seeds']=$result['number_of_seeds'];
+            $price_farmers=(json_decode($result['price_farmers'],true));
+            foreach($farmer_types as $farmer_type)
+            {
+                $item['price_farmer_type_'.$farmer_type['value']]=$item['price'];
+                if(isset($price_farmers[$farmer_type['value']]))
+                {
+                    $item['price_farmer_type_'.$farmer_type['value']]=$price_farmers[$farmer_type['value']];
+                }
+            }
+            $items[]=$item;
+        }
+        $this->json_return($items);
     }
     private function system_get_pack_items()
     {
@@ -541,9 +564,10 @@ class Setup_cclassification_variety extends Root_Controller
                 'pack_size_id'=>'',
                 'price'=>'',
                 'price_net'=>'',
+                'price_farmers'=>'{}',
                 'number_of_seeds'=>0
             );
-
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
             $data['title']="Assign Price to Pack Size of Variety (".$data['info']['name'].')';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/assign_price",$data,true));
@@ -664,6 +688,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $ajax['system_message']='Invalid Pack Size.';
                 $this->json_return($ajax);
             }
+            $data['farmer_types']=Query_helper::get_info($this->config->item('table_pos_setup_farmer_type'),array('id value,name text'),array('status ="'.$this->config->item('system_status_active').'"','id >1'),0,0,array('ordering ASC'));
 
             $data['title']='Change Price to Pack Size ('.$data['item']['name'].') of Variety ('.$data['info']['name'].')';
             $ajax['status']=true;
@@ -1291,6 +1316,17 @@ class Setup_cclassification_variety extends Root_Controller
         else
         {
             $item=$this->input->post('item');
+            $price_farmers=$this->input->post('price_farmers');
+            $price_farmers_new=array();
+            foreach($price_farmers as $farmer_type_id=>$price_farmer)
+            {
+                if(strlen($price_farmer)>0)
+                {
+                    $price_farmers_new[$farmer_type_id]=$price_farmer;
+                }
+            }
+            $item['price_farmers']=json_encode($price_farmers_new,JSON_FORCE_OBJECT);
+
 
             $this->db->trans_start();  //DB Transaction Handle START
             $history_data=array();
@@ -1299,6 +1335,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $data=array();
                 $data['price']=$item['price'];
                 $data['price_net']=$item['price_net'];
+                $data['price_farmers']=$item['price_farmers'];
                 $data['number_of_seeds']=$item['number_of_seeds'];
                 $data['user_updated']=$user->user_id;
                 $data['date_updated']=$time;
@@ -1329,6 +1366,7 @@ class Setup_cclassification_variety extends Root_Controller
                 $data['pack_size_id']=$item['pack_size_id'];
                 $data['price']=$item['price'];
                 $data['price_net']=$item['price_net'];
+                $data['price_farmers']=$item['price_farmers'];
                 $data['number_of_seeds']=$item['number_of_seeds'];
                 $data['user_created']=$user->user_id;
                 $data['date_created']=$time;
@@ -1341,6 +1379,7 @@ class Setup_cclassification_variety extends Root_Controller
             $history_data['variety_id']=$item['variety_id'];
             $history_data['price']=$item['price'];
             $history_data['price_net']=$item['price_net'];
+            $history_data['price_farmers']=$item['price_farmers'];
             $history_data['number_of_seeds']=$item['number_of_seeds'];
             $history_data['user_created']=$user->user_id;
             $history_data['date_created']=$time;

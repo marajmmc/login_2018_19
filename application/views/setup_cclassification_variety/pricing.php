@@ -126,6 +126,14 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                     <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="name"><?php echo $CI->lang->line('LABEL_PACK_NAME'); ?></label>
                     <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="price"><?php echo $CI->lang->line('LABEL_PRICE_TRADE'); ?></label>
                     <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="price_net"><?php echo $CI->lang->line('LABEL_PRICE_NET'); ?></label>
+                    <?php
+                    foreach($farmer_types as $farmer_type)
+                    {
+                        ?>
+                        <label class="checkbox-inline"><input type="checkbox" class="system_jqx_column"  checked value="price_farmer_type_<?php echo $farmer_type['value']; ?>"><?php echo $farmer_type['text']; ?></label>
+                        <?php
+                    }
+                    ?>
                 </div>
             </div>
             <?php
@@ -151,9 +159,17 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             dataFields: [
                 { name: 'id', type: 'int' },
                 { name: 'name', type: 'string' },
-                { name: 'price', type: 'string' },
-                { name: 'price_net', type: 'string' },
-                { name: 'number_of_seeds', type: 'string' }
+                { name: 'price', type: 'number' },
+                { name: 'price_net', type: 'number' },
+                <?php
+                    foreach($farmer_types as $farmer_type)
+                    {
+                        ?>
+                        { name: 'price_farmer_type_<?php echo $farmer_type['value']; ?>', type: 'number' },
+                        <?php
+                    }
+                    ?>
+                { name: 'number_of_seeds', type: 'number' }
             ],
             id: 'id',
             type: 'POST',
@@ -162,6 +178,24 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         };
 
         var dataAdapter = new $.jqx.dataAdapter(source);
+        var cellsrenderer = function(row, column, value, defaultHtml, columnSettings, record)
+        {
+            var element = $(defaultHtml);
+            if(column.substr(0,5)=='price')
+            {
+                if(value==0)
+                {
+                    element.html('');
+                }
+                else
+                {
+                    element.html(get_string_amount(value));
+                }
+            }
+
+            return element[0].outerHTML;
+
+        };
         // create jqxgrid.
         $("#system_jqx_container").jqxGrid(
             {
@@ -181,8 +215,16 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 autoheight: true,
                 columns: [
                     { text: '<?php echo $CI->lang->line('LABEL_PACK_NAME'); ?>', dataField: 'name',width:'100'},
-                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_TRADE'); ?>', dataField: 'price',width:'100',cellsalign:'right'},
-                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_NET'); ?>', dataField: 'price_net',width:'100',cellsalign:'right'},
+                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_TRADE'); ?>', dataField: 'price',cellsrenderer: cellsrenderer,width:'100',cellsalign:'right'},
+                    { text: '<?php echo $CI->lang->line('LABEL_PRICE_NET'); ?>', dataField: 'price_net',cellsrenderer: cellsrenderer,width:'100',cellsalign:'right'},
+                    <?php
+                        foreach($farmer_types as $farmer_type)
+                        {
+                            ?>
+                        { text: '<?php echo $farmer_type['text']; ?>', dataField: 'price_farmer_type_<?php echo $farmer_type['value']; ?>',cellsrenderer: cellsrenderer,width:'100',cellsalign:'right'},
+                        <?php
+                        }
+                    ?>
                     { text: '<?php echo $CI->lang->line('Number Of seeds'); ?>', dataField: 'number_of_seeds',width:'100',cellsalign:'right'}
                 ]
             });
