@@ -136,7 +136,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </tr>
             <tr>
                 <td colspan="6">&nbsp;</td>
-                <td class="text-right" colspan="2"><label>Reward Point Balance</label></td>
+                <td class="text-right" colspan="2"><label>New Reward Point Balance</label></td>
                 <td class="text-right"><label id="offer_balance_new">0.00</label></td>
                 <td>&nbsp;</td>
             </tr>
