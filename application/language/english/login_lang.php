@@ -213,8 +213,8 @@ $lang['LABEL_CUSTOMER_TYPE'] = 'Outlet Type';
 $lang['LABEL_PICTURE'] = 'Picture';
 $lang['LABEL_MAP_ADDRESS'] = 'Google Map Link';
 $lang['LABEL_INCHARGE'] = 'In-charge';
-$lang['LABEL_OUTLET_NAME'] = 'Showroom';
-$lang['LABEL_OUTLET'] = 'Showroom';
+$lang['LABEL_OUTLET_NAME'] = 'Sales Point';
+$lang['LABEL_OUTLET'] = 'Sales Point';
 
 /*Preference button lang config :: added by maraj*/
 $lang['LABEL_STATUS'] = 'Status';

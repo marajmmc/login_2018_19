@@ -18,7 +18,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     </div>
     <div style="" class="row show-grid" id="crop_id_container">
         <div class="col-xs-4">
-            <label class="control-label pull-right">Dealer type</label>
+            <label class="control-label pull-right">Customer type</label>
         </div>
         <div class="col-sm-4 col-xs-4">
             <select id="farmer_type_id" class="form-control">
@@ -34,11 +34,11 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     </div>
     <div style="" class="row show-grid">
         <div class="col-xs-4">
-            <label class="control-label pull-right">Outlet</label>
+            <label class="control-label pull-right">Sales Point</label>
         </div>
         <div class="col-sm-4 col-xs-4">
             <select id="outlet_id" class="form-control">
-                <option value="">Select Outlet</option>
+                <option value="">Select Sales Point</option>
                 <?php
                 foreach($outlets as $outlet)
                 {?>
@@ -51,7 +51,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
     </div>
     <div id="farmer_id_container" style="display: none" class="row show-grid">
         <div class="col-xs-4">
-            <label class="control-label pull-right">Outlet</label>
+            <label class="control-label pull-right">Customer</label>
         </div>
         <div class="col-sm-4 col-xs-4">
             <select id="farmer_id" class="form-control">
@@ -99,12 +99,12 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <th style="min-width: 100px;"><?php echo $CI->lang->line('LABEL_CROP_NAME'); ?></th>
                 <th style="min-width: 100px;"><?php echo $CI->lang->line('LABEL_VARIETY_NAME').' - '.$CI->lang->line('LABEL_PACK_SIZE_NAME'); ?></th>
                 <th style="min-width: 100px;"><?php echo $CI->lang->line('LABEL_PRICE_PER_PACK'); ?></th>
-                <th style="min-width: 100px;">Minimum Offer Quantity (kg)</th>
-                <th style="min-width: 100px;">Per kg Offer Amount</th>
+                <th style="min-width: 100px;">Minimum Order (kg) For Reward points</th>
+                <th style="min-width: 100px;">Reward Points/Kg</th>
                 <th style="min-width: 100px;"><?php echo $CI->lang->line('LABEL_QUANTITY'); ?>(Packets)</th>
                 <th style="min-width: 100px;"><?php echo $CI->lang->line('LABEL_WEIGHT_KG'); ?></th>
                 <th style="min-width: 100px;">Price</th>
-                <th style="min-width: 100px;">Reward Point</th>
+                <th style="min-width: 100px;">Reward Points</th>
                 <th style="min-width: 150px;"><?php echo $CI->lang->line('ACTION'); ?></th>
             </tr>
             </thead>
@@ -130,13 +130,13 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 <td colspan="2">
                     &nbsp;
                 </td>
-                <td class="text-right" colspan="2"><label>Reward Point Balance</label></td>
+                <td class="text-right" colspan="2"><label>Previous Reward Points Balance</label></td>
                 <td class="text-right"><label id="offer_balance">0.00</label></td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
                 <td colspan="6">&nbsp;</td>
-                <td class="text-right" colspan="2"><label>New Reward Point Balance</label></td>
+                <td class="text-right" colspan="2"><label>New Reward Points Balance</label></td>
                 <td class="text-right"><label id="offer_balance_new">0.00</label></td>
                 <td>&nbsp;</td>
             </tr>
@@ -275,8 +275,8 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 $(content_id+' .variety_name').html(sale_varieties_info[variety_barcode]['variety_name']+' - '+sale_varieties_info[variety_barcode]['pack_size']+'gm');
 
                 $(content_id+' .price_unit_pack_label').html(sale_varieties_info[variety_barcode]['price_unit_pack']);
-                $(content_id+' .quantity_minimum').html(sale_varieties_info[variety_barcode]['quantity_minimum']);
-                $(content_id+' .amount_per_kg').html(sale_varieties_info[variety_barcode]['amount_per_kg']);
+                $(content_id+' .quantity_minimum').html(get_string_kg(sale_varieties_info[variety_barcode]['quantity_minimum']));
+                $(content_id+' .amount_per_kg').html(get_string_amount(sale_varieties_info[variety_barcode]['amount_per_kg']));
 
                 $(content_id+' .quantity').attr('id','quantity_'+variety_barcode);
                 $(content_id+' .weight_kg').attr('id','weight_kg_'+variety_barcode);

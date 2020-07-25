@@ -26,10 +26,10 @@ class Report_offer_dealers extends Root_Controller
     }
     private function language_labels()
     {
-        $this->lang->language['LABEL_OFFER_OFFERED']='Offer Offered';
-        $this->lang->language['LABEL_OFFER_GIVEN']='Offer Given';
-        $this->lang->language['LABEL_OFFER_ADJUSTED']='Offer Adjusted';
-        $this->lang->language['LABEL_OFFER_BALANCE']='Offer Remains';
+        $this->lang->language['LABEL_OFFER_OFFERED']='Calculated Reward Points';
+        $this->lang->language['LABEL_OFFER_GIVEN']='Given Reward points';
+        $this->lang->language['LABEL_OFFER_ADJUSTED']='Adjusted Reward Points';
+        $this->lang->language['LABEL_OFFER_BALANCE']='Reward Points Balance';
     }
 
     public function index($action="search",$id=0)
@@ -144,7 +144,7 @@ class Report_offer_dealers extends Root_Controller
     {
         if(isset($this->permissions['action0'])&&($this->permissions['action0']==1))
         {
-            $data['title']="Offer Report Search";
+            $data['title']="Reward Points Report Search";
             $ajax['status']=true;
             //assign outlets
             $this->db->from($this->config->item('table_login_csetup_customer').' cus');
@@ -235,7 +235,7 @@ class Report_offer_dealers extends Root_Controller
             {
                 $method='list_offer_current_dealers_balance';
                 $data['system_preference_items']= System_helper::get_preference($user->user_id,$this->controller_url,$method,$this->get_preference_headers($method));
-                $data['title']="Dealer Current Offer Balance Report";
+                $data['title']="Dealer Current Reward Points Balance Report";
                 $ajax['system_content'][]=array("id"=>"#system_report_container","html"=>$this->load->view($this->controller_url."/list_offer_current_dealers_balance",$data,true));
             }
             else

@@ -91,7 +91,7 @@ $CI = & get_instance();
                             </select>
                         </div>
                         <div class="col-xs-6">
-                            <label class="control-label">Dealer Type</label>
+                            <label class="control-label">Customer Type</label>
                         </div>
                     </div>
                     <div style="display: none;" class="row show-grid" id="farmer_id_container">
@@ -101,7 +101,7 @@ $CI = & get_instance();
                             </select>
                         </div>
                         <div class="col-xs-6">
-                            <label class="control-label">Dealer</label>
+                            <label class="control-label">Customer</label>
                         </div>
                     </div>
 
