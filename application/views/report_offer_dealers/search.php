@@ -18,9 +18,9 @@ $CI = & get_instance();
                         </div>
                         <div class="col-xs-6">
                             <select id="report_name" name="report[report_name]" class="form-control">
-                                <option value="offer_current_dealers_balance">Dealers Current Offer Balance</option>
-                                <option value="offer_summary_dealers">Dealers offer summary</option>
-                                <option value="offer_history_dealer">Dealer Offer History</option>
+                                <option value="offer_current_dealers_balance">Dealers Current Reward Points Balance</option>
+<!--                                <option value="offer_summary_dealers">Dealers Reward Points summary</option>-->
+<!--                                <option value="offer_history_dealer">Dealer Reward Points History</option>-->
                             </select>
                         </div>
                     </div>
@@ -80,7 +80,6 @@ $CI = & get_instance();
                     <div class="row show-grid" id="container_farmer_type">
                         <div class="col-xs-6">
                             <select name="report[farmer_type_id]" id="farmer_type_id" class="form-control">
-                                <option value=""><?php echo $CI->lang->line('SELECT');?></option>
                                 <?php
                                 foreach($farmer_types as $row)
                                 {?>
@@ -133,49 +132,53 @@ $CI = & get_instance();
 </div>
 <script type="text/javascript">
 
+    function load_dealers()
+    {
+        $("#farmer_id").val("");
+        var farmer_type_id=$('#farmer_type_id').val();
+        var outlet_id=$('#outlet_id').val();
+        if((outlet_id>0)&&farmer_type_id>0)
+        {
+            $('#farmer_id_container').show();
+            $.ajax({
+                url:'<?php echo site_url($CI->controller_url.'/get_dropdown_dealers_by_outlet_farmer_type_id') ?>',
+                type: 'POST',
+                datatype: "JSON",
+                data:{outlet_id:outlet_id,farmer_type_id:farmer_type_id},
+                success: function (data, status)
+                {
+
+                },
+                error: function (xhr, desc, err)
+                {
+                    console.log("error");
+
+                }
+            });
+
+        }
+        else
+        {
+            $('#farmer_id_container').hide();
+
+        }
+    }
     jQuery(document).ready(function()
     {
         $(".date_large").datepicker({dateFormat : display_date_format,changeMonth: true,changeYear: true,yearRange: "2015:c+2"});
+        load_dealers();
         $(document).off("change", "#outlet_id");
         $(document).on('change','#outlet_id',function()
         {
             $("#system_report_container").html('');
-            $("#farmer_type_id").val("");
-            $("#farmer_id").val("");
-            $('#farmer_id_container').hide();
+            load_dealers();
 
         });
         $(document).off("change", "#farmer_type_id");
         $(document).on("change","#farmer_type_id",function()
         {
-            $("#farmer_id").val("");
-            var farmer_type_id=$('#farmer_type_id').val();
-            var outlet_id=$('#outlet_id').val();
-            if((outlet_id>0)&&farmer_type_id>0)
-            {
-                $('#farmer_id_container').show();
-                $.ajax({
-                    url:'<?php echo site_url($CI->controller_url.'/get_dropdown_dealers_by_outlet_farmer_type_id') ?>',
-                    type: 'POST',
-                    datatype: "JSON",
-                    data:{outlet_id:outlet_id,farmer_type_id:farmer_type_id},
-                    success: function (data, status)
-                    {
-
-                    },
-                    error: function (xhr, desc, err)
-                    {
-                        console.log("error");
-
-                    }
-                });
-
-            }
-            else
-            {
-                $('#farmer_id_container').hide();
-
-            }
+            $("#system_report_container").html('');
+            load_dealers();
         });
         $(document).off("change", "#farmer_id");
 
