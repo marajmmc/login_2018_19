@@ -43,10 +43,10 @@ class Offer_adjust extends Root_Controller
     }
     private function language_labels()
     {
-        $this->lang->language['LABEL_OFFER_OFFERED']='Offer Offered';
-        $this->lang->language['LABEL_OFFER_GIVEN']='Offer Given';
-        $this->lang->language['LABEL_OFFER_ADJUSTED']='Offer Adjusted';
-        $this->lang->language['LABEL_OFFER_BALANCE']='Offer Remains';
+        $this->lang->language['LABEL_OFFER_OFFERED']='Reward Points Offered';
+        $this->lang->language['LABEL_OFFER_GIVEN']='Reward Points Given';
+        $this->lang->language['LABEL_OFFER_ADJUSTED']='Reward Points Adjusted';
+        $this->lang->language['LABEL_OFFER_BALANCE']='Reward Points Remains';
         $this->lang->language['LABEL_DELETE']='Delete';
         $this->lang->language['LABEL_REMARKS_DELETE']='Delete Reason';
         $this->lang->language['LABEL_DATE_ADJUST']='Adjust Date';
@@ -287,7 +287,7 @@ class Offer_adjust extends Root_Controller
 
             $method='list_offer_adjust';
             $data['system_preference_items']= System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
-            $data['title']='Offer Adjust List ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
+            $data['title']='Reward Points Adjust List ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
             $ajax['status']=true;
             $ajax['system_content'][]=array("id"=>"#system_content","html"=>$this->load->view($this->controller_url."/list_offer_adjust",$data,true));
             if($this->message)

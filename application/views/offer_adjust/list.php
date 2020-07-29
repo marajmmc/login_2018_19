@@ -36,7 +36,7 @@ if(isset($CI->permissions['action0']) && ($CI->permissions['action0']==1))
     $action_buttons[]=array
     (
         'type'=>'button',
-        'label'=>'Offer adjust list',
+        'label'=>'Reward Points adjust list',
         'class'=>'button_jqx_action',
         'data-action-link'=>site_url($CI->controller_url.'/index/list_offer_adjust')
     );
