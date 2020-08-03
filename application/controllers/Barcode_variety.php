@@ -126,6 +126,15 @@ class Barcode_variety extends Root_Controller
             $this->db->select('pack.name pack_size');
             $this->db->where('price.id',$item_id);
             $data['item']=$this->db->get()->row_array();
+
+            //login_barcode_font_sizes
+            $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="login_barcode_font_sizes"', 'status ="'.$this->config->item('system_status_active').'"'),1);
+            $data['font_sizes']=array();
+            if($result)
+            {
+                $data['font_sizes']=explode(',',trim($result['config_value']));
+            }
+
             $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="'.$this->config->item('system_purpose_login_barcode_expire_date').'"', 'status ="'.$this->config->item('system_status_active').'"'),1);
             if(!$result)
             {
@@ -155,6 +164,19 @@ class Barcode_variety extends Root_Controller
             {
                 $data['item']['ger_pur']=$result['config_value'];
             }
+            $data['item']['line7']='';
+            $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="login_barcode_line7"', 'status ="'.$this->config->item('system_status_active').'"'),1);
+            if($result)
+            {
+                $data['item']['line7']=$result['config_value'];
+            }
+            $data['item']['line8']='';
+            $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('*'),array('purpose="login_barcode_line8"', 'status ="'.$this->config->item('system_status_active').'"'),1);
+            if($result)
+            {
+                $data['item']['line8']=$result['config_value'];
+            }
+
 
             $this->db->from($this->config->item('table_login_csetup_customer').' customer');
             $this->db->join($this->config->item('table_login_csetup_cus_info').' cus_info','cus_info.customer_id = customer.id','INNER');
@@ -188,6 +210,7 @@ class Barcode_variety extends Root_Controller
     {
         $data['id']=$this->input->post('id');
         $data['items']=$this->input->post('items');
+        $data['show_barcode']=$this->input->post('show_barcode');
         $data['padding_top']=18;
         $data['margin_left']=-40;
         $result=Query_helper::get_info($this->config->item('table_login_setup_system_configures'),array('config_value'),array('purpose ="' .$this->config->item('system_purpose_login_barcode_padding_top').'"','status ="'.$this->config->item('system_status_active').'"'),1);

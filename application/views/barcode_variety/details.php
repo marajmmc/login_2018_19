@@ -88,6 +88,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div style="" class="row show-grid">
             <div class="col-xs-4">
                 <label class="control-label pull-right">Line 1</label>
+                <input type="hidden" name="items[line1][font_size]" value="<?php echo isset($font_sizes[0])?$font_sizes[0]:'10'; ?>" />
             </div>
             <div class="col-xs-4">
                 <input type="text" name="items[line1][text]" class="form-control" value="<?php echo $item['title_barcode'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
@@ -105,6 +106,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div style="" class="row show-grid">
             <div class="col-xs-4">
                 <label class="control-label pull-right">Line 2(outlet)</label>
+                <input type="hidden" name="items[line2][font_size]" value="<?php echo isset($font_sizes[1])?$font_sizes[1]:'10'; ?>" />
             </div>
             <div class="col-xs-4">
                 <select name="items[line2][text]" class="form-control">
@@ -131,6 +133,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div style="" class="row show-grid">
             <div class="col-xs-4">
                 <label class="control-label pull-right">Line 3</label>
+                <input type="hidden" name="items[line3][font_size]" value="<?php echo isset($font_sizes[2])?$font_sizes[2]:'10'; ?>" />
             </div>
             <div class="col-xs-4">
                 <input type="text" name="items[line3][text]" class="form-control" value="<?php echo $item['lot_number'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
@@ -148,6 +151,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div style="" class="row show-grid">
             <div class="col-xs-4">
                 <label class="control-label pull-right">Line 4</label>
+                <input type="hidden" name="items[line4][font_size]" value="<?php echo isset($font_sizes[3])?$font_sizes[3]:'10'; ?>" />
             </div>
             <div class="col-xs-4">
                 <input type="text" name="items[line4][text]" class="form-control" value="MRP Tk: <?php echo $item['price'].' (Wt: '.$item['pack_size'].'g)'; ?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
@@ -165,6 +169,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div style="" class="row show-grid">
             <div class="col-xs-4">
                 <label class="control-label pull-right">Line 5</label>
+                <input type="hidden" name="items[line5][font_size]" value="<?php echo isset($font_sizes[4])?$font_sizes[4]:'10'; ?>" />
             </div>
             <div class="col-xs-4">
                 <input type="text" name="items[line5][text]" class="form-control" value="<?php echo $item['date_expire'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
@@ -182,6 +187,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
         <div style="" class="row show-grid">
             <div class="col-xs-4">
                 <label class="control-label pull-right">Line 6</label>
+                <input type="hidden" name="items[line6][font_size]" value="<?php echo isset($font_sizes[5])?$font_sizes[5]:'10'; ?>" />
             </div>
             <div class="col-xs-4">
                 <input type="text" name="items[line6][text]" class="form-control" value="<?php echo $item['ger_pur'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
@@ -194,6 +200,55 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             </div>
             <div class="col-xs-2">
                 <label class="control-label">Show</label>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 7</label>
+                <input type="hidden" name="items[line7][font_size]" value="<?php echo isset($font_sizes[6])?$font_sizes[6]:'10'; ?>" />
+            </div>
+            <div class="col-xs-4">
+                <input type="text" name="items[line7][text]" class="form-control" value="<?php echo $item['line7'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line7][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Line 8</label>
+                <input type="hidden" name="items[line8][font_size]" value="<?php echo isset($font_sizes[7])?$font_sizes[7]:'10'; ?>" />
+            </div>
+            <div class="col-xs-4">
+                <input type="text" name="items[line8][text]" class="form-control" value="<?php echo $item['line8'];?>" <?php if(!(isset($this->permissions['action2']) && ($this->permissions['action2']==1))){echo 'readonly';} ?>/>
+            </div>
+            <div class="col-xs-2">
+                <select name="items[line8][show]" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Show</label>
+            </div>
+        </div>
+
+        <div style="" class="row show-grid">
+            <div class="col-xs-4">
+                <label class="control-label pull-right">Show Barcode?</label>
+            </div>
+
+            <div class="col-xs-2">
+                <select name="show_barcode" class="form-control">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
             </div>
         </div>
 

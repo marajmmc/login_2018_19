@@ -24,14 +24,14 @@ $price_outlet_id=$id.'_000';
                 if($key=='line2')
                 {
                     ?>
-                    <div><?php echo substr($line['text'],0,-3);?></div>
+                    <div style="font-size: <?php echo $line['font_size']; ?>px;"><?php echo substr($line['text'],0,-3);?></div>
 
                     <?php
                 }
                 else
                 {
                     ?>
-                    <div><?php echo $line['text'];?></div>
+                    <div style="font-size: <?php echo $line['font_size']; ?>px;"><?php echo $line['text'];?></div>
                 <?php
                 }
                 ?>
@@ -39,8 +39,13 @@ $price_outlet_id=$id.'_000';
             <?php
             }
         }
+        if($show_barcode==1)
+        {
         ?>
         <img src="<?php echo site_url('barcode/index/variety_by_price_outlet_id/'.($price_outlet_id).'/150/20');  ?>">
+        <?php
+        }
+        ?>
     </div>
     <div style="width: 150px;float: left;margin-left: 20px;">
         <?php
@@ -55,14 +60,14 @@ $price_outlet_id=$id.'_000';
                 if($key=='line2')
                 {
                     ?>
-                    <div><?php echo substr($line['text'],0,-3);?></div>
+                    <div style="font-size: <?php echo $line['font_size']; ?>px;"><?php echo substr($line['text'],0,-3);?></div>
 
                 <?php
                 }
                 else
                 {
                     ?>
-                    <div><?php echo $line['text'];?></div>
+                    <div style="font-size: <?php echo $line['font_size']; ?>px;"><?php echo $line['text'];?></div>
                     <?php
                 }
                 ?>
@@ -70,7 +75,12 @@ $price_outlet_id=$id.'_000';
             <?php
             }
         }
+        if($show_barcode==1)
+        {
         ?>
         <img src="<?php echo site_url('barcode/index/variety_by_price_outlet_id/'.($price_outlet_id).'/150/20');  ?>">
+        <?php
+        }
+        ?>
     </div>
 </div>
