@@ -81,7 +81,11 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
             <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_GIVEN'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_given']);?></button>
             <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_ADJUSTED'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_adjusted']);?></button>
             <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow"><?php echo $CI->lang->line('LABEL_OFFER_BALANCE'); ?>: <?php echo System_helper::get_string_amount($offer_info['offer_balance']);?></button>
-
+        </div>
+        <div class="col-xs-12">
+            <button type="button" class="btn btn-success btn-md" style="font-weight: bold;color: #000000;background-color: lightyellow">Credit Limit: <?php echo System_helper::get_string_amount($amount_credit_limit);?></button>
+            <button type="button" class="btn btn-warning btn-md" style="font-weight: bold;color: #000000;background-color: lightblue">Balance: <?php echo System_helper::get_string_amount($amount_credit_balance);?></button>
+            <button type="button" class="btn btn-primary btn-md" style="font-weight: bold;color: #000000;background-color: lightcoral">Total Due: <?php echo System_helper::get_string_amount($amount_credit_limit-$amount_credit_balance);?></button>
         </div>
     </div>
 
@@ -192,6 +196,9 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columns:
                 [
                     { text: '<?php echo $CI->lang->line('LABEL_ID'); ?>', dataField: 'id',width:'100',cellsAlign:'right',hidden: <?php echo $system_preference_items['id']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ADJUST_METHOD'); ?>', dataField: 'adjust_method',width:'200',filtertype: 'list', hidden: <?php echo $system_preference_items['adjust_method']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_PAYMENT_ID'); ?>', dataField: 'payment_id',width:'100', hidden: <?php echo $system_preference_items['payment_id']?0:1;?>},
+
                     { text: '<?php echo $CI->lang->line('LABEL_DATE_ADJUST'); ?>', dataField: 'date_adjust',width:'200', hidden: <?php echo $system_preference_items['date_adjust']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT'); ?>', dataField: 'amount',width:'120',cellsAlign:'right', hidden: <?php echo $system_preference_items['amount']?0:1;?>,cellsrenderer: cellsrenderer,aggregates: ['sum'],aggregatesrenderer:aggregatesrenderer_amount},
                     { text: '<?php echo $CI->lang->line('LABEL_REMARKS'); ?>', dataField: 'remarks',hidden: <?php echo $system_preference_items['remarks']?0:1;?>}

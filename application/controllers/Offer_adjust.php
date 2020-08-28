@@ -49,8 +49,12 @@ class Offer_adjust extends Root_Controller
         $this->lang->language['LABEL_OFFER_BALANCE']='Reward Points Remains';
         $this->lang->language['LABEL_DELETE']='Delete';
         $this->lang->language['LABEL_REMARKS_DELETE']='Delete Reason';
+        $this->lang->language['LABEL_ADJUST_METHOD']='Adjust Method';
+        $this->lang->language['LABEL_ADJUST_CASH']='Cash/Gift';
+        $this->lang->language['LABEL_ADJUST_CREDIT_BALANCE']='From Credit Balance';
         $this->lang->language['LABEL_DATE_ADJUST']='Adjust Date';
         $this->lang->language['LABEL_AMOUNT']='Amount';
+        $this->lang->language['LABEL_PAYMENT_ID']='Payment Id';
     }
     public function index($action="list",$id=0,$id1=0)
     {
@@ -121,6 +125,8 @@ class Offer_adjust extends Root_Controller
         else if($method=='list_offer_adjust')
         {
             $data['id']= 1;
+            $data['adjust_method']= 1;
+            $data['payment_id']= 1;
             $data['date_adjust']= 1;
             $data['amount']= 1;
             $data['remarks']= 1;
@@ -284,6 +290,11 @@ class Offer_adjust extends Root_Controller
 
             $data['offer_info']=$offers[$data['item_id']];
 
+            //credit info
+            $data['amount_credit_balance']=$farmer_info['amount_credit_balance'];
+            $data['amount_credit_limit']=$farmer_info['amount_credit_limit'];
+
+
 
             $method='list_offer_adjust';
             $data['system_preference_items']= System_helper::get_preference($user->user_id, $this->controller_url, $method, $this->get_preference_headers($method));
@@ -315,6 +326,7 @@ class Offer_adjust extends Root_Controller
         foreach($items as &$item)
         {
             $item['date_adjust']=System_helper::display_date_time($item['date_adjust']);
+            $item['adjust_method']=$this->lang->line('LABEL_ADJUST_'.$item['adjust_method']);
         }
         $this->json_return($items);
     }
@@ -327,6 +339,10 @@ class Offer_adjust extends Root_Controller
             $data['farmer_info']=$farmer_info;
             $offers=Offer_helper::get_offer_stats(array($farmer_id));
             $data['offer_info']=$offers[$farmer_id];
+
+            //credit info
+            $data['amount_credit_limit']=$farmer_info['amount_credit_limit'];
+            $data['amount_credit_balance']=$farmer_info['amount_credit_balance'];
 
             $data['title']='New Offer Adjustment ::'.$farmer_info['name'].'-'.$farmer_info['mobile_no'].' ('.Barcode_helper::get_barcode_farmer($farmer_info['id']).')';
             $data['item']['id']=0;
@@ -374,18 +390,100 @@ class Offer_adjust extends Root_Controller
             $ajax['system_message']=$this->message;
             $this->json_return($ajax);
         }
+        $data['amount_credit_limit']=$farmer_info['amount_credit_limit'];
+        $data['amount_credit_balance']=$farmer_info['amount_credit_balance'];
+        if(!($data['amount_credit_limit']>0))
+        {
+            $ajax['status']=false;
+            $ajax['system_message']="This Dealer is not Credit Dealer";
+            $this->json_return($ajax);
+        }
+        //die();
+        $data_history=array();
+        $data_payment=array();
+        $adjust_amount=strlen($item['amount'])>0?$item['amount']:0;
+        if($item['adjust_method']=='CREDIT_BALANCE')
+        {
+            $data_history['farmer_id']=$farmer_id;
+            $data_history['credit_limit_old']=$farmer_info['amount_credit_limit'];
+            $data_history['credit_limit_new']=$farmer_info['amount_credit_limit'];
 
+            $data_history['balance_old']=$farmer_info['amount_credit_balance'];
+            $data_history['balance_new']=$farmer_info['amount_credit_balance']+$adjust_amount;
+            $data_history['amount_adjust']=$adjust_amount;
+            $data_history['reference_no']='';//set adjust id
+            $data_history['remarks']=$item['remarks'];
+            $data_history['remarks_reason']='Offer Adjustment';
+
+            if($data_history['balance_new']<0)
+            {
+                $ajax['status'] = false;
+                $ajax['system_message'] = 'New balance ('.$data_history['balance_new'].') cannot be negative';
+                $this->json_return($ajax);
+            }
+            $result=Query_helper::get_info($this->config->item('table_pos_setup_farmer_outlet'),array('*'),array('farmer_id ='.$farmer_id,'revision =1'),1);
+            if(!$result)
+            {
+                $ajax['status']=false;
+                $ajax['system_message']='This farmer not assigned any outlet.Please assign him an outlet.';
+                $this->json_return($ajax);
+            }
+            $data=array();
+            $data['farmer_id'] = $farmer_id;
+            $data['outlet_id'] = $result['outlet_id'];
+            $data['date_payment']=$time;
+            $data['payment_way_id']= 1;
+            $data['amount']= $adjust_amount;
+            $data['revision_count']=1;
+            $data['reference_no']= //set adjust id latter
+            $data['remarks']= $item['remarks'];
+            $data['date_created'] = $time;
+            $data['user_created'] = $user->user_id;
+            $data_payment=$data;
+
+
+        }
 
         $this->db->trans_start();  //DB Transaction Handle START
         $data=array();
+
         $data['farmer_id'] = $farmer_id;
+        $data['adjust_method'] = $item['adjust_method'];
+        $data['payment_id'] = 0;
         $data['date_adjust'] = $time;
         $data['amount'] =strlen($item['amount'])>0?$item['amount']:0;
         $data['remarks'] = $item['remarks'];
         $data['status'] = $this->config->item('system_status_active');
         $data['date_created'] = $time;
         $data['user_created'] = $user->user_id;
-        Query_helper::add($this->config->item('table_login_offer_adjust_farmer'),$data);
+        $adjust_id=Query_helper::add($this->config->item('table_login_offer_adjust_farmer'),$data);
+
+        if($item['adjust_method']=='CREDIT_BALANCE')
+        {
+
+            $data_payment['reference_no']='Reward Point Adjust Id :'.$adjust_id;//set adjust id
+            $payment_id=Query_helper::add($this->config->item('table_pos_farmer_credit_payment'),$data_payment, false);
+
+            $data_history['payment_id']=$payment_id;
+            $data_history['reference_no']='Reward Point Adjust Id :'.$adjust_id;//set adjust id
+
+            $data_credit=array();
+            $data_credit['date_updated'] = $time;
+            $data_credit['user_updated'] = $user->user_id;
+            $data_credit['amount_credit_balance']=$data_history['balance_new'];
+            Query_helper::update($this->config->item('table_pos_setup_farmer_farmer'),$data_credit, array('id='.$farmer_id), false);
+
+            //at pos it managed by farmer_credit_helper
+            $data_history['date_created']=$time;
+            $data_history['user_created']=$user->user_id;
+            $this->db->insert($this->config->item('table_pos_farmer_credit_balance_history'), $data_history);
+
+            //set payment id to adjustment
+            Query_helper::update($this->config->item('table_login_offer_adjust_farmer'),array('payment_id'=>$payment_id), array('id='.$adjust_id), false);
+
+
+
+        }
         Token_helper::update_token($system_user_token_info['id'], $system_user_token);
 
         $this->db->trans_complete();   //DB Transaction Handle END
@@ -404,6 +502,7 @@ class Offer_adjust extends Root_Controller
     private function check_validation_save()
     {
         $this->load->library('form_validation');
+        $this->form_validation->set_rules('item[adjust_method]',$this->lang->line('LABEL_ADJUST_METHOD'),'required');
         $this->form_validation->set_rules('item[amount]',$this->lang->line('LABEL_AMOUNT'),'required');
         $this->form_validation->set_rules('item[remarks]',$this->lang->line('LABEL_REMARKS'),'required');
 
