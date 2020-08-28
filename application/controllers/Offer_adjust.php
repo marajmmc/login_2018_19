@@ -404,6 +404,12 @@ class Offer_adjust extends Root_Controller
         $adjust_amount=strlen($item['amount'])>0?$item['amount']:0;
         if($item['adjust_method']=='CREDIT_BALANCE')
         {
+            if($adjust_amount<0)
+            {
+                $ajax['status'] = false;
+                $ajax['system_message'] = 'Negative amount Only for cash/gift.';
+                $this->json_return($ajax);
+            }
             $data_history['farmer_id']=$farmer_id;
             $data_history['credit_limit_old']=$farmer_info['amount_credit_limit'];
             $data_history['credit_limit_new']=$farmer_info['amount_credit_limit'];
