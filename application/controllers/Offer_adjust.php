@@ -44,8 +44,8 @@ class Offer_adjust extends Root_Controller
     private function language_labels()
     {
         $this->lang->language['LABEL_OFFER_OFFERED']='Reward Points Offered';
-        $this->lang->language['LABEL_OFFER_GIVEN']='Reward Points Given';
-        $this->lang->language['LABEL_OFFER_ADJUSTED']='Reward Points Adjusted';
+        $this->lang->language['LABEL_OFFER_GIVEN']='RP Adjusted by sales';
+        $this->lang->language['LABEL_OFFER_ADJUSTED']='RP Adjusted Cash/Credit balance';
         $this->lang->language['LABEL_OFFER_BALANCE']='Reward Points Remains';
         $this->lang->language['LABEL_DELETE']='Delete';
         $this->lang->language['LABEL_REMARKS_DELETE']='Delete Reason';
