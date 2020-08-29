@@ -27,8 +27,8 @@ class Report_offer_dealers extends Root_Controller
     private function language_labels()
     {
         $this->lang->language['LABEL_OFFER_OFFERED']='Calculated Reward Points';
-        $this->lang->language['LABEL_OFFER_GIVEN']='Given Reward points';
-        $this->lang->language['LABEL_OFFER_ADJUSTED']='Adjusted Reward Points';
+        $this->lang->language['LABEL_OFFER_GIVEN']='RP Adjusted by sales';
+        $this->lang->language['LABEL_OFFER_ADJUSTED']='RP Adjusted Cash/Credit balance';
         $this->lang->language['LABEL_OFFER_BALANCE']='Reward Points Balance';
     }
 
