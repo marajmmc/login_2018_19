@@ -143,7 +143,7 @@ $CI->load->view('action_buttons',array('action_buttons'=>$action_buttons));
                 columns:
                 [
                     { text: '<?php echo $CI->lang->line('LABEL_DATE'); ?>', dataField: 'date', width:200,cellsrenderer: cellsrenderer,hidden: <?php echo $system_preference_items['date']?0:1;?>},
-                    { text: '<?php echo $CI->lang->line('LABEL_ACTION_TRANSACTION'); ?>', dataField: 'action_transaction',cellsrenderer: cellsrenderer, width:80, hidden: <?php echo $system_preference_items['action_transaction']?0:1;?>},
+                    { text: '<?php echo $CI->lang->line('LABEL_ACTION_TRANSACTION'); ?>', dataField: 'action_transaction',cellsrenderer: cellsrenderer, width:150, hidden: <?php echo $system_preference_items['action_transaction']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_ACTION_NO'); ?>', dataField: 'action_no',width:'100',cellsrenderer: cellsrenderer, hidden: <?php echo $system_preference_items['action_no']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_DEBIT'); ?>', dataField: 'amount_debit', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_debit']?0:1;?>},
                     { text: '<?php echo $CI->lang->line('LABEL_AMOUNT_CREDIT'); ?>', dataField: 'amount_credit', width:100,cellsrenderer: cellsrenderer,cellsalign: 'right', hidden: <?php echo $system_preference_items['amount_credit']?0:1;?>},

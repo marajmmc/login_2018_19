@@ -593,7 +593,7 @@ class Report_farmer_balance extends Root_Controller
 
         //current payment
         $this->db->from($this->config->item('table_pos_farmer_credit_payment').' dp');
-        $this->db->select('dp.id,dp.date_payment,dp.amount');
+        $this->db->select('dp.id,dp.date_payment,dp.amount,dp.offer_adjust_id');
         $this->db->where('dp.status',$this->config->item('system_status_active'));
         $this->db->where('dp.farmer_id',$farmer_id);
         $this->db->where('dp.date_payment >=',$date_start);
@@ -621,6 +621,10 @@ class Report_farmer_balance extends Root_Controller
             $item=array();
             $item['date']=System_helper::display_date_time($payment['date_payment']);
             $item['action_transaction']="Payment";
+            if($payment['offer_adjust_id']>0)
+            {
+                $item['action_transaction']="Reward Adjust";
+            }
             $item['action_no']=Barcode_helper::get_barcode_dealer_payment($payment['id']);
             $item['amount_debit']=0;
             $item['amount_credit']=$payment['amount'];

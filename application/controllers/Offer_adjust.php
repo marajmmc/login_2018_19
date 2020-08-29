@@ -398,10 +398,20 @@ class Offer_adjust extends Root_Controller
             $ajax['system_message']="This Dealer is not Credit Dealer";
             $this->json_return($ajax);
         }
+        $offers=Offer_helper::get_offer_stats(array($farmer_id));
+
         //die();
         $data_history=array();
         $data_payment=array();
         $adjust_amount=strlen($item['amount'])>0?$item['amount']:0;
+        if($adjust_amount>$offers[$farmer_id]['offer_balance'])
+        {
+            $ajax['status']=false;
+            $ajax['system_message']="Adjust Amount Cannot be higher than balance";
+            $this->json_return($ajax);
+        }
+
+
         if($item['adjust_method']=='CREDIT_BALANCE')
         {
             if($adjust_amount<0)
@@ -468,6 +478,7 @@ class Offer_adjust extends Root_Controller
         {
 
             $data_payment['reference_no']='Reward Point Adjust Id :'.$adjust_id;//set adjust id
+            $data_payment['offer_adjust_id']=$adjust_id;//set adjust id
             $payment_id=Query_helper::add($this->config->item('table_pos_farmer_credit_payment'),$data_payment, false);
 
             $data_history['payment_id']=$payment_id;
