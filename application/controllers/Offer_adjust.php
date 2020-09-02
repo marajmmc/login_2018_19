@@ -392,12 +392,12 @@ class Offer_adjust extends Root_Controller
         }
         $data['amount_credit_limit']=$farmer_info['amount_credit_limit'];
         $data['amount_credit_balance']=$farmer_info['amount_credit_balance'];
-        if(!($data['amount_credit_limit']>0))
-        {
-            $ajax['status']=false;
-            $ajax['system_message']="This Dealer is not Credit Dealer";
-            $this->json_return($ajax);
-        }
+//        if(!($data['amount_credit_limit']>0))
+//        {
+//            $ajax['status']=false;
+//            $ajax['system_message']="This Dealer is not Credit Dealer";
+//            $this->json_return($ajax);
+//        }
         $offers=Offer_helper::get_offer_stats(array($farmer_id));
 
         //die();
