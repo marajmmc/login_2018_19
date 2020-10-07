@@ -414,6 +414,13 @@ class Offer_adjust extends Root_Controller
 
         if($item['adjust_method']=='CREDIT_BALANCE')
         {
+            if(!($farmer_info['amount_credit_limit']>0))
+            {
+                $ajax['status']=false;
+                $ajax['system_message']="This Dealer is not Credit Dealer";
+                $this->json_return($ajax);
+            }
+
             if($adjust_amount<0)
             {
                 $ajax['status'] = false;
